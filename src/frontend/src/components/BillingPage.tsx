@@ -1,0 +1,663 @@
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Progress } from "@/components/ui/progress";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  AlertTriangle,
+  CalendarDays,
+  ChevronRight,
+  CreditCard,
+  Crown,
+  ExternalLink,
+  Image,
+  Loader2,
+  Lock,
+  Paintbrush,
+  RotateCcw,
+  Save,
+  Shield,
+  TrendingUp,
+  Zap,
+} from "lucide-react";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+import type { BillingEvent } from "../backend.d.ts";
+import {
+  useGetBillingEvents,
+  useGetMySubscription,
+  useGetUsageSummary,
+} from "../hooks/useQueries";
+import { PricingModal } from "./PricingModal";
+import { SeatManagement } from "./SeatManagement";
+
+interface BillingPageProps {
+  onPricingOpen?: () => void;
+}
+
+const WHITE_LABEL_KEY = "lockfree_whitelabel";
+
+interface WhiteLabelConfig {
+  companyName: string;
+  primaryColor: string;
+  logoUrl: string;
+}
+
+function loadWhiteLabel(): WhiteLabelConfig {
+  try {
+    const raw = localStorage.getItem(WHITE_LABEL_KEY);
+    return raw
+      ? JSON.parse(raw)
+      : { companyName: "", primaryColor: "#00b4d8", logoUrl: "" };
+  } catch {
+    return { companyName: "", primaryColor: "#00b4d8", logoUrl: "" };
+  }
+}
+
+function WhiteLabelSection({
+  subscription,
+  onUpgrade,
+}: {
+  subscription: string;
+  onUpgrade: () => void;
+}) {
+  const isEnterprise = subscription === "enterprise";
+  const [config, setConfig] = useState<WhiteLabelConfig>(loadWhiteLabel);
+
+  // Apply stored branding on mount
+  useEffect(() => {
+    const stored = loadWhiteLabel();
+    if (stored.primaryColor) {
+      document.documentElement.style.setProperty(
+        "--white-label-primary",
+        stored.primaryColor,
+      );
+    }
+  }, []);
+
+  function handleSave() {
+    localStorage.setItem(WHITE_LABEL_KEY, JSON.stringify(config));
+    document.documentElement.style.setProperty(
+      "--white-label-primary",
+      config.primaryColor,
+    );
+    toast.success(
+      "White-label branding saved! All team members will see your branding.",
+    );
+  }
+
+  function handleReset() {
+    const defaults: WhiteLabelConfig = {
+      companyName: "",
+      primaryColor: "#00b4d8",
+      logoUrl: "",
+    };
+    localStorage.removeItem(WHITE_LABEL_KEY);
+    document.documentElement.style.removeProperty("--white-label-primary");
+    setConfig(defaults);
+    toast.success("Branding reset to default.");
+  }
+
+  if (!isEnterprise) {
+    return (
+      <div className="rounded-xl border border-dashed border-border bg-muted/20 p-6 text-center">
+        <div className="w-12 h-12 rounded-xl bg-muted/50 border border-border flex items-center justify-center mx-auto mb-3">
+          <Lock className="w-5 h-5 text-muted-foreground" />
+        </div>
+        <div className="font-display font-bold text-foreground mb-1.5">
+          White-Label Branding
+        </div>
+        <p className="text-sm text-muted-foreground mb-4 max-w-xs mx-auto">
+          White-label branding is available on the Enterprise plan. Rebrand the
+          console with your company identity.
+        </p>
+        <Button
+          size="sm"
+          className="gap-2 bg-[oklch(0.75_0.18_60)] hover:bg-[oklch(0.68_0.18_60)] text-background"
+          onClick={onUpgrade}
+        >
+          <Crown className="w-3.5 h-3.5" />
+          Upgrade to Enterprise
+        </Button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-5">
+      <div className="flex items-center gap-2.5">
+        <div className="w-8 h-8 rounded-lg bg-[oklch(0.75_0.18_60/0.15)] border border-[oklch(0.75_0.18_60/0.3)] flex items-center justify-center flex-shrink-0">
+          <Paintbrush className="w-4 h-4 text-[oklch(0.75_0.18_60)]" />
+        </div>
+        <div>
+          <h3 className="font-display font-bold text-sm text-foreground">
+            White-Label Branding
+          </h3>
+          <p className="text-xs text-muted-foreground">
+            All team members will see your custom branding across the console
+          </p>
+        </div>
+        <div className="ml-auto">
+          <Badge className="bg-[oklch(0.75_0.18_60/0.12)] text-[oklch(0.85_0.18_60)] border border-[oklch(0.75_0.18_60/0.3)] text-xs">
+            Enterprise
+          </Badge>
+        </div>
+      </div>
+
+      <p className="text-sm text-muted-foreground">
+        Rebrand LockFree Engine with your company identity. All team members
+        will see your custom branding across the entire console — no vendor
+        lock-in, fully on-chain.
+      </p>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {/* Company name */}
+        <div className="space-y-1.5">
+          <Label htmlFor="wl-name" className="text-xs">
+            Company Name
+          </Label>
+          <Input
+            id="wl-name"
+            placeholder="Acme Cloud"
+            value={config.companyName}
+            onChange={(e) =>
+              setConfig((prev) => ({ ...prev, companyName: e.target.value }))
+            }
+          />
+        </div>
+
+        {/* Primary color */}
+        <div className="space-y-1.5">
+          <Label htmlFor="wl-color" className="text-xs">
+            Primary Color
+          </Label>
+          <div className="flex items-center gap-2.5">
+            <div
+              className="w-9 h-9 rounded-lg border border-border flex-shrink-0 cursor-pointer"
+              style={{ background: config.primaryColor }}
+              title={config.primaryColor}
+            />
+            <input
+              id="wl-color"
+              type="color"
+              value={config.primaryColor}
+              onChange={(e) =>
+                setConfig((prev) => ({
+                  ...prev,
+                  primaryColor: e.target.value,
+                }))
+              }
+              className="sr-only"
+              aria-label="Pick primary color"
+            />
+            <Input
+              value={config.primaryColor}
+              onChange={(e) =>
+                setConfig((prev) => ({
+                  ...prev,
+                  primaryColor: e.target.value,
+                }))
+              }
+              placeholder="#00b4d8"
+              className="font-mono text-xs"
+            />
+            <label
+              htmlFor="wl-color"
+              className="flex-shrink-0 cursor-pointer"
+              title="Open color picker"
+            >
+              <div className="w-9 h-9 rounded-lg border border-border bg-muted/40 hover:bg-muted flex items-center justify-center transition-colors">
+                <Paintbrush className="w-3.5 h-3.5 text-muted-foreground" />
+              </div>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      {/* Logo URL */}
+      <div className="space-y-1.5">
+        <Label htmlFor="wl-logo" className="text-xs">
+          Logo URL
+        </Label>
+        <Input
+          id="wl-logo"
+          placeholder="https://example.com/logo.png or paste base64"
+          value={config.logoUrl}
+          onChange={(e) =>
+            setConfig((prev) => ({ ...prev, logoUrl: e.target.value }))
+          }
+        />
+        {config.logoUrl && (
+          <div className="mt-2 p-3 rounded-lg border border-border bg-muted/30 flex items-center gap-3">
+            <img
+              src={config.logoUrl}
+              alt="Logo preview"
+              className="h-8 max-w-[120px] object-contain"
+              onError={(e) => {
+                (e.currentTarget as HTMLImageElement).style.display = "none";
+              }}
+            />
+            <span className="text-xs text-muted-foreground">Logo preview</span>
+          </div>
+        )}
+        {!config.logoUrl && (
+          <div className="mt-2 p-3 rounded-lg border border-dashed border-border bg-muted/20 flex items-center gap-2 text-muted-foreground">
+            <Image className="w-4 h-4" />
+            <span className="text-xs">Enter a URL to preview your logo</span>
+          </div>
+        )}
+      </div>
+
+      {/* Actions */}
+      <div className="flex items-center gap-2 pt-1">
+        <Button className="gap-2" onClick={handleSave}>
+          <Save className="w-3.5 h-3.5" />
+          Save Branding
+        </Button>
+        <Button variant="outline" className="gap-2" onClick={handleReset}>
+          <RotateCcw className="w-3.5 h-3.5" />
+          Reset to Default
+        </Button>
+      </div>
+
+      {config.companyName && (
+        <div className="rounded-lg border border-primary/20 bg-primary/5 px-4 py-3 flex items-center gap-2">
+          <div
+            className="w-2.5 h-2.5 rounded-full animate-pulse"
+            style={{ background: config.primaryColor }}
+          />
+          <p className="text-xs text-muted-foreground">
+            Currently showing as:{" "}
+            <span className="font-semibold text-foreground">
+              {config.companyName}
+            </span>{" "}
+            to all team members
+          </p>
+        </div>
+      )}
+    </div>
+  );
+}
+
+const TIER_LIMITS = {
+  free: { engines: 1, deployments: 5, migrations: -1 },
+  pro: { engines: -1, deployments: -1, migrations: -1 },
+  enterprise: { engines: -1, deployments: -1, migrations: -1 },
+};
+
+const TIER_PRICE = {
+  free: "$0",
+  pro: "$29",
+  enterprise: "$499",
+};
+
+function formatDate(timestamp: bigint): string {
+  const ms = Number(timestamp / 1_000_000n);
+  return new Date(ms).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
+function EventTypeBadge({ type }: { type: string }) {
+  const styles: Record<string, string> = {
+    upgrade:
+      "bg-[oklch(0.72_0.19_145/0.12)] text-[oklch(0.82_0.19_145)] border-[oklch(0.72_0.19_145/0.3)]",
+    downgrade: "bg-muted/50 text-muted-foreground border-border",
+    payment: "bg-primary/10 text-primary border-primary/20",
+    subscription: "bg-primary/10 text-primary border-primary/20",
+    refund:
+      "bg-[oklch(0.75_0.18_60/0.12)] text-[oklch(0.85_0.18_60)] border-[oklch(0.75_0.18_60/0.3)]",
+  };
+  const key = type.toLowerCase();
+  return (
+    <span
+      className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border capitalize
+        ${styles[key] ?? styles.payment}
+      `}
+    >
+      {type}
+    </span>
+  );
+}
+
+interface UsageMeterProps {
+  label: string;
+  value: number;
+  max: number | null;
+  warn?: boolean;
+  onUpgrade?: () => void;
+}
+
+function UsageMeter({ label, value, max, warn, onUpgrade }: UsageMeterProps) {
+  const pct = max === null ? 0 : Math.min((value / max) * 100, 100);
+  const isNearLimit = max !== null && pct >= 80;
+
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center justify-between text-xs">
+        <span className="text-muted-foreground font-medium">{label}</span>
+        <span
+          className={`font-mono font-semibold ${isNearLimit ? "text-[oklch(0.72_0.18_55)]" : "text-foreground"}`}
+        >
+          {value} / {max === null ? "∞" : max}
+        </span>
+      </div>
+      {max !== null ? (
+        <Progress
+          value={pct}
+          className={`h-1.5 ${isNearLimit ? "[&>div]:bg-[oklch(0.72_0.18_55)]" : "[&>div]:bg-primary"}`}
+        />
+      ) : (
+        <div className="h-1.5 rounded-full bg-secondary">
+          <div className="h-full w-0 rounded-full bg-primary/40" />
+        </div>
+      )}
+      {warn && isNearLimit && onUpgrade && (
+        <div className="flex items-center justify-between p-2 rounded-lg bg-[oklch(0.72_0.18_55/0.1)] border border-[oklch(0.72_0.18_55/0.3)]">
+          <div className="flex items-center gap-1.5">
+            <AlertTriangle className="w-3.5 h-3.5 text-[oklch(0.72_0.18_55)]" />
+            <span className="text-xs text-[oklch(0.82_0.18_55)]">
+              Approaching limit
+            </span>
+          </div>
+          <Button
+            size="sm"
+            variant="ghost"
+            className="h-6 text-xs px-2 text-[oklch(0.72_0.18_55)] hover:bg-[oklch(0.72_0.18_55/0.1)]"
+            onClick={onUpgrade}
+          >
+            Upgrade
+            <ChevronRight className="w-3 h-3 ml-0.5" />
+          </Button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export function BillingPage({ onPricingOpen }: BillingPageProps) {
+  const { data: subscription = "free", isLoading: subLoading } =
+    useGetMySubscription();
+  const { data: billingEvents = [], isLoading: eventsLoading } =
+    useGetBillingEvents();
+  const { data: usage, isLoading: usageLoading } = useGetUsageSummary();
+  const [pricingOpen, setPricingOpen] = useState(false);
+
+  const limits =
+    TIER_LIMITS[subscription as keyof typeof TIER_LIMITS] ?? TIER_LIMITS.free;
+  const enginesCount = Number(usage?.enginesCount ?? 0);
+  const deploymentsCount = Number(usage?.deploymentsThisMonth ?? 0);
+  const migrationsCount = Number(usage?.migrationsThisMonth ?? 0);
+
+  function openPricing() {
+    setPricingOpen(true);
+    onPricingOpen?.();
+  }
+
+  return (
+    <div className="max-w-4xl mx-auto space-y-6 pb-8">
+      {/* Page header */}
+      <div>
+        <h1 className="font-display text-xl font-bold text-foreground">
+          Billing & Subscription
+        </h1>
+        <p className="text-sm text-muted-foreground mt-0.5">
+          Manage your plan, usage, and payment history — all recorded on-chain.
+        </p>
+      </div>
+
+      {/* Section A: Current Plan */}
+      <div className="rounded-xl border border-border bg-card overflow-hidden">
+        <div className="px-5 py-4 border-b border-border bg-card/80">
+          <h2 className="font-display font-bold text-sm text-muted-foreground uppercase tracking-wide">
+            Current Plan
+          </h2>
+        </div>
+        <div className="p-5">
+          {subLoading ? (
+            <div className="flex items-center gap-2 text-muted-foreground">
+              <Loader2 className="w-4 h-4 animate-spin" />
+              <span className="text-sm">Loading plan...</span>
+            </div>
+          ) : (
+            <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+              <div className="flex items-center gap-3">
+                <div
+                  className={`
+                    w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0
+                    ${subscription === "free" ? "bg-muted/50 border border-border" : ""}
+                    ${subscription === "pro" ? "bg-[oklch(0.72_0.19_145/0.15)] border border-[oklch(0.72_0.19_145/0.4)]" : ""}
+                    ${subscription === "enterprise" ? "bg-[oklch(0.75_0.18_60/0.15)] border border-[oklch(0.75_0.18_60/0.4)]" : ""}
+                  `}
+                >
+                  {subscription === "free" && (
+                    <Shield className="w-5 h-5 text-muted-foreground" />
+                  )}
+                  {subscription === "pro" && (
+                    <Zap className="w-5 h-5 text-[oklch(0.72_0.19_145)]" />
+                  )}
+                  {subscription === "enterprise" && (
+                    <Crown className="w-5 h-5 text-[oklch(0.75_0.18_60)]" />
+                  )}
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span
+                      className={`font-display text-2xl font-bold capitalize
+                        ${subscription === "free" ? "text-muted-foreground" : ""}
+                        ${subscription === "pro" ? "text-[oklch(0.82_0.19_145)]" : ""}
+                        ${subscription === "enterprise" ? "text-[oklch(0.85_0.18_60)]" : ""}
+                      `}
+                    >
+                      {subscription}
+                    </span>
+                    <span className="font-display text-lg font-semibold text-muted-foreground">
+                      {TIER_PRICE[subscription as keyof typeof TIER_PRICE] ??
+                        "$0"}
+                      /mo
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground mt-0.5">
+                    <CalendarDays className="w-3 h-3" />
+                    Next billing: March 1, 2026
+                  </div>
+                </div>
+              </div>
+              <div className="sm:ml-auto">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="gap-2"
+                  onClick={openPricing}
+                >
+                  <CreditCard className="w-3.5 h-3.5" />
+                  Change Plan
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Section B: Usage */}
+      <div className="rounded-xl border border-border bg-card overflow-hidden">
+        <div className="px-5 py-4 border-b border-border bg-card/80">
+          <h2 className="font-display font-bold text-sm text-muted-foreground uppercase tracking-wide flex items-center gap-2">
+            <TrendingUp className="w-4 h-4" />
+            Usage This Month
+          </h2>
+        </div>
+        <div className="p-5 space-y-5">
+          {usageLoading ? (
+            <div className="flex items-center gap-2 text-muted-foreground">
+              <Loader2 className="w-4 h-4 animate-spin" />
+              <span className="text-sm">Loading usage...</span>
+            </div>
+          ) : (
+            <>
+              <UsageMeter
+                label="Cloud Engines"
+                value={enginesCount}
+                max={limits.engines === -1 ? null : limits.engines}
+                warn={subscription === "free"}
+                onUpgrade={openPricing}
+              />
+              <UsageMeter
+                label="Deployments"
+                value={deploymentsCount}
+                max={limits.deployments === -1 ? null : limits.deployments}
+                warn={subscription === "free"}
+                onUpgrade={openPricing}
+              />
+              <UsageMeter
+                label="Migrations"
+                value={migrationsCount}
+                max={null}
+              />
+            </>
+          )}
+        </div>
+      </div>
+
+      {/* Section C: Billing Log */}
+      <div className="rounded-xl border border-border bg-card overflow-hidden">
+        <div className="px-5 py-4 border-b border-border bg-card/80 flex items-center justify-between">
+          <h2 className="font-display font-bold text-sm text-muted-foreground uppercase tracking-wide">
+            On-Chain Billing Log
+          </h2>
+          <div className="flex items-center gap-1.5">
+            <div className="w-1.5 h-1.5 rounded-full bg-[oklch(0.72_0.19_145)] animate-pulse" />
+            <span className="text-xs text-[oklch(0.72_0.19_145)] flex items-center gap-1">
+              Transparent audit trail — stored on ICP
+              <ExternalLink className="w-3 h-3" />
+            </span>
+          </div>
+        </div>
+        <div>
+          {eventsLoading ? (
+            <div className="flex items-center gap-2 text-muted-foreground p-5">
+              <Loader2 className="w-4 h-4 animate-spin" />
+              <span className="text-sm">Loading billing history...</span>
+            </div>
+          ) : billingEvents.length === 0 ? (
+            <div className="p-8 text-center">
+              <CreditCard className="w-8 h-8 text-muted-foreground/30 mx-auto mb-3" />
+              <p className="text-sm text-muted-foreground">
+                No billing events yet.
+              </p>
+              <p className="text-xs text-muted-foreground/70 mt-1">
+                Your payment history will appear here.
+              </p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow className="border-border hover:bg-transparent">
+                    <TableHead className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                      Date
+                    </TableHead>
+                    <TableHead className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                      Event
+                    </TableHead>
+                    <TableHead className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                      Plan
+                    </TableHead>
+                    <TableHead className="text-xs font-semibold uppercase tracking-wide text-muted-foreground text-right">
+                      Amount
+                    </TableHead>
+                    <TableHead className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                      Currency
+                    </TableHead>
+                    <TableHead className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                      Note
+                    </TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {(billingEvents as BillingEvent[]).map((event) => (
+                    <TableRow
+                      key={event.id.toString()}
+                      className="border-border"
+                    >
+                      <TableCell className="text-xs text-muted-foreground font-mono">
+                        {formatDate(event.timestamp)}
+                      </TableCell>
+                      <TableCell>
+                        <EventTypeBadge type={event.eventType} />
+                      </TableCell>
+                      <TableCell className="text-xs text-foreground capitalize font-medium">
+                        {event.tier}
+                      </TableCell>
+                      <TableCell className="text-xs font-mono font-semibold text-right">
+                        {event.amount > 0 ? `$${event.amount.toFixed(2)}` : "—"}
+                      </TableCell>
+                      <TableCell className="text-xs text-muted-foreground uppercase">
+                        {event.currency}
+                      </TableCell>
+                      <TableCell className="text-xs text-muted-foreground max-w-[160px] truncate">
+                        {event.note}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Section D: Seat Management (Enterprise only) */}
+      <div className="rounded-xl border border-border bg-card overflow-hidden">
+        <div className="px-5 py-4 border-b border-border bg-card/80">
+          <h2 className="font-display font-bold text-sm text-muted-foreground uppercase tracking-wide">
+            Team Seats
+          </h2>
+        </div>
+        <div className="p-5">
+          <SeatManagement
+            subscription={subscription}
+            onUpgradeToEnterprise={openPricing}
+          />
+        </div>
+      </div>
+
+      {/* Section E: White-Label Branding */}
+      <div className="rounded-xl border border-border bg-card overflow-hidden">
+        <div className="px-5 py-4 border-b border-border bg-card/80">
+          <h2 className="font-display font-bold text-sm text-muted-foreground uppercase tracking-wide">
+            White-Label Branding
+          </h2>
+        </div>
+        <div className="p-5">
+          <WhiteLabelSection
+            subscription={subscription}
+            onUpgrade={openPricing}
+          />
+        </div>
+      </div>
+
+      {/* Pricing Modal */}
+      <PricingModal
+        open={pricingOpen}
+        onClose={() => setPricingOpen(false)}
+        currentTier={subscription}
+        onUpgrade={() => {
+          setPricingOpen(false);
+        }}
+      />
+    </div>
+  );
+}

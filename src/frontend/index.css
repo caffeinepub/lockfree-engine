@@ -1,0 +1,390 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── Fonts ─────────────────────────────────────────────────────────────── */
+@font-face {
+  font-family: "Outfit";
+  src: url("/assets/fonts/Outfit.woff2") format("woff2");
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Geist Mono";
+  src: url("/assets/fonts/GeistMono.woff2") format("woff2");
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Cabinet Grotesk";
+  src: url("/assets/fonts/CabinetGrotesk.woff2") format("woff2");
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+/* ─── Tokens ─────────────────────────────────────────────────────────────── */
+@layer base {
+  :root {
+    --radius: 0.5rem;
+
+    /* Dark-first palette — deep space console */
+    --background: 0.12 0.008 240;
+    --foreground: 0.94 0.01 240;
+    --card: 0.155 0.01 240;
+    --card-foreground: 0.94 0.01 240;
+    --popover: 0.17 0.012 240;
+    --popover-foreground: 0.94 0.01 240;
+    --primary: 0.78 0.18 195;
+    --primary-foreground: 0.1 0.01 240;
+    --secondary: 0.2 0.015 240;
+    --secondary-foreground: 0.85 0.01 240;
+    --muted: 0.18 0.01 240;
+    --muted-foreground: 0.56 0.02 240;
+    --accent: 0.25 0.02 240;
+    --accent-foreground: 0.94 0.01 240;
+    --destructive: 0.65 0.22 25;
+    --destructive-foreground: 0.98 0 0;
+    --border: 0.25 0.015 240;
+    --input: 0.22 0.015 240;
+    --ring: 0.78 0.18 195;
+
+    /* Status colors */
+    --status-running: 0.72 0.19 145;
+    --status-provisioning: 0.78 0.17 80;
+    --status-migrating: 0.65 0.2 220;
+    --status-stopped: 0.45 0.01 240;
+
+    /* Provider colors */
+    --provider-aws: 0.72 0.18 55;
+    --provider-gcp: 0.65 0.18 220;
+    --provider-azure: 0.72 0.17 195;
+
+    /* Sidebar */
+    --sidebar: 0.1 0.01 240;
+    --sidebar-foreground: 0.94 0.01 240;
+    --sidebar-primary: 0.78 0.18 195;
+    --sidebar-primary-foreground: 0.1 0.01 240;
+    --sidebar-accent: 0.18 0.015 240;
+    --sidebar-accent-foreground: 0.85 0.01 240;
+    --sidebar-border: 0.2 0.01 240;
+    --sidebar-ring: 0.78 0.18 195;
+
+    /* Charts */
+    --chart-1: 0.78 0.18 195;
+    --chart-2: 0.72 0.18 55;
+    --chart-3: 0.72 0.19 145;
+    --chart-4: 0.65 0.2 220;
+    --chart-5: 0.65 0.22 25;
+  }
+
+  /* Always dark */
+  html {
+    color-scheme: dark;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-feature-settings: "cv11", "ss01";
+  }
+
+  ::selection {
+    background: oklch(var(--primary) / 0.3);
+  }
+
+  :focus-visible {
+    outline: 2px solid oklch(var(--ring));
+    outline-offset: 2px;
+  }
+}
+
+/* ─── Scrollbar ──────────────────────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: oklch(var(--background));
+}
+::-webkit-scrollbar-thumb {
+  background: oklch(var(--border));
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: oklch(var(--muted-foreground));
+}
+
+/* ─── Provider glow effects ──────────────────────────────────────────────── */
+.engine-card-aws {
+  box-shadow: 0 0 0 1px oklch(var(--provider-aws) / 0.3),
+    0 4px 20px oklch(var(--provider-aws) / 0.1),
+    0 1px 3px rgba(0, 0, 0, 0.3);
+  transition: box-shadow 0.2s ease, transform 0.15s ease;
+}
+.engine-card-aws:hover {
+  box-shadow: 0 0 0 1px oklch(var(--provider-aws) / 0.6),
+    0 8px 32px oklch(var(--provider-aws) / 0.2),
+    0 2px 8px rgba(0, 0, 0, 0.4);
+  transform: translateY(-1px);
+}
+
+.engine-card-gcp {
+  box-shadow: 0 0 0 1px oklch(var(--provider-gcp) / 0.3),
+    0 4px 20px oklch(var(--provider-gcp) / 0.1),
+    0 1px 3px rgba(0, 0, 0, 0.3);
+  transition: box-shadow 0.2s ease, transform 0.15s ease;
+}
+.engine-card-gcp:hover {
+  box-shadow: 0 0 0 1px oklch(var(--provider-gcp) / 0.6),
+    0 8px 32px oklch(var(--provider-gcp) / 0.2),
+    0 2px 8px rgba(0, 0, 0, 0.4);
+  transform: translateY(-1px);
+}
+
+.engine-card-azure {
+  box-shadow: 0 0 0 1px oklch(var(--provider-azure) / 0.3),
+    0 4px 20px oklch(var(--provider-azure) / 0.1),
+    0 1px 3px rgba(0, 0, 0, 0.3);
+  transition: box-shadow 0.2s ease, transform 0.15s ease;
+}
+.engine-card-azure:hover {
+  box-shadow: 0 0 0 1px oklch(var(--provider-azure) / 0.6),
+    0 8px 32px oklch(var(--provider-azure) / 0.2),
+    0 2px 8px rgba(0, 0, 0, 0.4);
+  transform: translateY(-1px);
+}
+
+/* ─── Animations ─────────────────────────────────────────────────────────── */
+@keyframes pulse-ring {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
+@keyframes migrate-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 oklch(var(--provider-gcp) / 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 6px oklch(var(--provider-gcp) / 0);
+  }
+}
+
+@keyframes scan-line {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(100vh);
+  }
+}
+
+@keyframes typing-dot {
+  0%,
+  60%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.4;
+  }
+  30% {
+    transform: translateY(-4px);
+    opacity: 1;
+  }
+}
+
+.typing-dot:nth-child(1) {
+  animation: typing-dot 1.2s ease infinite;
+}
+.typing-dot:nth-child(2) {
+  animation: typing-dot 1.2s ease infinite 0.2s;
+}
+.typing-dot:nth-child(3) {
+  animation: typing-dot 1.2s ease infinite 0.4s;
+}
+
+@keyframes grid-fade {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-grid-fade {
+  animation: grid-fade 0.35s ease forwards;
+}
+
+/* ─── Login page grid bg ─────────────────────────────────────────────────── */
+.login-grid-bg {
+  background-image: linear-gradient(
+      to right,
+      oklch(var(--border) / 0.3) 1px,
+      transparent 1px
+    ),
+    linear-gradient(to bottom, oklch(var(--border) / 0.3) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+/* ─── Mono utility ───────────────────────────────────────────────────────── */
+.font-mono {
+  font-family: "Geist Mono", ui-monospace, monospace;
+}
+
+/* ─── Console panel ──────────────────────────────────────────────────────── */
+.console-panel {
+  background: oklch(var(--card));
+  border: 1px solid oklch(var(--border));
+  border-radius: var(--radius);
+  box-shadow: inset 0 1px 0 oklch(var(--border) / 0.6);
+}
+
+/* ─── Billing / Tier colors ──────────────────────────────────────────────── */
+:root {
+  --tier-pro: 0.72 0.19 145;
+  --tier-enterprise: 0.75 0.18 60;
+  --tier-free: 0.56 0.02 240;
+}
+
+.tier-pro-glow {
+  box-shadow: 0 0 0 1px oklch(var(--tier-pro) / 0.5),
+    0 4px 32px oklch(var(--tier-pro) / 0.18);
+}
+
+.tier-enterprise-glow {
+  box-shadow: 0 0 0 1px oklch(var(--tier-enterprise) / 0.5),
+    0 4px 32px oklch(var(--tier-enterprise) / 0.18);
+}
+
+/* ─── Checkmark animation ─────────────────────────────────────────────────── */
+@keyframes check-pop {
+  0% { transform: scale(0) rotate(-20deg); opacity: 0; }
+  60% { transform: scale(1.2) rotate(4deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+.animate-check-pop {
+  animation: check-pop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* ─── Payment stepper ─────────────────────────────────────────────────────── */
+@keyframes step-fade-in {
+  from { opacity: 0; transform: translateX(12px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.step-content {
+  animation: step-fade-in 0.25s ease forwards;
+}
+
+/* ─── Pricing card highlight ──────────────────────────────────────────────── */
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+.pricing-shimmer {
+  background: linear-gradient(
+    90deg,
+    oklch(var(--tier-pro) / 0.05) 0%,
+    oklch(var(--tier-pro) / 0.15) 50%,
+    oklch(var(--tier-pro) / 0.05) 100%
+  );
+  background-size: 200% auto;
+  animation: shimmer 3s linear infinite;
+}
+
+/* ─── Login CTA shimmer border ────────────────────────────────────────────── */
+@keyframes cta-shimmer {
+  0% { background-position: -300% center; }
+  100% { background-position: 300% center; }
+}
+
+.btn-shimmer-border {
+  position: relative;
+}
+.btn-shimmer-border::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  background: linear-gradient(
+    90deg,
+    oklch(var(--primary) / 0.2) 0%,
+    oklch(var(--primary) / 0.7) 35%,
+    oklch(0.78 0.18 220 / 0.8) 50%,
+    oklch(var(--primary) / 0.7) 65%,
+    oklch(var(--primary) / 0.2) 100%
+  );
+  background-size: 300% auto;
+  animation: cta-shimmer 3.5s linear infinite;
+  z-index: -1;
+  border-radius: calc(var(--radius) + 1px);
+}
+
+/* ─── Onboarding tour step transition ────────────────────────────────────── */
+@keyframes tour-slide-in {
+  from { opacity: 0; transform: translateX(20px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes tour-slide-out {
+  from { opacity: 1; transform: translateX(0); }
+  to   { opacity: 0; transform: translateX(-20px); }
+}
+
+/* ─── Active button micro-interaction ────────────────────────────────────── */
+.btn-active:active {
+  transform: scale(0.98);
+}
+
+/* ─── Cost alert left-border treatment ───────────────────────────────────── */
+.cost-alert-border {
+  border-left: 3px solid;
+  border-top: 1px solid;
+  border-right: 1px solid;
+  border-bottom: 1px solid;
+}
+
+/* ─── Migration history timeline connector ────────────────────────────────── */
+.migration-timeline-row + .migration-timeline-row {
+  position: relative;
+}
+.migration-timeline-row + .migration-timeline-row::before {
+  content: '';
+  position: absolute;
+  left: 1.25rem;
+  top: -0.5rem;
+  width: 1px;
+  height: 0.5rem;
+  background: oklch(var(--border));
+}
+
+/* ─── Dialog / modal crisp border ────────────────────────────────────────── */
+[role="dialog"] .dialog-inner {
+  border: 1px solid oklch(var(--border) / 0.6);
+}
+
+/* ─── Summary card value styling ─────────────────────────────────────────── */
+.summary-value {
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+/* ─── Topbar border ───────────────────────────────────────────────────────── */
+.topbar-border {
+  border-bottom: 1px solid oklch(var(--border) / 0.6);
+}
