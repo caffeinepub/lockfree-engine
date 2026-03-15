@@ -109,7 +109,7 @@ const PAGE_TITLES: Record<Page, string> = {
 const PRICING_SHOWN_KEY = "lockfree_pricing_shown";
 
 function AppShell() {
-  const { identity, isInitializing, login } = useInternetIdentity();
+  const { identity, isInitializing, login, clear } = useInternetIdentity();
   const { data: engines } = useListEngines();
   const { data: subscription = "free" } = useGetMySubscription();
   const { mutateAsync: populateDemo, isPending: isLoadingDemo } =
@@ -122,7 +122,6 @@ function AppShell() {
   const [chatEngine, setChatEngine] = useState<Engine | undefined>(undefined);
   const [pricingOpen, setPricingOpen] = useState(false);
   const [tourOpen, setTourOpen] = useState(false);
-  // Show landing page to unauthenticated visitors; skip if already authenticated
   const [showLanding, setShowLanding] = useState(true);
 
   // Inject client-side demo engines into the React Query cache whenever they change
@@ -132,14 +131,14 @@ function AppShell() {
     }
   }, [demoEngines, queryClient]);
 
-  // Detect demo mode from engine list (works for both backend-populated and client-side demos)
+  // Detect demo mode from engine list
   useEffect(() => {
     if (engines && engines.length > 0) {
       setIsDemoMode(engines.some((e) => e.name.toLowerCase().includes("demo")));
     }
   }, [engines]);
 
-  // Show onboarding tour on first login (before pricing modal)
+  // Show onboarding tour on first login
   useEffect(() => {
     if (!identity) return;
     const tourSeen = localStorage.getItem(TOUR_SEEN_KEY);
@@ -149,12 +148,11 @@ function AppShell() {
     }
   }, [identity]);
 
-  // Show pricing modal on first login (after tour)
+  // Show pricing modal on first login
   useEffect(() => {
     if (!identity) return;
     const shown = localStorage.getItem(PRICING_SHOWN_KEY);
     if (!shown) {
-      // Delay longer if tour is being shown to avoid overlap
       const tourSeen = localStorage.getItem(TOUR_SEEN_KEY);
       const delay = tourSeen ? 800 : 3000;
       const timer = setTimeout(() => {
@@ -167,20 +165,16 @@ function AppShell() {
 
   async function handleLoadDemo() {
     if (!identity) {
-      // Not authenticated — load demo data entirely client-side, no backend call needed
       setDemoEngines(DEMO_ENGINES);
       setIsDemoMode(true);
       toast.success("Demo data loaded!");
       return;
     }
-    // Authenticated — try backend first, fall back to client-side if it fails
     try {
       await populateDemo();
       setIsDemoMode(true);
       toast.success("Demo data loaded!");
     } catch {
-      // Backend call failed — fall back to client-side demo data so the demo
-      // always works regardless of canister state
       setDemoEngines(DEMO_ENGINES);
       setIsDemoMode(true);
       toast.success("Demo data loaded!");
@@ -193,8 +187,15 @@ function AppShell() {
   }
 
   function handleUpgrade(_tier: string) {
-    // Subscription will be refetched by React Query on invalidation
     setPricingOpen(false);
+  }
+
+  function handleSignOut() {
+    clear();
+    setShowLanding(true);
+    setIsDemoMode(false);
+    setDemoEngines([]);
+    queryClient.clear();
   }
 
   // Show initializing state
@@ -219,7 +220,7 @@ function AppShell() {
     );
   }
 
-  // Landing page — shown to unauthenticated visitors who haven't bypassed it
+  // Landing page
   if (showLanding && !identity) {
     return (
       <LandingPage
@@ -236,7 +237,7 @@ function AppShell() {
     );
   }
 
-  // Login page if not authenticated (landing was bypassed)
+  // Login page if not authenticated
   if (!identity) {
     return (
       <LoginPage onLoadDemo={handleLoadDemo} isLoadingDemo={isLoadingDemo} />
@@ -259,6 +260,8 @@ function AppShell() {
           title={PAGE_TITLES[activePage]}
           onMenuClick={() => setMobileOpen(true)}
           isDemoMode={isDemoMode}
+          onNavigate={(p) => setActivePage(p as Page)}
+          onSignOut={handleSignOut}
         />
 
         <main className="flex-1 p-4 lg:p-6">

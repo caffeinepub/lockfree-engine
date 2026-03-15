@@ -1,18 +1,102 @@
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
-import { Bell, Menu, Search } from "lucide-react";
+import { Bell, CreditCard, LogOut, Menu, Search, Settings } from "lucide-react";
+import { useState } from "react";
 import { useInternetIdentity } from "../hooks/useInternetIdentity";
 import { truncatePrincipal } from "../lib/providerUtils";
+
+interface Notification {
+  id: string;
+  type: "cost" | "migration" | "resilience" | "info";
+  message: string;
+  time: string;
+  read: boolean;
+}
+
+const DEMO_NOTIFICATIONS: Notification[] = [
+  {
+    id: "n1",
+    type: "cost",
+    message: "AWS cost alert: Demo — CRM Platform exceeded $90/mo threshold",
+    time: "2m ago",
+    read: false,
+  },
+  {
+    id: "n2",
+    type: "migration",
+    message: "Migration to GCP completed successfully — 23% cost savings",
+    time: "1h ago",
+    read: false,
+  },
+  {
+    id: "n3",
+    type: "resilience",
+    message: "Resilience score for Azure Storage Cluster dropped to 61",
+    time: "3h ago",
+    read: true,
+  },
+  {
+    id: "n4",
+    type: "cost",
+    message: "Azure engine cost alert: Storage Cluster nearing monthly budget",
+    time: "Yesterday",
+    read: true,
+  },
+  {
+    id: "n5",
+    type: "info",
+    message:
+      "LockFree Engine platform update deployed — new AI optimization features",
+    time: "2d ago",
+    read: true,
+  },
+];
+
+const TYPE_COLORS: Record<Notification["type"], string> = {
+  cost: "bg-yellow-500",
+  migration: "bg-green-500",
+  resilience: "bg-orange-500",
+  info: "bg-blue-500",
+};
 
 interface TopBarProps {
   title: string;
   onMenuClick: () => void;
   isDemoMode?: boolean;
+  onNavigate?: (page: string) => void;
+  onSignOut?: () => void;
 }
 
-export function TopBar({ title, onMenuClick, isDemoMode }: TopBarProps) {
+export function TopBar({
+  title,
+  onMenuClick,
+  isDemoMode,
+  onNavigate,
+  onSignOut,
+}: TopBarProps) {
   const { identity } = useInternetIdentity();
   const principal = identity?.getPrincipal().toString() ?? "demo";
+  const [notifications, setNotifications] =
+    useState<Notification[]>(DEMO_NOTIFICATIONS);
+  const unreadCount = notifications.filter((n) => !n.read).length;
+
+  function markAllRead() {
+    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+  }
+
+  function markRead(id: string) {
+    setNotifications((prev) =>
+      prev.map((n) => (n.id === id ? { ...n, read: true } : n)),
+    );
+  }
 
   return (
     <header className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b border-border/60 bg-background/80 backdrop-blur-sm px-4 lg:px-6">
@@ -22,6 +106,7 @@ export function TopBar({ title, onMenuClick, isDemoMode }: TopBarProps) {
         size="icon"
         className="lg:hidden w-8 h-8"
         onClick={onMenuClick}
+        data-ocid="topbar.menu.button"
       >
         <Menu className="w-4 h-4" />
       </Button>
@@ -47,26 +132,147 @@ export function TopBar({ title, onMenuClick, isDemoMode }: TopBarProps) {
         <Input
           placeholder="Search engines..."
           className="h-8 pl-8 w-48 text-xs bg-secondary/50 border-border"
+          data-ocid="topbar.search_input"
         />
       </div>
 
-      {/* Notifications */}
-      <Button variant="ghost" size="icon" className="w-8 h-8 relative">
-        <Bell className="w-4 h-4" />
-        <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-primary" />
-      </Button>
+      {/* Notifications dropdown */}
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="w-8 h-8 relative"
+            data-ocid="topbar.notifications.button"
+          >
+            <Bell className="w-4 h-4" />
+            {unreadCount > 0 && (
+              <span className="absolute top-1 right-1 w-4 h-4 rounded-full bg-primary text-[9px] font-bold text-primary-foreground flex items-center justify-center">
+                {unreadCount}
+              </span>
+            )}
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent
+          align="end"
+          className="w-80"
+          data-ocid="topbar.notifications.dropdown_menu"
+        >
+          <div className="flex items-center justify-between px-3 py-2">
+            <span className="text-sm font-semibold">Notifications</span>
+            {unreadCount > 0 && (
+              <button
+                type="button"
+                onClick={markAllRead}
+                className="text-xs text-primary hover:underline"
+                data-ocid="topbar.notifications.mark_all_read.button"
+              >
+                Mark all read
+              </button>
+            )}
+          </div>
+          <DropdownMenuSeparator />
+          {notifications.length === 0 ? (
+            <div
+              className="px-3 py-6 text-center text-xs text-muted-foreground"
+              data-ocid="topbar.notifications.empty_state"
+            >
+              No notifications
+            </div>
+          ) : (
+            <div className="max-h-72 overflow-y-auto">
+              {notifications.map((n) => (
+                <button
+                  type="button"
+                  key={n.id}
+                  onClick={() => markRead(n.id)}
+                  className={`w-full text-left flex gap-2.5 px-3 py-2.5 hover:bg-muted/50 transition-colors ${
+                    !n.read ? "bg-muted/20" : ""
+                  }`}
+                >
+                  <span
+                    className={`mt-1.5 w-2 h-2 rounded-full flex-shrink-0 ${TYPE_COLORS[n.type]} ${
+                      n.read ? "opacity-30" : ""
+                    }`}
+                  />
+                  <div className="flex-1 min-w-0">
+                    <p
+                      className={`text-xs leading-snug ${
+                        n.read ? "text-muted-foreground" : "text-foreground"
+                      }`}
+                    >
+                      {n.message}
+                    </p>
+                    <p className="text-[10px] text-muted-foreground/60 mt-0.5">
+                      {n.time}
+                    </p>
+                  </div>
+                  {!n.read && (
+                    <span className="w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0 mt-1.5" />
+                  )}
+                </button>
+              ))}
+            </div>
+          )}
+        </DropdownMenuContent>
+      </DropdownMenu>
 
-      {/* User avatar */}
-      <div className="flex items-center gap-2 pl-2 border-l border-border">
-        <div className="w-7 h-7 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center">
-          <span className="text-xs font-mono text-primary font-bold">
-            {principal.slice(0, 2).toUpperCase()}
-          </span>
-        </div>
-        <span className="hidden sm:block text-xs font-mono text-muted-foreground">
-          {truncatePrincipal(principal)}
-        </span>
-      </div>
+      {/* User profile dropdown */}
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <button
+            type="button"
+            className="flex items-center gap-2 pl-2 border-l border-border hover:opacity-80 transition-opacity"
+            data-ocid="topbar.profile.button"
+          >
+            <div className="w-7 h-7 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center">
+              <span className="text-xs font-mono text-primary font-bold">
+                {principal.slice(0, 2).toUpperCase()}
+              </span>
+            </div>
+            <span className="hidden sm:block text-xs font-mono text-muted-foreground">
+              {truncatePrincipal(principal)}
+            </span>
+          </button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent
+          align="end"
+          className="w-48"
+          data-ocid="topbar.profile.dropdown_menu"
+        >
+          <DropdownMenuLabel className="font-normal">
+            <p className="text-xs font-mono text-muted-foreground truncate">
+              {truncatePrincipal(principal)}
+            </p>
+          </DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem
+            onClick={() => onNavigate?.("settings")}
+            className="cursor-pointer"
+            data-ocid="topbar.profile.settings.button"
+          >
+            <Settings className="w-3.5 h-3.5 mr-2" />
+            Settings
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() => onNavigate?.("billing")}
+            className="cursor-pointer"
+            data-ocid="topbar.profile.billing.button"
+          >
+            <CreditCard className="w-3.5 h-3.5 mr-2" />
+            Billing
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem
+            onClick={onSignOut}
+            className="cursor-pointer text-destructive focus:text-destructive"
+            data-ocid="topbar.profile.signout.button"
+          >
+            <LogOut className="w-3.5 h-3.5 mr-2" />
+            Sign Out
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
     </header>
   );
 }
