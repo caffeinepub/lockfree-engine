@@ -19,6 +19,7 @@ import {
   Cpu,
   CreditCard,
   Database,
+  Download,
   Globe,
   HardDrive,
   Key,
@@ -26,14 +27,18 @@ import {
   ListChecks,
   LogIn,
   MessageSquare,
+  Moon,
   Network,
   Package,
   Rocket,
   Server,
   Settings,
   Shield,
+  ShieldCheck,
   Shuffle,
   Star,
+  Sun,
+  ToggleLeft,
   TrendingUp,
   Users,
   Wallet,
@@ -83,6 +88,107 @@ const businessSections: GuideSection[] = [
             Built for the Mission 70 / Cloud Engines era of the Internet
             Computer
           </li>
+        </ul>
+      </div>
+    ),
+  },
+  {
+    id: "account-settings",
+    title: "Account Settings & Data Export",
+    icon: Download,
+    content: (
+      <div className="space-y-3">
+        <p>
+          The <strong>Account Settings</strong> page is accessible from two
+          places: the <strong>sidebar</strong> (look for "Account Settings" in
+          the navigation) and the <strong>profile dropdown</strong> in the
+          top-right corner of the top bar.
+        </p>
+        <p className="font-semibold text-sm">What's inside:</p>
+        <ul className="list-disc list-inside space-y-1 text-muted-foreground ml-2">
+          <li>
+            <strong>Profile info</strong> — your principal ID and member since
+            date
+          </li>
+          <li>
+            <strong>Current plan</strong> — your active subscription tier with
+            an upgrade link
+          </li>
+          <li>
+            <strong>Data Portability</strong> — export all your data as JSON or
+            CSV
+          </li>
+        </ul>
+        <div className="rounded-md border border-primary/30 bg-primary/5 p-3 mt-2">
+          <p className="text-sm font-medium text-primary mb-1">
+            No Lock-In Promise
+          </p>
+          <p className="text-xs text-muted-foreground">
+            LockFree Engine practices what it preaches. Your engine
+            configurations, migration history, cost data, and settings can be
+            exported at any time. Your data belongs to you — take it anywhere.
+          </p>
+        </div>
+      </div>
+    ),
+  },
+  {
+    id: "theme-toggle",
+    title: "Dark Mode & Light Mode",
+    icon: Sun,
+    content: (
+      <div className="space-y-3">
+        <p>
+          LockFree Engine defaults to <strong>dark mode</strong>, which is
+          standard for cloud and developer tools. If you prefer a lighter
+          interface, you can switch at any time.
+        </p>
+        <p>
+          Look for the <strong>sun/moon icon</strong> in the top-right corner of
+          the top bar, next to the notifications bell. Click it to toggle
+          between dark and light mode.
+        </p>
+        <ul className="list-disc list-inside space-y-1 text-muted-foreground ml-2">
+          <li>Your preference is saved automatically</li>
+          <li>It persists across browser sessions and refreshes</li>
+          <li>
+            Toast notifications and dialogs also adapt to your selected theme
+          </li>
+        </ul>
+      </div>
+    ),
+  },
+  {
+    id: "demo-data-toggle",
+    title: "Demo Data Toggle",
+    icon: ToggleLeft,
+    content: (
+      <div className="space-y-3">
+        <p>
+          Not ready to connect real engines yet? The{" "}
+          <strong>Demo Data toggle</strong> lets you explore the full dashboard
+          with simulated engine data — no sign-up required.
+        </p>
+        <p className="font-semibold text-sm">How it works:</p>
+        <ul className="list-disc list-inside space-y-1 text-muted-foreground ml-2">
+          <li>
+            On the <strong>login page</strong> and{" "}
+            <strong>empty dashboard</strong>, you'll see a "Demo Data" toggle
+            switch
+          </li>
+          <li>
+            Turn it <strong>on</strong> to load three simulated engines (AWS,
+            GCP, Azure) with realistic cost and resilience data
+          </li>
+          <li>
+            Turn it <strong>off</strong> to clear the demo data and see the true
+            empty state
+          </li>
+          <li>
+            In demo mode, a blue banner appears at the top — click{" "}
+            <strong>Exit Demo</strong> to return to the clean state
+          </li>
+          <li>Your toggle preference is remembered across refreshes</li>
         </ul>
       </div>
     ),
@@ -542,43 +648,67 @@ const businessSections: GuideSection[] = [
   },
   {
     id: "subscription-plans",
-    title: "Subscription Plans — Free, Pro, and Enterprise",
+    title: "Subscription Plans — Free, Pro, Business & Enterprise",
     icon: Star,
     content: (
       <div className="space-y-3">
-        <div className="grid gap-3 sm:grid-cols-3">
+        <p className="text-sm text-muted-foreground">
+          Annual billing saves ~20% (2 months free) on all paid plans.
+        </p>
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <div className="rounded-lg border border-border p-3">
-            <div className="font-bold mb-1">Free</div>
+            <div className="font-bold mb-0.5">Free</div>
+            <div className="text-primary font-semibold text-sm mb-2">$0</div>
             <div className="text-xs text-muted-foreground space-y-1">
-              <div>• Up to 2 engines</div>
+              <div>• 1 engine (small size)</div>
+              <div>• 1 user seat</div>
               <div>• Basic AI chat</div>
-              <div>• 7-day cost history</div>
-              <div>• Community support</div>
+              <div>• No migration</div>
+              <div>• 30-day trial</div>
             </div>
           </div>
           <div className="rounded-lg border border-primary/50 bg-primary/5 p-3">
-            <div className="font-bold mb-1 flex items-center gap-1">
+            <div className="font-bold mb-0.5 flex items-center gap-1">
               Pro{" "}
               <Badge variant="secondary" className="text-xs">
                 Popular
               </Badge>
             </div>
+            <div className="text-primary font-semibold text-sm mb-2">
+              $49/mo
+            </div>
             <div className="text-xs text-muted-foreground space-y-1">
-              <div>• Unlimited engines</div>
-              <div>• Advanced AI optimization</div>
-              <div>• 90-day cost history</div>
-              <div>• Priority support</div>
-              <div>• Full migration history</div>
+              <div>• Up to 10 engines</div>
+              <div>• 3 user seats</div>
+              <div>• Full migration flows</div>
+              <div>• Unlimited AI chat</div>
+              <div>• Standard support</div>
             </div>
           </div>
           <div className="rounded-lg border border-border bg-gradient-to-b from-muted/20 to-transparent p-3">
-            <div className="font-bold mb-1">Enterprise</div>
+            <div className="font-bold mb-0.5">Business</div>
+            <div className="text-primary font-semibold text-sm mb-2">
+              $199/mo
+            </div>
             <div className="text-xs text-muted-foreground space-y-1">
-              <div>• Everything in Pro</div>
+              <div>• Up to 50 engines</div>
+              <div>• 10 user seats</div>
+              <div>• Advanced cost optimization</div>
+              <div>• Affiliate dashboard</div>
+              <div>• Priority support</div>
+            </div>
+          </div>
+          <div className="rounded-lg border border-border bg-gradient-to-b from-yellow-500/10 to-transparent p-3">
+            <div className="font-bold mb-0.5">Enterprise</div>
+            <div className="text-primary font-semibold text-sm mb-2">
+              $599/mo
+            </div>
+            <div className="text-xs text-muted-foreground space-y-1">
+              <div>• Unlimited engines</div>
+              <div>• Unlimited users</div>
               <div>• White-label branding</div>
-              <div>• Team seat management</div>
-              <div>• Dedicated account manager</div>
-              <div>• Custom SLA</div>
+              <div>• Dedicated onboarding + SLA</div>
+              <div>• Direct account manager</div>
             </div>
           </div>
         </div>
@@ -776,15 +906,21 @@ const businessSections: GuideSection[] = [
   },
   {
     id: "settings",
-    title: "Settings",
+    title: "Account Settings",
     icon: Settings,
     content: (
       <div className="space-y-3">
         <p>
-          The Settings page lets you customize your LockFree Engine experience.
+          The <strong>Account Settings</strong> page is your control centre for
+          personalisation, plan management, and data export. Find it in the
+          sidebar or via the profile dropdown in the top-right corner.
         </p>
         <p className="font-semibold text-sm">Available settings:</p>
         <ul className="list-disc list-inside space-y-1 text-muted-foreground ml-2">
+          <li>
+            <strong>Profile info</strong> — principal ID, current plan tier,
+            member since date
+          </li>
           <li>
             <strong>Display preferences</strong> — theme, timezone, date format
           </li>
@@ -794,12 +930,11 @@ const businessSections: GuideSection[] = [
           </li>
           <li>
             <strong>White-label branding</strong> (Enterprise only) — set a
-            custom brand name and primary color that replaces "LockFree Engine"
-            branding across the dashboard
+            custom brand name and primary color
           </li>
           <li>
-            <strong>Account options</strong> — view your principal ID, export
-            data
+            <strong>Data Portability</strong> — export all your data as JSON or
+            CSV at any time
           </li>
         </ul>
       </div>
@@ -903,6 +1038,150 @@ const developerSections: GuideSection[] = [
           (@dfinity/agent). All calls are either query calls (fast, read-only)
           or update calls (state-changing, on-chain consensus required).
         </p>
+      </div>
+    ),
+  },
+  {
+    id: "account-settings-dev",
+    title: "Account Settings & Data Export",
+    icon: Download,
+    content: (
+      <div className="space-y-3">
+        <p>
+          The Account Settings page is a client-side page that assembles export
+          data from React Query cache and localStorage — no dedicated backend
+          call is required for the export itself.
+        </p>
+        <p className="font-semibold text-sm">Export format:</p>
+        <ul className="list-disc list-inside space-y-1 text-muted-foreground ml-2">
+          <li>
+            <strong>JSON</strong> — a nested object containing engines,
+            migrations, cost snapshots, and account settings
+          </li>
+          <li>
+            <strong>CSV</strong> — flat rows for each data type, spreadsheet
+            friendly
+          </li>
+        </ul>
+        <p className="text-sm text-muted-foreground">
+          Both exports are generated entirely in the browser using{" "}
+          <code className="text-xs bg-muted px-1 rounded">Blob</code> +{" "}
+          <code className="text-xs bg-muted px-1 rounded">
+            URL.createObjectURL
+          </code>{" "}
+          and trigger an immediate file download. No data leaves the client for
+          this operation.
+        </p>
+        <p className="text-sm text-muted-foreground">
+          The page is accessible via sidebar nav item{" "}
+          <code className="text-xs bg-muted px-1 rounded">id: "settings"</code>{" "}
+          and the profile dropdown &quot;Account Settings&quot; link.
+        </p>
+      </div>
+    ),
+  },
+  {
+    id: "theme-toggle-dev",
+    title: "Theme Toggle (Dark / Light Mode)",
+    icon: Moon,
+    content: (
+      <div className="space-y-3">
+        <p>
+          Theme preference is stored in localStorage under the key{" "}
+          <code className="text-xs bg-muted px-1 rounded">lockfree_theme</code>{" "}
+          with values{" "}
+          <code className="text-xs bg-muted px-1 rounded">"dark"</code> or{" "}
+          <code className="text-xs bg-muted px-1 rounded">"light"</code>.
+        </p>
+        <p className="text-sm text-muted-foreground">
+          A blocking{" "}
+          <code className="text-xs bg-muted px-1 rounded">&lt;script&gt;</code>{" "}
+          tag in{" "}
+          <code className="text-xs bg-muted px-1 rounded">index.html</code>{" "}
+          reads this key and applies the{" "}
+          <code className="text-xs bg-muted px-1 rounded">dark</code> or{" "}
+          <code className="text-xs bg-muted px-1 rounded">light</code> class to{" "}
+          <code className="text-xs bg-muted px-1 rounded">&lt;html&gt;</code>{" "}
+          before React hydrates — preventing any flash of the wrong theme.
+        </p>
+        <p className="text-sm text-muted-foreground">
+          The{" "}
+          <code className="text-xs bg-muted px-1 rounded">&lt;Toaster&gt;</code>{" "}
+          component in{" "}
+          <code className="text-xs bg-muted px-1 rounded">App.tsx</code>{" "}
+          receives the{" "}
+          <code className="text-xs bg-muted px-1 rounded">theme</code> prop
+          dynamically, so toast notifications match the active theme.
+        </p>
+        <ul className="list-disc list-inside space-y-1 text-muted-foreground ml-2">
+          <li>
+            <code className="text-xs bg-muted px-1 rounded">
+              lockfree_theme
+            </code>{" "}
+            — localStorage key for theme preference
+          </li>
+          <li>
+            Default is{" "}
+            <code className="text-xs bg-muted px-1 rounded">"dark"</code> if key
+            is absent
+          </li>
+          <li>
+            Theme class applied to{" "}
+            <code className="text-xs bg-muted px-1 rounded">
+              document.documentElement
+            </code>
+          </li>
+        </ul>
+      </div>
+    ),
+  },
+  {
+    id: "demo-data-toggle-dev",
+    title: "Demo Data Toggle — Technical Details",
+    icon: ToggleLeft,
+    content: (
+      <div className="space-y-3">
+        <p>
+          Demo mode preference is persisted in localStorage under the key{" "}
+          <code className="text-xs bg-muted px-1 rounded">
+            lockfree_demo_pref
+          </code>
+          .
+        </p>
+        <p className="font-semibold text-sm">Key implementation details:</p>
+        <ul className="list-disc list-inside space-y-1 text-muted-foreground ml-2">
+          <li>
+            Auto-load on{" "}
+            <code className="text-xs bg-muted px-1 rounded">LoginPage</code> is
+            guarded by a{" "}
+            <code className="text-xs bg-muted px-1 rounded">useRef</code> to
+            prevent double-firing in React 19 strict mode
+          </li>
+          <li>
+            <code className="text-xs bg-muted px-1 rounded">isDemoMode</code> in{" "}
+            <code className="text-xs bg-muted px-1 rounded">App.tsx</code> is
+            derived from engine names but respects the user's explicit
+            preference from localStorage
+          </li>
+          <li>
+            Both{" "}
+            <code className="text-xs bg-muted px-1 rounded">
+              handleLoadDemo
+            </code>{" "}
+            and{" "}
+            <code className="text-xs bg-muted px-1 rounded">
+              handleClearDemo
+            </code>{" "}
+            write to localStorage before updating React state
+          </li>
+          <li>
+            In demo mode, a blue banner renders with an "Exit Demo" button wired
+            to{" "}
+            <code className="text-xs bg-muted px-1 rounded">
+              handleClearDemo
+            </code>
+          </li>
+        </ul>
       </div>
     ),
   },
@@ -1463,6 +1742,144 @@ dfx canister --network ic id lockfree_frontend`}</pre>
   },
 ];
 
+// ─── Admin Section (conditional) ─────────────────────────────────────────────
+
+const adminBusinessSection: GuideSection = {
+  id: "admin-section-biz",
+  title: "Admin Section",
+  icon: ShieldCheck,
+  content: (
+    <div className="space-y-3">
+      <div className="flex items-center gap-2 mb-2">
+        <Badge variant="destructive" className="text-xs">
+          Admin Only
+        </Badge>
+        <span className="text-xs text-muted-foreground">
+          Visible only to admin users
+        </span>
+      </div>
+      <p>
+        The <strong>Admin Section</strong> is accessible from the{" "}
+        <strong>shield icon</strong> at the bottom of the sidebar — it only
+        appears for users with admin privileges.
+      </p>
+      <p className="font-semibold text-sm">Four admin tabs:</p>
+      <div className="space-y-2">
+        <div className="rounded-md border border-border p-3">
+          <div className="font-medium text-sm mb-1">📊 Analytics</div>
+          <div className="text-xs text-muted-foreground">
+            Total registered users, waitlist signups, active engine counts, and
+            a breakdown of users by plan tier (Free / Pro / Business /
+            Enterprise).
+          </div>
+        </div>
+        <div className="rounded-md border border-border p-3">
+          <div className="font-medium text-sm mb-1">📋 Waitlist</div>
+          <div className="text-xs text-muted-foreground">
+            View all landing page signups. Update each entry's status:{" "}
+            <strong>New</strong>, <strong>Contacted</strong>,{" "}
+            <strong>Approved</strong>, or <strong>Rejected</strong>. Entries are
+            stored in the backend so nothing is lost on refresh.
+          </div>
+        </div>
+        <div className="rounded-md border border-border p-3">
+          <div className="font-medium text-sm mb-1">👥 Users</div>
+          <div className="text-xs text-muted-foreground">
+            View all registered users and their current plan tier. Manually
+            upgrade or downgrade any user's plan — useful for onboarding early
+            beta testers or handling support requests.
+          </div>
+        </div>
+        <div className="rounded-md border border-border p-3">
+          <div className="font-medium text-sm mb-1">⚙️ Content Settings</div>
+          <div className="text-xs text-muted-foreground">
+            Edit announcement banners, update pricing copy, and toggle feature
+            flags. All changes save to the backend immediately — no rebuild
+            required.
+          </div>
+        </div>
+      </div>
+    </div>
+  ),
+};
+
+const adminDeveloperSection: GuideSection = {
+  id: "admin-section",
+  title: "Admin Section — Technical Details",
+  icon: ShieldCheck,
+  content: (
+    <div className="space-y-3">
+      <div className="flex items-center gap-2 mb-2">
+        <Badge variant="destructive" className="text-xs">
+          Admin Only
+        </Badge>
+        <span className="text-xs text-muted-foreground">
+          Visible only to admin users
+        </span>
+      </div>
+      <p>
+        The <code className="text-xs bg-muted px-1 rounded">/admin</code> route
+        is guarded by an{" "}
+        <code className="text-xs bg-muted px-1 rounded">isAdmin</code> check on
+        mount — non-admin users who navigate directly to the URL see an "Access
+        Denied" state.
+      </p>
+      <p className="font-semibold text-sm">Access & role management:</p>
+      <ul className="list-disc list-inside space-y-1 text-muted-foreground ml-2">
+        <li>
+          Admin role is claimed on first login via{" "}
+          <code className="text-xs bg-muted px-1 rounded">
+            claimInitialAdmin()
+          </code>{" "}
+          — the first Internet Identity principal to sign in becomes the admin
+          and the role locks
+        </li>
+        <li>
+          Role stored in the backend via the{" "}
+          <code className="text-xs bg-muted px-1 rounded">authorization</code>{" "}
+          component
+        </li>
+        <li>
+          <code className="text-xs bg-muted px-1 rounded">
+            lockfree_is_admin
+          </code>{" "}
+          localStorage key caches the admin flag client-side for fast UI
+          rendering
+        </li>
+      </ul>
+      <p className="font-semibold text-sm">Backend APIs used:</p>
+      <ul className="list-disc list-inside space-y-1 text-muted-foreground ml-2">
+        <li>
+          <code className="text-xs bg-muted px-1 rounded">
+            getAdminAnalytics()
+          </code>{" "}
+          — returns aggregate stats
+        </li>
+        <li>
+          <code className="text-xs bg-muted px-1 rounded">listAllUsers()</code>{" "}
+          — paginated user list with tier info
+        </li>
+        <li>
+          <code className="text-xs bg-muted px-1 rounded">
+            setUserTier(principal, tier)
+          </code>{" "}
+          — manually change a user's plan
+        </li>
+        <li>
+          <code className="text-xs bg-muted px-1 rounded">
+            getContentSettings()
+          </code>{" "}
+          /{" "}
+          <code className="text-xs bg-muted px-1 rounded">
+            saveContentSettings()
+          </code>{" "}
+          — read and write announcement banners and feature flags
+        </li>
+      </ul>
+    </div>
+  ),
+};
+
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 export function UserGuidePage() {
@@ -1470,28 +1887,43 @@ export function UserGuidePage() {
   const [activeTab, setActiveTab] = useState<"business" | "developers">(
     "business",
   );
+  const [isAdmin] = useState(
+    () => localStorage.getItem("lockfree_is_admin") === "true",
+  );
+
+  const allBusinessSections = useMemo(() => {
+    return isAdmin
+      ? [...businessSections, adminBusinessSection]
+      : businessSections;
+  }, [isAdmin]);
+
+  const allDeveloperSections = useMemo(() => {
+    return isAdmin
+      ? [...developerSections, adminDeveloperSection]
+      : developerSections;
+  }, [isAdmin]);
 
   const filteredBusiness = useMemo(() => {
-    if (!search.trim()) return businessSections;
+    if (!search.trim()) return allBusinessSections;
     const q = search.toLowerCase();
-    return businessSections.filter(
+    return allBusinessSections.filter(
       (s) =>
         s.title.toLowerCase().includes(q) ||
         (typeof s.content === "object" &&
           JSON.stringify(s.content).toLowerCase().includes(q)),
     );
-  }, [search]);
+  }, [search, allBusinessSections]);
 
   const filteredDevelopers = useMemo(() => {
-    if (!search.trim()) return developerSections;
+    if (!search.trim()) return allDeveloperSections;
     const q = search.toLowerCase();
-    return developerSections.filter(
+    return allDeveloperSections.filter(
       (s) =>
         s.title.toLowerCase().includes(q) ||
         (typeof s.content === "object" &&
           JSON.stringify(s.content).toLowerCase().includes(q)),
     );
-  }, [search]);
+  }, [search, allDeveloperSections]);
 
   return (
     <div data-ocid="user_guide.page" className="max-w-4xl mx-auto space-y-6">
