@@ -227,20 +227,19 @@ export function LoginPage({ onLoadDemo, isLoadingDemo }: LoginPageProps) {
       {/* Nav bar */}
       <header className="relative z-10 flex items-center justify-between px-6 md:px-10 py-5">
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-md bg-primary/20 border border-primary/30 flex items-center justify-center">
-            <div className="w-3 h-3 rounded-sm bg-primary/80" />
-          </div>
+          <img
+            src="/assets/generated/lockfree-logo-transparent.dim_200x200.png"
+            alt="LockFree Engine"
+            className="w-8 h-8 object-contain"
+            onError={(e) => {
+              (e.target as HTMLImageElement).style.display = "none";
+            }}
+          />
           <span className="font-display text-base font-bold tracking-tight">
             LockFree Engine
           </span>
         </div>
         <div className="flex items-center gap-3">
-          <a
-            href="#partners"
-            className="text-xs text-muted-foreground hover:text-foreground transition-colors"
-          >
-            Partners
-          </a>
           <div className="flex items-center gap-1.5 text-xs font-mono text-muted-foreground border border-border rounded-full px-3 py-1.5">
             <span className="w-1.5 h-1.5 rounded-full bg-status-running animate-pulse" />
             ICP Mainnet

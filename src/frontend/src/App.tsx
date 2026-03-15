@@ -19,6 +19,7 @@ import { PricingModal } from "./components/PricingModal";
 import { ReferralsAffiliatePage } from "./components/ReferralsAffiliatePage";
 import { SettingsPage } from "./components/SettingsPage";
 import { TopBar } from "./components/TopBar";
+import { UserGuidePage } from "./components/UserGuidePage";
 import { useInternetIdentity } from "./hooks/useInternetIdentity";
 import {
   queryKeys,
@@ -94,7 +95,8 @@ type Page =
   | "settings"
   | "billing"
   | "referrals"
-  | "partners";
+  | "partners"
+  | "userguide";
 
 const PAGE_TITLES: Record<Page, string> = {
   dashboard: "Dashboard",
@@ -104,6 +106,7 @@ const PAGE_TITLES: Record<Page, string> = {
   billing: "Billing",
   referrals: "Referrals & Affiliates",
   partners: "Partners",
+  userguide: "User Guide",
 };
 
 const PRICING_SHOWN_KEY = "lockfree_pricing_shown";
@@ -124,7 +127,7 @@ function AppShell() {
   const [tourOpen, setTourOpen] = useState(false);
   const [showLanding, setShowLanding] = useState(true);
 
-  // Inject client-side demo engines into the React Query cache whenever they change
+  // Safety-net: inject client-side demo engines into the React Query cache whenever they change
   useEffect(() => {
     if (demoEngines.length > 0) {
       queryClient.setQueryData(queryKeys.engines, demoEngines);
@@ -165,6 +168,8 @@ function AppShell() {
 
   async function handleLoadDemo() {
     if (!identity) {
+      // Set cache immediately and synchronously — don't rely on the useEffect chain
+      queryClient.setQueryData(queryKeys.engines, DEMO_ENGINES);
       setDemoEngines(DEMO_ENGINES);
       setIsDemoMode(true);
       toast.success("Demo data loaded!");
@@ -175,6 +180,8 @@ function AppShell() {
       setIsDemoMode(true);
       toast.success("Demo data loaded!");
     } catch {
+      // Fallback to client-side demo data if backend call fails
+      queryClient.setQueryData(queryKeys.engines, DEMO_ENGINES);
       setDemoEngines(DEMO_ENGINES);
       setIsDemoMode(true);
       toast.success("Demo data loaded!");
@@ -228,11 +235,7 @@ function AppShell() {
           setShowLanding(false);
           login();
         }}
-        onTryDemo={() => {
-          setShowLanding(false);
-          handleLoadDemo();
-        }}
-        isLoadingDemo={isLoadingDemo}
+        onTryDemo={() => setShowLanding(false)}
       />
     );
   }
@@ -252,6 +255,7 @@ function AppShell() {
         onNavigate={(p) => setActivePage(p as Page)}
         mobileOpen={mobileOpen}
         onMobileClose={() => setMobileOpen(false)}
+        onSignOut={handleSignOut}
       />
 
       {/* Main content area */}
@@ -269,6 +273,7 @@ function AppShell() {
             <DashboardPage
               isDemoMode={isDemoMode}
               onLoadDemo={handleLoadDemo}
+              isLoadingDemo={isLoadingDemo}
               onNavigateToChat={handleNavigateToChat}
             />
           )}
@@ -290,6 +295,7 @@ function AppShell() {
           {activePage === "partners" && (
             <PartnersPage onNavigate={(p) => setActivePage(p as Page)} />
           )}
+          {activePage === "userguide" && <UserGuidePage />}
         </main>
 
         {/* Footer */}

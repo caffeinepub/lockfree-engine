@@ -29,6 +29,7 @@ import { SummaryCards } from "./SummaryCards";
 interface DashboardPageProps {
   isDemoMode: boolean;
   onLoadDemo: () => void;
+  isLoadingDemo: boolean;
   onNavigateToChat: (engine?: Engine) => void;
 }
 
@@ -77,6 +78,7 @@ function EmptyEnginesState({
           onClick={onDemo}
           disabled={isLoadingDemo}
           className="gap-2"
+          data-ocid="engines.demo.button"
         >
           {isLoadingDemo ? (
             <Loader2 className="w-4 h-4 animate-spin" />
@@ -93,18 +95,13 @@ function EmptyEnginesState({
 export function DashboardPage({
   isDemoMode,
   onLoadDemo,
+  isLoadingDemo,
   onNavigateToChat,
 }: DashboardPageProps) {
   const [newModalOpen, setNewModalOpen] = useState(false);
   const [distributeOpen, setDistributeOpen] = useState(false);
   const { data: engines, isLoading } = useListEngines();
   const { mutate: deleteEngine, isPending: isDeleting } = useDeleteEngine();
-
-  async function handleLoadDemo() {
-    // Delegate entirely to the parent handler, which knows whether the user is
-    // authenticated and will either call the backend or use client-side state.
-    onLoadDemo();
-  }
 
   function handleDelete(id: bigint) {
     deleteEngine(id, {
@@ -191,8 +188,8 @@ export function DashboardPage({
         ) : !engines || engines.length === 0 ? (
           <EmptyEnginesState
             onNew={() => setNewModalOpen(true)}
-            onDemo={handleLoadDemo}
-            isLoadingDemo={false}
+            onDemo={onLoadDemo}
+            isLoadingDemo={isLoadingDemo}
           />
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">

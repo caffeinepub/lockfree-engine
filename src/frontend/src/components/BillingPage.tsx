@@ -393,6 +393,13 @@ export function BillingPage({ onPricingOpen }: BillingPageProps) {
   const { data: billingEvents = [], isLoading: eventsLoading } =
     useGetBillingEvents();
   const { data: usage, isLoading: usageLoading } = useGetUsageSummary();
+  const nextBilling = new Date();
+  nextBilling.setMonth(nextBilling.getMonth() + 1, 1);
+  const nextBillingStr = nextBilling.toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  });
   const [pricingOpen, setPricingOpen] = useState(false);
 
   const limits =
@@ -471,7 +478,7 @@ export function BillingPage({ onPricingOpen }: BillingPageProps) {
                   </div>
                   <div className="flex items-center gap-1.5 text-xs text-muted-foreground mt-0.5">
                     <CalendarDays className="w-3 h-3" />
-                    Next billing: March 1, 2026
+                    Next billing: {nextBillingStr}
                   </div>
                 </div>
               </div>

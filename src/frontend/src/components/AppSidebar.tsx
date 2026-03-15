@@ -5,6 +5,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import {
+  BookOpen,
   Building2,
   Cpu,
   CreditCard,
@@ -24,6 +25,7 @@ interface AppSidebarProps {
   onNavigate: (page: string) => void;
   mobileOpen: boolean;
   onMobileClose: () => void;
+  onSignOut: () => void;
 }
 
 const navItems = [
@@ -34,6 +36,7 @@ const navItems = [
   { id: "referrals", label: "Referrals", icon: Users },
   { id: "partners", label: "Partners", icon: Building2 },
   { id: "settings", label: "Settings", icon: Settings },
+  { id: "userguide", label: "User Guide", icon: BookOpen },
 ];
 
 export function AppSidebar({
@@ -41,8 +44,9 @@ export function AppSidebar({
   onNavigate,
   mobileOpen,
   onMobileClose,
+  onSignOut,
 }: AppSidebarProps) {
-  const { clear, identity } = useInternetIdentity();
+  const { identity } = useInternetIdentity();
   const principal = identity?.getPrincipal().toString() ?? "demo";
 
   return (
@@ -72,9 +76,14 @@ export function AppSidebar({
         {/* Logo */}
         <div className="flex items-center justify-between px-4 py-5 border-b border-sidebar-border">
           <div className="flex items-center gap-2.5">
-            <div className="w-7 h-7 rounded-md bg-primary/20 border border-primary/40 flex items-center justify-center flex-shrink-0">
-              <div className="w-3 h-3 rounded-sm bg-primary/80" />
-            </div>
+            <img
+              src="/assets/generated/lockfree-logo-transparent.dim_200x200.png"
+              alt="LockFree Engine"
+              className="w-7 h-7 object-contain flex-shrink-0"
+              onError={(e) => {
+                (e.target as HTMLImageElement).style.display = "none";
+              }}
+            />
             <span className="font-display text-sm font-bold tracking-tight text-foreground">
               LockFree
             </span>
@@ -89,7 +98,7 @@ export function AppSidebar({
         </div>
 
         {/* Nav */}
-        <nav className="flex-1 py-4 px-2 space-y-0.5">
+        <nav className="flex-1 py-4 px-2 space-y-0.5 overflow-y-auto">
           {navItems.map((item) => (
             <NavLink
               key={item.id}
@@ -139,7 +148,7 @@ export function AppSidebar({
             variant="ghost"
             size="sm"
             className="w-full justify-start gap-2 h-8 text-muted-foreground hover:text-foreground text-xs"
-            onClick={clear}
+            onClick={onSignOut}
           >
             <LogOut className="w-3.5 h-3.5" />
             Sign out

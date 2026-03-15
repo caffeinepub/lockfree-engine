@@ -322,9 +322,14 @@ export function LandingPage({
       {/* ── Nav ── */}
       <header className="relative z-40 flex items-center justify-between px-5 sm:px-8 md:px-12 py-4 border-b border-border/40 backdrop-blur-sm bg-background/70">
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-md bg-primary/20 border border-primary/30 flex items-center justify-center">
-            <div className="w-3 h-3 rounded-sm bg-primary/80" />
-          </div>
+          <img
+            src="/assets/generated/lockfree-logo-transparent.dim_200x200.png"
+            alt="LockFree Engine"
+            className="w-8 h-8 object-contain"
+            onError={(e) => {
+              (e.target as HTMLImageElement).style.display = "none";
+            }}
+          />
           <span className="font-display text-base font-bold tracking-tight">
             LockFree Engine
           </span>

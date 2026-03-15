@@ -25,10 +25,16 @@ export const queryKeys = {
 
 export function useListEngines() {
   const { actor, isFetching } = useActor();
+  const qc = useQueryClient();
   return useQuery<Engine[]>({
     queryKey: queryKeys.engines,
     queryFn: async () => {
       if (!actor) return [];
+      // Preserve demo data — don't overwrite with empty backend result
+      const cached = qc.getQueryData<Engine[]>(queryKeys.engines);
+      const isDemo =
+        cached?.some((e) => e.name.toLowerCase().includes("demo")) ?? false;
+      if (isDemo) return cached!;
       return actor.listEngines();
     },
     enabled: !!actor && !isFetching,

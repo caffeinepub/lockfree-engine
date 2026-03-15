@@ -121,7 +121,7 @@ export function MigrationHistoryPanel() {
               className={`relative ${i > 0 ? "migration-timeline-row" : ""}`}
             >
               {i > 0 && (
-                <div className="absolute left-5 -top-px w-px h-px bg-border" />
+                <div className="absolute left-5 -top-px w-px h-4 bg-border" />
               )}
               <MigrationRow record={record} />
             </div>
