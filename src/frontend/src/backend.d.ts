@@ -20,6 +20,16 @@ export interface Engine {
     createdAt: bigint;
     resilienceScore: bigint;
 }
+export interface AdminUserRecord {
+    tier: string;
+    principalId: Principal;
+}
+export interface WaitlistEntry {
+    id: bigint;
+    name: string;
+    submittedAt: bigint;
+    email: string;
+}
 export interface DistributeResult {
     updatedEngines: Array<Engine>;
     overallResilienceScore: bigint;
@@ -53,11 +63,10 @@ export interface MigrationRecord {
 export interface UserProfile {
     name: string;
 }
-export interface WaitlistEntry {
-    id: bigint;
-    email: string;
-    name: string;
-    submittedAt: bigint;
+export interface ContentSettings {
+    demoModeEnabled: boolean;
+    announcementBanner: string;
+    affiliateEnabled: boolean;
 }
 export enum UserRole {
     admin = "admin",
@@ -66,27 +75,33 @@ export enum UserRole {
 }
 export interface backendInterface {
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
+    claimInitialAdmin(): Promise<boolean>;
     createEngine(name: string, provider: string, cpu: bigint, ram: bigint, storage: bigint, costPerHour: number): Promise<bigint>;
     deleteEngine(id: bigint): Promise<void>;
     deployApp(engineId: bigint, _prompt: string): Promise<string>;
     distributeAcrossProviders(): Promise<void>;
-    /**
-     * / * Distributes all caller's engines across providers and computes overall resilience score.
-     */
     distributeAndGetScore(): Promise<DistributeResult>;
+    getAdminAnalytics(): Promise<{
+        freeCount: bigint;
+        businessCount: bigint;
+        totalWaitlist: bigint;
+        totalEngines: bigint;
+        totalUsers: bigint;
+        proCount: bigint;
+        enterpriseCount: bigint;
+    }>;
     getBillingEvents(): Promise<Array<BillingEvent>>;
     getCallerUserProfile(): Promise<UserProfile | null>;
     getCallerUserRole(): Promise<UserRole>;
+    getContentSettings(): Promise<ContentSettings>;
     getCostSummary(): Promise<{
         totalCost: number;
         engineCosts: Array<[bigint, number]>;
     }>;
     getEngine(id: bigint): Promise<Engine>;
-    /**
-     * / * Returns all migration records for the caller, newest first (descending by id).
-     */
     getMigrationHistory(): Promise<Array<MigrationRecord>>;
     getMySubscription(): Promise<string>;
+    getPublicContentSettings(): Promise<ContentSettings>;
     getUsageSummary(): Promise<{
         enginesCount: bigint;
         deploymentsThisMonth: bigint;
@@ -97,18 +112,17 @@ export interface backendInterface {
     inviteSeat(member: Principal, role: string): Promise<void>;
     isCallerAdmin(): Promise<boolean>;
     joinWaitlist(email: string, name: string): Promise<boolean>;
+    listAllUsers(): Promise<Array<AdminUserRecord>>;
     listEngines(): Promise<Array<Engine>>;
     listSeats(): Promise<Array<SeatMember>>;
     migrateEngine(id: bigint, targetProvider: string): Promise<void>;
-    /**
-     * / * Migrates an engine to a new provider and returns the migration record.
-     * /   * Computes mock savings and updates the engine state.
-     */
     migrateEngineWithDetails(id: bigint, targetProvider: string): Promise<MigrationRecord>;
     populateDemoData(): Promise<void>;
     removeSeat(member: Principal): Promise<void>;
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
+    saveContentSettings(settings: ContentSettings): Promise<void>;
     sendMessage(content: string, _engineId: bigint | null): Promise<string>;
+    setUserTier(user: Principal, tier: string): Promise<void>;
     updateEngineStatus(id: bigint, status: string): Promise<void>;
     upgradeSubscription(tier: string, paymentMethod: string): Promise<void>;
 }

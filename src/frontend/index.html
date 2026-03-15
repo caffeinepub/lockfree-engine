@@ -1,4 +1,4 @@
-<html lang="en">
+<html lang="en" class="dark">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -18,6 +18,17 @@
     <meta name="twitter:title" content="LockFree Engine — Your portable cloud console" />
     <meta name="twitter:description" content="Provision, deploy, migrate, and manage cloud engines across AWS, Google Cloud, and Azure. No vendor lock-in. Powered by ICP." />
     <meta name="twitter:image" content="/assets/generated/og-image.dim_1200x630.jpg" />
+
+    <!-- Theme init: apply stored preference before first paint to avoid flash -->
+    <script>
+      (function () {
+        var stored = localStorage.getItem("lockfree_theme");
+        var theme = stored === "light" ? "light" : "dark";
+        var html = document.documentElement;
+        html.classList.remove("dark", "light");
+        html.classList.add(theme);
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

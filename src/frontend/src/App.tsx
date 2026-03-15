@@ -20,6 +20,7 @@ import { ReferralsAffiliatePage } from "./components/ReferralsAffiliatePage";
 import { SettingsPage } from "./components/SettingsPage";
 import { TopBar } from "./components/TopBar";
 import { UserGuidePage } from "./components/UserGuidePage";
+import { AdminPage } from "./components/admin/AdminPage";
 import { useInternetIdentity } from "./hooks/useInternetIdentity";
 import {
   queryKeys,
@@ -27,6 +28,7 @@ import {
   useListEngines,
   usePopulateDemoData,
 } from "./hooks/useQueries";
+import { useTheme } from "./hooks/useTheme";
 
 // ─── Client-side demo engines (used when not authenticated or as fallback) ────
 
@@ -96,7 +98,8 @@ type Page =
   | "billing"
   | "referrals"
   | "partners"
-  | "userguide";
+  | "userguide"
+  | "admin";
 
 const PAGE_TITLES: Record<Page, string> = {
   dashboard: "Dashboard",
@@ -107,20 +110,26 @@ const PAGE_TITLES: Record<Page, string> = {
   referrals: "Referrals & Affiliates",
   partners: "Partners",
   userguide: "User Guide",
+  admin: "Admin",
 };
 
 const PRICING_SHOWN_KEY = "lockfree_pricing_shown";
+const DEMO_PREF_KEY = "lockfree_demo_enabled";
 
 function AppShell() {
   const { identity, isInitializing, login, clear } = useInternetIdentity();
-  const { data: engines } = useListEngines();
+  useListEngines(); // keep query active for cache
   const { data: subscription = "free" } = useGetMySubscription();
   const { mutateAsync: populateDemo, isPending: isLoadingDemo } =
     usePopulateDemoData();
   const queryClient = useQueryClient();
+  const { theme, toggleTheme } = useTheme();
   const [activePage, setActivePage] = useState<Page>("dashboard");
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [isDemoMode, setIsDemoMode] = useState(false);
+  // Initialize from localStorage — default to true (auto-load) unless user explicitly turned it off
+  const [isDemoMode, setIsDemoMode] = useState(
+    () => localStorage.getItem(DEMO_PREF_KEY) !== "false",
+  );
   const [demoEngines, setDemoEngines] = useState<Engine[]>([]);
   const [chatEngine, setChatEngine] = useState<Engine | undefined>(undefined);
   const [pricingOpen, setPricingOpen] = useState(false);
@@ -133,13 +142,6 @@ function AppShell() {
       queryClient.setQueryData(queryKeys.engines, demoEngines);
     }
   }, [demoEngines, queryClient]);
-
-  // Detect demo mode from engine list
-  useEffect(() => {
-    if (engines && engines.length > 0) {
-      setIsDemoMode(engines.some((e) => e.name.toLowerCase().includes("demo")));
-    }
-  }, [engines]);
 
   // Show onboarding tour on first login
   useEffect(() => {
@@ -167,6 +169,7 @@ function AppShell() {
   }, [identity]);
 
   async function handleLoadDemo() {
+    localStorage.setItem(DEMO_PREF_KEY, "true");
     if (!identity) {
       // Set cache immediately and synchronously — don't rely on the useEffect chain
       queryClient.setQueryData(queryKeys.engines, DEMO_ENGINES);
@@ -186,6 +189,14 @@ function AppShell() {
       setIsDemoMode(true);
       toast.success("Demo data loaded!");
     }
+  }
+
+  function handleClearDemo() {
+    localStorage.setItem(DEMO_PREF_KEY, "false");
+    queryClient.setQueryData(queryKeys.engines, []);
+    setDemoEngines([]);
+    setIsDemoMode(false);
+    toast.success("Demo data cleared");
   }
 
   function handleNavigateToChat(engine?: Engine) {
@@ -236,6 +247,7 @@ function AppShell() {
           login();
         }}
         onTryDemo={() => setShowLanding(false)}
+        isLoadingDemo={isLoadingDemo}
       />
     );
   }
@@ -243,7 +255,12 @@ function AppShell() {
   // Login page if not authenticated
   if (!identity) {
     return (
-      <LoginPage onLoadDemo={handleLoadDemo} isLoadingDemo={isLoadingDemo} />
+      <LoginPage
+        onLoadDemo={handleLoadDemo}
+        isLoadingDemo={isLoadingDemo}
+        isDemoMode={isDemoMode}
+        onClearDemo={handleClearDemo}
+      />
     );
   }
 
@@ -266,6 +283,8 @@ function AppShell() {
           isDemoMode={isDemoMode}
           onNavigate={(p) => setActivePage(p as Page)}
           onSignOut={handleSignOut}
+          theme={theme}
+          onToggleTheme={toggleTheme}
         />
 
         <main className="flex-1 p-4 lg:p-6">
@@ -275,6 +294,7 @@ function AppShell() {
               onLoadDemo={handleLoadDemo}
               isLoadingDemo={isLoadingDemo}
               onNavigateToChat={handleNavigateToChat}
+              onClearDemo={handleClearDemo}
             />
           )}
           {activePage === "engines" && (
@@ -296,6 +316,7 @@ function AppShell() {
             <PartnersPage onNavigate={(p) => setActivePage(p as Page)} />
           )}
           {activePage === "userguide" && <UserGuidePage />}
+          {activePage === "admin" && <AdminPage />}
         </main>
 
         {/* Footer */}
@@ -327,10 +348,15 @@ function AppShell() {
 }
 
 export default function App() {
+  const { theme } = useTheme();
   return (
     <TooltipProvider delayDuration={300}>
       <AppShell />
-      <Toaster position="bottom-right" theme="dark" richColors />
+      <Toaster
+        position="bottom-right"
+        theme={theme as "dark" | "light" | "system"}
+        richColors
+      />
     </TooltipProvider>
   );
 }

@@ -10,6 +10,7 @@ import type { ActorMethod } from '@icp-sdk/core/agent';
 import type { IDL } from '@icp-sdk/core/candid';
 import type { Principal } from '@icp-sdk/core/principal';
 
+export interface AdminUserRecord { 'tier' : string, 'principalId' : Principal }
 export interface BillingEvent {
   'id' : bigint,
   'userId' : Principal,
@@ -19,6 +20,11 @@ export interface BillingEvent {
   'timestamp' : bigint,
   'amount' : number,
   'eventType' : string,
+}
+export interface ContentSettings {
+  'demoModeEnabled' : boolean,
+  'announcementBanner' : string,
+  'affiliateEnabled' : boolean,
 }
 export interface DistributeResult {
   'updatedEngines' : Array<Engine>,
@@ -57,10 +63,17 @@ export interface UserProfile { 'name' : string }
 export type UserRole = { 'admin' : null } |
   { 'user' : null } |
   { 'guest' : null };
+export interface WaitlistEntry {
+  'id' : bigint,
+  'name' : string,
+  'submittedAt' : bigint,
+  'email' : string,
+}
 export interface _SERVICE {
   '_getMigrationHistoryForTests' : ActorMethod<[], Array<MigrationRecord>>,
   '_initializeAccessControlWithSecret' : ActorMethod<[string], undefined>,
   'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
+  'claimInitialAdmin' : ActorMethod<[], boolean>,
   'createEngine' : ActorMethod<
     [string, string, bigint, bigint, bigint, number],
     bigint
@@ -68,23 +81,31 @@ export interface _SERVICE {
   'deleteEngine' : ActorMethod<[bigint], undefined>,
   'deployApp' : ActorMethod<[bigint, string], string>,
   'distributeAcrossProviders' : ActorMethod<[], undefined>,
-  /**
-   * / * Distributes all caller's engines across providers and computes overall resilience score.
-   */
   'distributeAndGetScore' : ActorMethod<[], DistributeResult>,
+  'getAdminAnalytics' : ActorMethod<
+    [],
+    {
+      'freeCount' : bigint,
+      'businessCount' : bigint,
+      'totalWaitlist' : bigint,
+      'totalEngines' : bigint,
+      'totalUsers' : bigint,
+      'proCount' : bigint,
+      'enterpriseCount' : bigint,
+    }
+  >,
   'getBillingEvents' : ActorMethod<[], Array<BillingEvent>>,
   'getCallerUserProfile' : ActorMethod<[], [] | [UserProfile]>,
   'getCallerUserRole' : ActorMethod<[], UserRole>,
+  'getContentSettings' : ActorMethod<[], ContentSettings>,
   'getCostSummary' : ActorMethod<
     [],
     { 'totalCost' : number, 'engineCosts' : Array<[bigint, number]> }
   >,
   'getEngine' : ActorMethod<[bigint], Engine>,
-  /**
-   * / * Returns all migration records for the caller, newest first (descending by id).
-   */
   'getMigrationHistory' : ActorMethod<[], Array<MigrationRecord>>,
   'getMySubscription' : ActorMethod<[], string>,
+  'getPublicContentSettings' : ActorMethod<[], ContentSettings>,
   'getUsageSummary' : ActorMethod<
     [],
     {
@@ -94,20 +115,21 @@ export interface _SERVICE {
     }
   >,
   'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
+  'getWaitlistEntries' : ActorMethod<[], Array<WaitlistEntry>>,
   'inviteSeat' : ActorMethod<[Principal, string], undefined>,
   'isCallerAdmin' : ActorMethod<[], boolean>,
+  'joinWaitlist' : ActorMethod<[string, string], boolean>,
+  'listAllUsers' : ActorMethod<[], Array<AdminUserRecord>>,
   'listEngines' : ActorMethod<[], Array<Engine>>,
   'listSeats' : ActorMethod<[], Array<SeatMember>>,
   'migrateEngine' : ActorMethod<[bigint, string], undefined>,
-  /**
-   * / * Migrates an engine to a new provider and returns the migration record.
-   * /   * Computes mock savings and updates the engine state.
-   */
   'migrateEngineWithDetails' : ActorMethod<[bigint, string], MigrationRecord>,
   'populateDemoData' : ActorMethod<[], undefined>,
   'removeSeat' : ActorMethod<[Principal], undefined>,
   'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,
+  'saveContentSettings' : ActorMethod<[ContentSettings], undefined>,
   'sendMessage' : ActorMethod<[string, [] | [bigint]], string>,
+  'setUserTier' : ActorMethod<[Principal, string], undefined>,
   'updateEngineStatus' : ActorMethod<[bigint, string], undefined>,
   'upgradeSubscription' : ActorMethod<[string, string], undefined>,
 }

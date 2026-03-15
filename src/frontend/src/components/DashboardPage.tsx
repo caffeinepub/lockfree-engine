@@ -1,22 +1,25 @@
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Switch } from "@/components/ui/switch";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useQuery } from "@tanstack/react-query";
 import {
   LayoutGrid,
-  Loader2,
+  Megaphone,
   Plus,
   ServerOff,
   Shuffle,
-  Zap,
+  X,
 } from "lucide-react";
-import { motion } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 import { toast } from "sonner";
-import type { Engine } from "../backend.d.ts";
+import type { ContentSettings, Engine } from "../backend.d.ts";
+import { useActor } from "../hooks/useActor";
 import { useDeleteEngine, useListEngines } from "../hooks/useQueries";
 import { CostAlerts } from "./CostAlerts";
 import { DistributeModal } from "./DistributeModal";
@@ -31,6 +34,7 @@ interface DashboardPageProps {
   onLoadDemo: () => void;
   isLoadingDemo: boolean;
   onNavigateToChat: (engine?: Engine) => void;
+  onClearDemo: () => void;
 }
 
 function EngineGridSkeleton() {
@@ -46,17 +50,20 @@ function EngineGridSkeleton() {
 function EmptyEnginesState({
   onNew,
   onDemo,
-  isLoadingDemo,
+  onClearDemo,
+  isDemoMode,
 }: {
   onNew: () => void;
   onDemo: () => void;
-  isLoadingDemo: boolean;
+  onClearDemo: () => void;
+  isDemoMode: boolean;
 }) {
   return (
     <motion.div
       className="console-panel flex flex-col items-center justify-center py-16 px-8 text-center"
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
+      data-ocid="engines.empty_state"
     >
       <div className="w-14 h-14 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center mb-5">
         <ServerOff className="w-7 h-7 text-primary/60" />
@@ -68,25 +75,35 @@ function EmptyEnginesState({
         Provision your first cloud engine to get started. Engines run on ICP and
         can migrate across AWS, GCP, and Azure instantly.
       </p>
-      <div className="flex gap-3 flex-wrap justify-center">
-        <Button onClick={onNew} className="gap-2">
+      <div className="flex flex-col items-center gap-4">
+        <Button
+          onClick={onNew}
+          className="gap-2"
+          data-ocid="engines.primary_button"
+        >
           <Plus className="w-4 h-4" />
           New Engine
         </Button>
-        <Button
-          variant="outline"
-          onClick={onDemo}
-          disabled={isLoadingDemo}
-          className="gap-2"
-          data-ocid="engines.demo.button"
-        >
-          {isLoadingDemo ? (
-            <Loader2 className="w-4 h-4 animate-spin" />
-          ) : (
-            <Zap className="w-4 h-4" />
-          )}
-          Load Demo Data
-        </Button>
+        {/* Demo Data toggle row */}
+        <div className="flex items-center justify-between gap-6 bg-card border border-border rounded-lg px-4 py-3 w-full max-w-xs">
+          <div className="flex flex-col text-left">
+            <span className="text-sm font-medium text-foreground">
+              Demo Data
+            </span>
+            <span className="text-xs text-muted-foreground mt-0.5">
+              Load simulated engines to explore
+            </span>
+          </div>
+          <Switch
+            checked={isDemoMode}
+            onCheckedChange={(checked) => {
+              if (checked) onDemo();
+              else onClearDemo();
+            }}
+            data-ocid="dashboard.demo.toggle"
+            aria-label="Toggle demo data"
+          />
+        </div>
       </div>
     </motion.div>
   );
@@ -95,13 +112,33 @@ function EmptyEnginesState({
 export function DashboardPage({
   isDemoMode,
   onLoadDemo,
-  isLoadingDemo,
+  isLoadingDemo: _isLoadingDemo,
   onNavigateToChat,
+  onClearDemo,
 }: DashboardPageProps) {
   const [newModalOpen, setNewModalOpen] = useState(false);
   const [distributeOpen, setDistributeOpen] = useState(false);
+  const [bannerDismissed, setBannerDismissed] = useState(false);
   const { data: engines, isLoading } = useListEngines();
   const { mutate: deleteEngine, isPending: isDeleting } = useDeleteEngine();
+  const { actor } = useActor();
+
+  const { data: publicSettings } = useQuery<ContentSettings>({
+    queryKey: ["publicContentSettings"],
+    queryFn: async () => {
+      if (!actor)
+        return {
+          demoModeEnabled: true,
+          announcementBanner: "",
+          affiliateEnabled: true,
+        };
+      return actor.getPublicContentSettings();
+    },
+    enabled: !!actor,
+    staleTime: 60_000,
+  });
+
+  const announcementBanner = publicSettings?.announcementBanner ?? "";
 
   function handleDelete(id: bigint) {
     deleteEngine(id, {
@@ -112,6 +149,35 @@ export function DashboardPage({
 
   return (
     <div className="flex flex-col gap-8">
+      {/* Announcement banner */}
+      <AnimatePresence>
+        {announcementBanner && !bannerDismissed && (
+          <motion.div
+            key="announcement-banner"
+            className="flex items-start gap-3 px-4 py-3 rounded-lg bg-amber-500/10 border border-amber-500/20 text-sm"
+            initial={{ opacity: 0, y: -8, height: 0 }}
+            animate={{ opacity: 1, y: 0, height: "auto" }}
+            exit={{ opacity: 0, y: -8, height: 0 }}
+            transition={{ duration: 0.2 }}
+            data-ocid="dashboard.announcement.panel"
+          >
+            <Megaphone className="w-4 h-4 text-amber-400 flex-shrink-0 mt-0.5" />
+            <span className="text-amber-400 flex-1 leading-relaxed">
+              {announcementBanner}
+            </span>
+            <button
+              type="button"
+              onClick={() => setBannerDismissed(true)}
+              className="text-amber-400/60 hover:text-amber-400 transition-colors flex-shrink-0"
+              aria-label="Dismiss announcement"
+              data-ocid="dashboard.announcement.close_button"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Demo mode banner */}
       {isDemoMode && (
         <motion.div
@@ -123,9 +189,18 @@ export function DashboardPage({
           <span className="text-status-provisioning font-medium">
             Demo Mode
           </span>
-          <span className="text-muted-foreground">
+          <span className="text-muted-foreground flex-1 hidden sm:inline">
             — This is simulated data. Changes won't persist between sessions.
           </span>
+          <button
+            type="button"
+            onClick={onClearDemo}
+            className="ml-auto flex-shrink-0 text-xs font-semibold px-3 py-1.5 rounded-md bg-white/15 hover:bg-white/25 text-white border border-white/30 transition-colors"
+            data-ocid="dashboard.demo.toggle"
+            aria-label="Exit demo mode"
+          >
+            Exit Demo
+          </button>
         </motion.div>
       )}
 
@@ -189,7 +264,8 @@ export function DashboardPage({
           <EmptyEnginesState
             onNew={() => setNewModalOpen(true)}
             onDemo={onLoadDemo}
-            isLoadingDemo={isLoadingDemo}
+            onClearDemo={onClearDemo}
+            isDemoMode={isDemoMode}
           />
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">

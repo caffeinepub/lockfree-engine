@@ -16,9 +16,12 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ["Outfit", "system-ui", "sans-serif"],
-        mono: ['"Geist Mono"', "ui-monospace", "monospace"],
-        display: ['"Cabinet Grotesk"', "Outfit", "system-ui", "sans-serif"],
+        /* Body — sharp geometric sans with distinctive character */
+        sans: ['"Plus Jakarta Sans"', "system-ui", "sans-serif"],
+        /* Display — expressive grotesque for headings and hero text */
+        display: ['"Bricolage Grotesque"', '"Plus Jakarta Sans"', "system-ui", "sans-serif"],
+        /* Mono — for code, data, principals, IDs */
+        mono: ['"JetBrains Mono"', '"Geist Mono"', "ui-monospace", "monospace"],
       },
       colors: {
         border: "oklch(var(--border))",
@@ -87,9 +90,10 @@ export default {
         sm: "calc(var(--radius) - 4px)",
       },
       boxShadow: {
-        xs: "0 1px 2px 0 rgba(0,0,0,0.15)",
-        card: "0 4px 24px rgba(0,0,0,0.25)",
-        glow: "0 0 20px oklch(var(--primary) / 0.2)",
+        xs: "0 1px 2px 0 rgba(0,0,0,0.2)",
+        card: "0 4px 28px rgba(0,0,0,0.35), 0 1px 4px rgba(0,0,0,0.25)",
+        glow: "0 0 24px oklch(var(--primary) / 0.25), 0 0 8px oklch(var(--primary) / 0.12)",
+        "glow-sm": "0 0 12px oklch(var(--primary) / 0.2)",
       },
       keyframes: {
         "accordion-down": {
@@ -105,7 +109,7 @@ export default {
           "100%": { width: "100%" },
         },
         "fade-in": {
-          from: { opacity: "0", transform: "translateY(4px)" },
+          from: { opacity: "0", transform: "translateY(6px)" },
           to: { opacity: "1", transform: "translateY(0)" },
         },
         "slide-in-right": {
@@ -117,9 +121,9 @@ export default {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "migrate-sweep": "migrate-sweep 3s ease-in-out forwards",
-        "fade-in": "fade-in 0.3s ease forwards",
+        "fade-in": "fade-in 0.35s ease forwards",
         "slide-in-right": "slide-in-right 0.25s ease forwards",
-        "pulse-slow": "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+        "pulse-slow": "pulse 2.4s cubic-bezier(0.4, 0, 0.6, 1) infinite",
       },
     },
   },

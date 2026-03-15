@@ -25,6 +25,7 @@ import {
   RotateCcw,
   Save,
   Shield,
+  Star,
   TrendingUp,
   Zap,
 } from "lucide-react";
@@ -72,7 +73,6 @@ function WhiteLabelSection({
   const isEnterprise = subscription === "enterprise";
   const [config, setConfig] = useState<WhiteLabelConfig>(loadWhiteLabel);
 
-  // Apply stored branding on mount
   useEffect(() => {
     const stored = loadWhiteLabel();
     if (stored.primaryColor) {
@@ -123,6 +123,7 @@ function WhiteLabelSection({
           size="sm"
           className="gap-2 bg-[oklch(0.75_0.18_60)] hover:bg-[oklch(0.68_0.18_60)] text-background"
           onClick={onUpgrade}
+          data-ocid="billing.whitelabel.open_modal_button"
         >
           <Crown className="w-3.5 h-3.5" />
           Upgrade to Enterprise
@@ -159,7 +160,6 @@ function WhiteLabelSection({
       </p>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {/* Company name */}
         <div className="space-y-1.5">
           <Label htmlFor="wl-name" className="text-xs">
             Company Name
@@ -171,10 +171,9 @@ function WhiteLabelSection({
             onChange={(e) =>
               setConfig((prev) => ({ ...prev, companyName: e.target.value }))
             }
+            data-ocid="billing.whitelabel.input"
           />
         </div>
-
-        {/* Primary color */}
         <div className="space-y-1.5">
           <Label htmlFor="wl-color" className="text-xs">
             Primary Color
@@ -190,10 +189,7 @@ function WhiteLabelSection({
               type="color"
               value={config.primaryColor}
               onChange={(e) =>
-                setConfig((prev) => ({
-                  ...prev,
-                  primaryColor: e.target.value,
-                }))
+                setConfig((prev) => ({ ...prev, primaryColor: e.target.value }))
               }
               className="sr-only"
               aria-label="Pick primary color"
@@ -201,10 +197,7 @@ function WhiteLabelSection({
             <Input
               value={config.primaryColor}
               onChange={(e) =>
-                setConfig((prev) => ({
-                  ...prev,
-                  primaryColor: e.target.value,
-                }))
+                setConfig((prev) => ({ ...prev, primaryColor: e.target.value }))
               }
               placeholder="#00b4d8"
               className="font-mono text-xs"
@@ -222,7 +215,6 @@ function WhiteLabelSection({
         </div>
       </div>
 
-      {/* Logo URL */}
       <div className="space-y-1.5">
         <Label htmlFor="wl-logo" className="text-xs">
           Logo URL
@@ -256,9 +248,12 @@ function WhiteLabelSection({
         )}
       </div>
 
-      {/* Actions */}
       <div className="flex items-center gap-2 pt-1">
-        <Button className="gap-2" onClick={handleSave}>
+        <Button
+          className="gap-2"
+          onClick={handleSave}
+          data-ocid="billing.whitelabel.save_button"
+        >
           <Save className="w-3.5 h-3.5" />
           Save Branding
         </Button>
@@ -288,16 +283,50 @@ function WhiteLabelSection({
 }
 
 const TIER_LIMITS = {
-  free: { engines: 1, deployments: 5, migrations: -1 },
-  pro: { engines: -1, deployments: -1, migrations: -1 },
+  free: { engines: 1, deployments: 5, migrations: 0 },
+  pro: { engines: 10, deployments: -1, migrations: -1 },
+  business: { engines: 50, deployments: -1, migrations: -1 },
   enterprise: { engines: -1, deployments: -1, migrations: -1 },
 };
 
-const TIER_PRICE = {
+const TIER_PRICE: Record<string, string> = {
   free: "$0",
-  pro: "$29",
-  enterprise: "$499",
+  pro: "$49",
+  business: "$199",
+  enterprise: "$599",
 };
+
+const TIER_ICON: Record<string, React.ElementType> = {
+  free: Shield,
+  pro: Zap,
+  business: Star,
+  enterprise: Crown,
+};
+
+const TIER_COLOR: Record<string, string> = {
+  free: "text-muted-foreground",
+  pro: "text-[oklch(0.82_0.19_145)]",
+  business: "text-[oklch(0.78_0.22_260)]",
+  enterprise: "text-[oklch(0.85_0.18_60)]",
+};
+
+const TIER_ICON_COLOR: Record<string, string> = {
+  free: "text-muted-foreground",
+  pro: "text-[oklch(0.72_0.19_145)]",
+  business: "text-[oklch(0.68_0.22_260)]",
+  enterprise: "text-[oklch(0.75_0.18_60)]",
+};
+
+const TIER_ICON_BG: Record<string, string> = {
+  free: "bg-muted/50 border border-border",
+  pro: "bg-[oklch(0.72_0.19_145/0.15)] border border-[oklch(0.72_0.19_145/0.4)]",
+  business:
+    "bg-[oklch(0.68_0.22_260/0.15)] border border-[oklch(0.68_0.22_260/0.4)]",
+  enterprise:
+    "bg-[oklch(0.75_0.18_60/0.15)] border border-[oklch(0.75_0.18_60/0.4)]",
+};
+
+import type React from "react";
 
 function formatDate(timestamp: bigint): string {
   const ms = Number(timestamp / 1_000_000n);
@@ -323,9 +352,7 @@ function EventTypeBadge({ type }: { type: string }) {
   const key = type.toLowerCase();
   return (
     <span
-      className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border capitalize
-        ${styles[key] ?? styles.payment}
-      `}
+      className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border capitalize ${styles[key] ?? styles.payment}`}
     >
       {type}
     </span>
@@ -408,6 +435,8 @@ export function BillingPage({ onPricingOpen }: BillingPageProps) {
   const deploymentsCount = Number(usage?.deploymentsThisMonth ?? 0);
   const migrationsCount = Number(usage?.migrationsThisMonth ?? 0);
 
+  const TierIcon = TIER_ICON[subscription] ?? Shield;
+
   function openPricing() {
     setPricingOpen(true);
     onPricingOpen?.();
@@ -415,7 +444,6 @@ export function BillingPage({ onPricingOpen }: BillingPageProps) {
 
   return (
     <div className="max-w-4xl mx-auto space-y-6 pb-8">
-      {/* Page header */}
       <div>
         <h1 className="font-display text-xl font-bold text-foreground">
           Billing & Subscription
@@ -442,38 +470,21 @@ export function BillingPage({ onPricingOpen }: BillingPageProps) {
             <div className="flex flex-col sm:flex-row sm:items-center gap-4">
               <div className="flex items-center gap-3">
                 <div
-                  className={`
-                    w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0
-                    ${subscription === "free" ? "bg-muted/50 border border-border" : ""}
-                    ${subscription === "pro" ? "bg-[oklch(0.72_0.19_145/0.15)] border border-[oklch(0.72_0.19_145/0.4)]" : ""}
-                    ${subscription === "enterprise" ? "bg-[oklch(0.75_0.18_60/0.15)] border border-[oklch(0.75_0.18_60/0.4)]" : ""}
-                  `}
+                  className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${TIER_ICON_BG[subscription] ?? TIER_ICON_BG.free}`}
                 >
-                  {subscription === "free" && (
-                    <Shield className="w-5 h-5 text-muted-foreground" />
-                  )}
-                  {subscription === "pro" && (
-                    <Zap className="w-5 h-5 text-[oklch(0.72_0.19_145)]" />
-                  )}
-                  {subscription === "enterprise" && (
-                    <Crown className="w-5 h-5 text-[oklch(0.75_0.18_60)]" />
-                  )}
+                  <TierIcon
+                    className={`w-5 h-5 ${TIER_ICON_COLOR[subscription] ?? TIER_ICON_COLOR.free}`}
+                  />
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
                     <span
-                      className={`font-display text-2xl font-bold capitalize
-                        ${subscription === "free" ? "text-muted-foreground" : ""}
-                        ${subscription === "pro" ? "text-[oklch(0.82_0.19_145)]" : ""}
-                        ${subscription === "enterprise" ? "text-[oklch(0.85_0.18_60)]" : ""}
-                      `}
+                      className={`font-display text-2xl font-bold capitalize ${TIER_COLOR[subscription] ?? TIER_COLOR.free}`}
                     >
                       {subscription}
                     </span>
                     <span className="font-display text-lg font-semibold text-muted-foreground">
-                      {TIER_PRICE[subscription as keyof typeof TIER_PRICE] ??
-                        "$0"}
-                      /mo
+                      {TIER_PRICE[subscription] ?? "$0"}/mo
                     </span>
                   </div>
                   <div className="flex items-center gap-1.5 text-xs text-muted-foreground mt-0.5">
@@ -488,6 +499,7 @@ export function BillingPage({ onPricingOpen }: BillingPageProps) {
                   variant="outline"
                   className="gap-2"
                   onClick={openPricing}
+                  data-ocid="billing.plan.open_modal_button"
                 >
                   <CreditCard className="w-3.5 h-3.5" />
                   Change Plan
@@ -518,7 +530,7 @@ export function BillingPage({ onPricingOpen }: BillingPageProps) {
                 label="Cloud Engines"
                 value={enginesCount}
                 max={limits.engines === -1 ? null : limits.engines}
-                warn={subscription === "free"}
+                warn={subscription === "free" || subscription === "pro"}
                 onUpgrade={openPricing}
               />
               <UsageMeter
@@ -531,7 +543,13 @@ export function BillingPage({ onPricingOpen }: BillingPageProps) {
               <UsageMeter
                 label="Migrations"
                 value={migrationsCount}
-                max={null}
+                max={
+                  limits.migrations === -1
+                    ? null
+                    : limits.migrations === 0
+                      ? null
+                      : limits.migrations
+                }
               />
             </>
           )}
@@ -559,7 +577,10 @@ export function BillingPage({ onPricingOpen }: BillingPageProps) {
               <span className="text-sm">Loading billing history...</span>
             </div>
           ) : billingEvents.length === 0 ? (
-            <div className="p-8 text-center">
+            <div
+              className="p-8 text-center"
+              data-ocid="billing.log.empty_state"
+            >
               <CreditCard className="w-8 h-8 text-muted-foreground/30 mx-auto mb-3" />
               <p className="text-sm text-muted-foreground">
                 No billing events yet.
@@ -570,7 +591,7 @@ export function BillingPage({ onPricingOpen }: BillingPageProps) {
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <Table>
+              <Table data-ocid="billing.log.table">
                 <TableHeader>
                   <TableRow className="border-border hover:bg-transparent">
                     <TableHead className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
@@ -626,7 +647,7 @@ export function BillingPage({ onPricingOpen }: BillingPageProps) {
         </div>
       </div>
 
-      {/* Section D: Seat Management (Enterprise only) */}
+      {/* Section D: Seat Management */}
       <div className="rounded-xl border border-border bg-card overflow-hidden">
         <div className="px-5 py-4 border-b border-border bg-card/80">
           <h2 className="font-display font-bold text-sm text-muted-foreground uppercase tracking-wide">
@@ -656,7 +677,6 @@ export function BillingPage({ onPricingOpen }: BillingPageProps) {
         </div>
       </div>
 
-      {/* Pricing Modal */}
       <PricingModal
         open={pricingOpen}
         onClose={() => setPricingOpen(false)}

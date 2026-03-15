@@ -332,12 +332,23 @@ export function useRemoveSeat() {
 const WAITLIST_KEY = "lockfree_waitlist_entries";
 
 export function useJoinWaitlist() {
+  const { actor } = useActor();
   return useMutation({
     mutationFn: async (params: { email: string; name: string }) => {
-      // Persist locally (client-side waitlist for demo/launch)
+      // Always persist locally as a backup
       const existing = JSON.parse(localStorage.getItem(WAITLIST_KEY) ?? "[]");
       existing.push({ ...params, submittedAt: Date.now() });
       localStorage.setItem(WAITLIST_KEY, JSON.stringify(existing));
+
+      // Try to save to backend (actor is available anonymously)
+      if (actor) {
+        try {
+          await actor.joinWaitlist(params.email, params.name);
+        } catch {
+          // Backend call failed — localStorage backup already written above
+        }
+      }
+
       // Small artificial delay for UX
       await new Promise((r) => setTimeout(r, 600));
       return true;

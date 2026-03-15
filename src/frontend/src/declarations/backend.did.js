@@ -52,6 +52,21 @@ export const BillingEvent = IDL.Record({
   'eventType' : IDL.Text,
 });
 export const UserProfile = IDL.Record({ 'name' : IDL.Text });
+export const ContentSettings = IDL.Record({
+  'demoModeEnabled' : IDL.Bool,
+  'announcementBanner' : IDL.Text,
+  'affiliateEnabled' : IDL.Bool,
+});
+export const WaitlistEntry = IDL.Record({
+  'id' : IDL.Nat,
+  'name' : IDL.Text,
+  'submittedAt' : IDL.Int,
+  'email' : IDL.Text,
+});
+export const AdminUserRecord = IDL.Record({
+  'tier' : IDL.Text,
+  'principalId' : IDL.Principal,
+});
 export const SeatMember = IDL.Record({
   'role' : IDL.Text,
   'invitedAt' : IDL.Int,
@@ -66,6 +81,7 @@ export const idlService = IDL.Service({
     ),
   '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
   'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
+  'claimInitialAdmin' : IDL.Func([], [IDL.Bool], []),
   'createEngine' : IDL.Func(
       [IDL.Text, IDL.Text, IDL.Nat, IDL.Nat, IDL.Nat, IDL.Float64],
       [IDL.Nat],
@@ -75,9 +91,25 @@ export const idlService = IDL.Service({
   'deployApp' : IDL.Func([IDL.Nat, IDL.Text], [IDL.Text], []),
   'distributeAcrossProviders' : IDL.Func([], [], []),
   'distributeAndGetScore' : IDL.Func([], [DistributeResult], []),
+  'getAdminAnalytics' : IDL.Func(
+      [],
+      [
+        IDL.Record({
+          'freeCount' : IDL.Nat,
+          'businessCount' : IDL.Nat,
+          'totalWaitlist' : IDL.Nat,
+          'totalEngines' : IDL.Nat,
+          'totalUsers' : IDL.Nat,
+          'proCount' : IDL.Nat,
+          'enterpriseCount' : IDL.Nat,
+        }),
+      ],
+      ['query'],
+    ),
   'getBillingEvents' : IDL.Func([], [IDL.Vec(BillingEvent)], ['query']),
   'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
   'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
+  'getContentSettings' : IDL.Func([], [ContentSettings], ['query']),
   'getCostSummary' : IDL.Func(
       [],
       [
@@ -91,6 +123,7 @@ export const idlService = IDL.Service({
   'getEngine' : IDL.Func([IDL.Nat], [Engine], ['query']),
   'getMigrationHistory' : IDL.Func([], [IDL.Vec(MigrationRecord)], ['query']),
   'getMySubscription' : IDL.Func([], [IDL.Text], ['query']),
+  'getPublicContentSettings' : IDL.Func([], [ContentSettings], ['query']),
   'getUsageSummary' : IDL.Func(
       [],
       [
@@ -107,8 +140,11 @@ export const idlService = IDL.Service({
       [IDL.Opt(UserProfile)],
       ['query'],
     ),
+  'getWaitlistEntries' : IDL.Func([], [IDL.Vec(WaitlistEntry)], ['query']),
   'inviteSeat' : IDL.Func([IDL.Principal, IDL.Text], [], []),
   'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
+  'joinWaitlist' : IDL.Func([IDL.Text, IDL.Text], [IDL.Bool], []),
+  'listAllUsers' : IDL.Func([], [IDL.Vec(AdminUserRecord)], ['query']),
   'listEngines' : IDL.Func([], [IDL.Vec(Engine)], ['query']),
   'listSeats' : IDL.Func([], [IDL.Vec(SeatMember)], ['query']),
   'migrateEngine' : IDL.Func([IDL.Nat, IDL.Text], [], []),
@@ -120,7 +156,9 @@ export const idlService = IDL.Service({
   'populateDemoData' : IDL.Func([], [], []),
   'removeSeat' : IDL.Func([IDL.Principal], [], []),
   'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
+  'saveContentSettings' : IDL.Func([ContentSettings], [], []),
   'sendMessage' : IDL.Func([IDL.Text, IDL.Opt(IDL.Nat)], [IDL.Text], []),
+  'setUserTier' : IDL.Func([IDL.Principal, IDL.Text], [], []),
   'updateEngineStatus' : IDL.Func([IDL.Nat, IDL.Text], [], []),
   'upgradeSubscription' : IDL.Func([IDL.Text, IDL.Text], [], []),
 });
@@ -172,6 +210,21 @@ export const idlFactory = ({ IDL }) => {
     'eventType' : IDL.Text,
   });
   const UserProfile = IDL.Record({ 'name' : IDL.Text });
+  const ContentSettings = IDL.Record({
+    'demoModeEnabled' : IDL.Bool,
+    'announcementBanner' : IDL.Text,
+    'affiliateEnabled' : IDL.Bool,
+  });
+  const WaitlistEntry = IDL.Record({
+    'id' : IDL.Nat,
+    'name' : IDL.Text,
+    'submittedAt' : IDL.Int,
+    'email' : IDL.Text,
+  });
+  const AdminUserRecord = IDL.Record({
+    'tier' : IDL.Text,
+    'principalId' : IDL.Principal,
+  });
   const SeatMember = IDL.Record({
     'role' : IDL.Text,
     'invitedAt' : IDL.Int,
@@ -186,6 +239,7 @@ export const idlFactory = ({ IDL }) => {
       ),
     '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
     'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
+    'claimInitialAdmin' : IDL.Func([], [IDL.Bool], []),
     'createEngine' : IDL.Func(
         [IDL.Text, IDL.Text, IDL.Nat, IDL.Nat, IDL.Nat, IDL.Float64],
         [IDL.Nat],
@@ -195,9 +249,25 @@ export const idlFactory = ({ IDL }) => {
     'deployApp' : IDL.Func([IDL.Nat, IDL.Text], [IDL.Text], []),
     'distributeAcrossProviders' : IDL.Func([], [], []),
     'distributeAndGetScore' : IDL.Func([], [DistributeResult], []),
+    'getAdminAnalytics' : IDL.Func(
+        [],
+        [
+          IDL.Record({
+            'freeCount' : IDL.Nat,
+            'businessCount' : IDL.Nat,
+            'totalWaitlist' : IDL.Nat,
+            'totalEngines' : IDL.Nat,
+            'totalUsers' : IDL.Nat,
+            'proCount' : IDL.Nat,
+            'enterpriseCount' : IDL.Nat,
+          }),
+        ],
+        ['query'],
+      ),
     'getBillingEvents' : IDL.Func([], [IDL.Vec(BillingEvent)], ['query']),
     'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
     'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
+    'getContentSettings' : IDL.Func([], [ContentSettings], ['query']),
     'getCostSummary' : IDL.Func(
         [],
         [
@@ -211,6 +281,7 @@ export const idlFactory = ({ IDL }) => {
     'getEngine' : IDL.Func([IDL.Nat], [Engine], ['query']),
     'getMigrationHistory' : IDL.Func([], [IDL.Vec(MigrationRecord)], ['query']),
     'getMySubscription' : IDL.Func([], [IDL.Text], ['query']),
+    'getPublicContentSettings' : IDL.Func([], [ContentSettings], ['query']),
     'getUsageSummary' : IDL.Func(
         [],
         [
@@ -227,8 +298,11 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Opt(UserProfile)],
         ['query'],
       ),
+    'getWaitlistEntries' : IDL.Func([], [IDL.Vec(WaitlistEntry)], ['query']),
     'inviteSeat' : IDL.Func([IDL.Principal, IDL.Text], [], []),
     'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
+    'joinWaitlist' : IDL.Func([IDL.Text, IDL.Text], [IDL.Bool], []),
+    'listAllUsers' : IDL.Func([], [IDL.Vec(AdminUserRecord)], ['query']),
     'listEngines' : IDL.Func([], [IDL.Vec(Engine)], ['query']),
     'listSeats' : IDL.Func([], [IDL.Vec(SeatMember)], ['query']),
     'migrateEngine' : IDL.Func([IDL.Nat, IDL.Text], [], []),
@@ -240,7 +314,9 @@ export const idlFactory = ({ IDL }) => {
     'populateDemoData' : IDL.Func([], [], []),
     'removeSeat' : IDL.Func([IDL.Principal], [], []),
     'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
+    'saveContentSettings' : IDL.Func([ContentSettings], [], []),
     'sendMessage' : IDL.Func([IDL.Text, IDL.Opt(IDL.Nat)], [IDL.Text], []),
+    'setUserTier' : IDL.Func([IDL.Principal, IDL.Text], [], []),
     'updateEngineStatus' : IDL.Func([IDL.Nat, IDL.Text], [], []),
     'upgradeSubscription' : IDL.Func([IDL.Text, IDL.Text], [], []),
   });

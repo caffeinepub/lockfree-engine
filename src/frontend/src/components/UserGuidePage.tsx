@@ -693,6 +693,56 @@ const businessSections: GuideSection[] = [
     ),
   },
   {
+    id: "ai-deploy-chat",
+    title: "AI Deploy Chat",
+    icon: MessageSquare,
+    content: (
+      <div className="space-y-3">
+        <p>
+          The <strong>AI Deploy</strong> page gives you an intelligent assistant
+          that helps you make decisions about your cloud engines — no technical
+          knowledge required.
+        </p>
+        <p className="font-semibold text-sm">What you can ask the AI:</p>
+        <ul className="list-disc list-inside space-y-1 text-muted-foreground ml-2">
+          <li>
+            <strong>"Which provider should I use for my CRM?"</strong> — get a
+            recommendation based on cost, resilience, and workload type
+          </li>
+          <li>
+            <strong>"How can I reduce my cloud bill?"</strong> — get
+            provider-specific cost optimisation tips
+          </li>
+          <li>
+            <strong>"Is my engine healthy?"</strong> — get a plain-language
+            summary of your engine's resilience score and what it means
+          </li>
+          <li>
+            <strong>"Should I migrate to GCP?"</strong> — the AI will weigh up
+            cost savings vs. migration effort for your specific setup
+          </li>
+        </ul>
+        <p className="font-semibold text-sm">How to use it:</p>
+        <ol className="list-decimal list-inside space-y-1 text-muted-foreground ml-2">
+          <li>
+            Click <strong>AI Deploy</strong> in the left sidebar
+          </li>
+          <li>
+            Optionally select a specific engine from the dropdown at the top
+          </li>
+          <li>Type your question and press Enter or click Send</li>
+          <li>The AI responds with context-aware guidance for that engine</li>
+        </ol>
+        <p className="text-sm text-muted-foreground">
+          Your conversation history is saved automatically — if you close the
+          browser and come back, your previous messages will still be there. The
+          Free tier allows up to 10 messages per session; upgrade to Pro or
+          Enterprise for unlimited access.
+        </p>
+      </div>
+    ),
+  },
+  {
     id: "profile-signout",
     title: "Your Profile & Signing Out",
     icon: Settings,

@@ -102,6 +102,16 @@ export interface Engine {
     createdAt: bigint;
     resilienceScore: bigint;
 }
+export interface AdminUserRecord {
+    tier: string;
+    principalId: Principal;
+}
+export interface WaitlistEntry {
+    id: bigint;
+    name: string;
+    submittedAt: bigint;
+    email: string;
+}
 export interface DistributeResult {
     updatedEngines: Array<Engine>;
     overallResilienceScore: bigint;
@@ -135,6 +145,11 @@ export interface MigrationRecord {
 export interface UserProfile {
     name: string;
 }
+export interface ContentSettings {
+    demoModeEnabled: boolean;
+    announcementBanner: string;
+    affiliateEnabled: boolean;
+}
 export enum UserRole {
     admin = "admin",
     user = "user",
@@ -144,47 +159,54 @@ export interface backendInterface {
     _getMigrationHistoryForTests(): Promise<Array<MigrationRecord>>;
     _initializeAccessControlWithSecret(userSecret: string): Promise<void>;
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
+    claimInitialAdmin(): Promise<boolean>;
     createEngine(name: string, provider: string, cpu: bigint, ram: bigint, storage: bigint, costPerHour: number): Promise<bigint>;
     deleteEngine(id: bigint): Promise<void>;
     deployApp(engineId: bigint, _prompt: string): Promise<string>;
     distributeAcrossProviders(): Promise<void>;
-    /**
-     * / * Distributes all caller's engines across providers and computes overall resilience score.
-     */
     distributeAndGetScore(): Promise<DistributeResult>;
+    getAdminAnalytics(): Promise<{
+        freeCount: bigint;
+        businessCount: bigint;
+        totalWaitlist: bigint;
+        totalEngines: bigint;
+        totalUsers: bigint;
+        proCount: bigint;
+        enterpriseCount: bigint;
+    }>;
     getBillingEvents(): Promise<Array<BillingEvent>>;
     getCallerUserProfile(): Promise<UserProfile | null>;
     getCallerUserRole(): Promise<UserRole>;
+    getContentSettings(): Promise<ContentSettings>;
     getCostSummary(): Promise<{
         totalCost: number;
         engineCosts: Array<[bigint, number]>;
     }>;
     getEngine(id: bigint): Promise<Engine>;
-    /**
-     * / * Returns all migration records for the caller, newest first (descending by id).
-     */
     getMigrationHistory(): Promise<Array<MigrationRecord>>;
     getMySubscription(): Promise<string>;
+    getPublicContentSettings(): Promise<ContentSettings>;
     getUsageSummary(): Promise<{
         enginesCount: bigint;
         deploymentsThisMonth: bigint;
         migrationsThisMonth: bigint;
     }>;
     getUserProfile(user: Principal): Promise<UserProfile | null>;
+    getWaitlistEntries(): Promise<Array<WaitlistEntry>>;
     inviteSeat(member: Principal, role: string): Promise<void>;
     isCallerAdmin(): Promise<boolean>;
+    joinWaitlist(email: string, name: string): Promise<boolean>;
+    listAllUsers(): Promise<Array<AdminUserRecord>>;
     listEngines(): Promise<Array<Engine>>;
     listSeats(): Promise<Array<SeatMember>>;
     migrateEngine(id: bigint, targetProvider: string): Promise<void>;
-    /**
-     * / * Migrates an engine to a new provider and returns the migration record.
-     * /   * Computes mock savings and updates the engine state.
-     */
     migrateEngineWithDetails(id: bigint, targetProvider: string): Promise<MigrationRecord>;
     populateDemoData(): Promise<void>;
     removeSeat(member: Principal): Promise<void>;
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
+    saveContentSettings(settings: ContentSettings): Promise<void>;
     sendMessage(content: string, _engineId: bigint | null): Promise<string>;
+    setUserTier(user: Principal, tier: string): Promise<void>;
     updateEngineStatus(id: bigint, status: string): Promise<void>;
     upgradeSubscription(tier: string, paymentMethod: string): Promise<void>;
 }
@@ -230,6 +252,20 @@ export class Backend implements backendInterface {
             }
         } else {
             const result = await this.actor.assignCallerUserRole(arg0, to_candid_UserRole_n1(this._uploadFile, this._downloadFile, arg1));
+            return result;
+        }
+    }
+    async claimInitialAdmin(): Promise<boolean> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.claimInitialAdmin();
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.claimInitialAdmin();
             return result;
         }
     }
@@ -303,6 +339,28 @@ export class Backend implements backendInterface {
             return result;
         }
     }
+    async getAdminAnalytics(): Promise<{
+        freeCount: bigint;
+        businessCount: bigint;
+        totalWaitlist: bigint;
+        totalEngines: bigint;
+        totalUsers: bigint;
+        proCount: bigint;
+        enterpriseCount: bigint;
+    }> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getAdminAnalytics();
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getAdminAnalytics();
+            return result;
+        }
+    }
     async getBillingEvents(): Promise<Array<BillingEvent>> {
         if (this.processError) {
             try {
@@ -343,6 +401,20 @@ export class Backend implements backendInterface {
         } else {
             const result = await this.actor.getCallerUserRole();
             return from_candid_UserRole_n4(this._uploadFile, this._downloadFile, result);
+        }
+    }
+    async getContentSettings(): Promise<ContentSettings> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getContentSettings();
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getContentSettings();
+            return result;
         }
     }
     async getCostSummary(): Promise<{
@@ -404,6 +476,20 @@ export class Backend implements backendInterface {
             return result;
         }
     }
+    async getPublicContentSettings(): Promise<ContentSettings> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getPublicContentSettings();
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getPublicContentSettings();
+            return result;
+        }
+    }
     async getUsageSummary(): Promise<{
         enginesCount: bigint;
         deploymentsThisMonth: bigint;
@@ -436,6 +522,20 @@ export class Backend implements backendInterface {
             return from_candid_opt_n3(this._uploadFile, this._downloadFile, result);
         }
     }
+    async getWaitlistEntries(): Promise<Array<WaitlistEntry>> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getWaitlistEntries();
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getWaitlistEntries();
+            return result;
+        }
+    }
     async inviteSeat(arg0: Principal, arg1: string): Promise<void> {
         if (this.processError) {
             try {
@@ -461,6 +561,34 @@ export class Backend implements backendInterface {
             }
         } else {
             const result = await this.actor.isCallerAdmin();
+            return result;
+        }
+    }
+    async joinWaitlist(arg0: string, arg1: string): Promise<boolean> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.joinWaitlist(arg0, arg1);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.joinWaitlist(arg0, arg1);
+            return result;
+        }
+    }
+    async listAllUsers(): Promise<Array<AdminUserRecord>> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.listAllUsers();
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.listAllUsers();
             return result;
         }
     }
@@ -562,6 +690,20 @@ export class Backend implements backendInterface {
             return result;
         }
     }
+    async saveContentSettings(arg0: ContentSettings): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.saveContentSettings(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.saveContentSettings(arg0);
+            return result;
+        }
+    }
     async sendMessage(arg0: string, arg1: bigint | null): Promise<string> {
         if (this.processError) {
             try {
@@ -573,6 +715,20 @@ export class Backend implements backendInterface {
             }
         } else {
             const result = await this.actor.sendMessage(arg0, to_candid_opt_n6(this._uploadFile, this._downloadFile, arg1));
+            return result;
+        }
+    }
+    async setUserTier(arg0: Principal, arg1: string): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.setUserTier(arg0, arg1);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.setUserTier(arg0, arg1);
             return result;
         }
     }

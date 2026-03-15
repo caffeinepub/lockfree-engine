@@ -1,14 +1,138 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { ExternalLink, Info, LogOut, Shield } from "lucide-react";
+import {
+  Download,
+  ExternalLink,
+  FileJson,
+  FileSpreadsheet,
+  Info,
+  LogOut,
+  Shield,
+} from "lucide-react";
 import { useInternetIdentity } from "../hooks/useInternetIdentity";
-import { useListEngines } from "../hooks/useQueries";
+import {
+  useGetBillingEvents,
+  useGetMigrationHistory,
+  useListEngines,
+} from "../hooks/useQueries";
+import { useGetMySubscription } from "../hooks/useQueries";
+
+function downloadFile(filename: string, content: string, mimeType: string) {
+  const blob = new Blob([content], { type: mimeType });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
 
 export function SettingsPage() {
   const { identity, clear } = useInternetIdentity();
   const { data: engines } = useListEngines();
+  const { data: migrations } = useGetMigrationHistory();
+  const { data: billingEvents } = useGetBillingEvents();
+  const { data: subscription } = useGetMySubscription();
   const principal = identity?.getPrincipal().toString() ?? "demo-mode";
+
+  function buildExportPayload() {
+    return {
+      exportedAt: new Date().toISOString(),
+      account: {
+        principal,
+        plan: subscription ?? "free",
+      },
+      engines: (engines ?? []).map((e) => ({
+        id: e.id.toString(),
+        name: e.name,
+        provider: e.provider,
+        status: e.status,
+        cpu: e.cpu.toString(),
+        ram: e.ram.toString(),
+        storage: e.storage.toString(),
+        costPerHour: e.costPerHour,
+        createdAt: e.createdAt.toString(),
+      })),
+      migrationHistory: (migrations ?? []).map((m) => ({
+        id: m.id.toString(),
+        engineId: m.engineId.toString(),
+        fromProvider: m.fromProvider,
+        toProvider: m.toProvider,
+        status: m.status,
+        costSavings: m.savedPerMonth,
+        timestamp: m.timestamp.toString(),
+      })),
+      billingEvents: (billingEvents ?? []).map((b) => ({
+        id: b.id.toString(),
+        eventType: b.eventType,
+        amount: b.amount,
+        description: b.note,
+        timestamp: b.timestamp.toString(),
+      })),
+    };
+  }
+
+  function handleExportJSON() {
+    const payload = buildExportPayload();
+    downloadFile(
+      `lockfreeengine-export-${new Date().toISOString().slice(0, 10)}.json`,
+      JSON.stringify(payload, null, 2),
+      "application/json",
+    );
+  }
+
+  function handleExportCSV() {
+    const payload = buildExportPayload();
+    const sections: string[] = [];
+
+    // Account section
+    sections.push("ACCOUNT");
+    sections.push("Principal,Plan,Exported At");
+    sections.push(
+      `"${payload.account.principal}","${payload.account.plan}","${payload.exportedAt}"`,
+    );
+    sections.push("");
+
+    // Engines section
+    sections.push("ENGINES");
+    sections.push(
+      "ID,Name,Provider,Status,CPU,RAM (GB),Storage (GB),Cost Per Hour",
+    );
+    for (const e of payload.engines) {
+      sections.push(
+        `"${e.id}","${e.name}","${e.provider}","${e.status}","${e.cpu}","${e.ram}","${e.storage}","${e.costPerHour}"`,
+      );
+    }
+    sections.push("");
+
+    // Migration history section
+    sections.push("MIGRATION HISTORY");
+    sections.push(
+      "ID,Engine ID,From Provider,To Provider,Status,Cost Savings,Timestamp",
+    );
+    for (const m of payload.migrationHistory) {
+      sections.push(
+        `"${m.id}","${m.engineId}","${m.fromProvider}","${m.toProvider}","${m.status}","${m.costSavings}","${m.timestamp}"`,
+      );
+    }
+    sections.push("");
+
+    // Billing events section
+    sections.push("BILLING EVENTS");
+    sections.push("ID,Event Type,Amount,Description,Timestamp");
+    for (const b of payload.billingEvents) {
+      sections.push(
+        `"${b.id}","${b.eventType}","${b.amount}","${b.description}","${b.timestamp}"`,
+      );
+    }
+
+    downloadFile(
+      `lockfreeengine-export-${new Date().toISOString().slice(0, 10)}.csv`,
+      sections.join("\n"),
+      "text/csv",
+    );
+  }
 
   return (
     <div className="max-w-2xl space-y-6">
@@ -34,6 +158,15 @@ export function SettingsPage() {
             </div>
           </div>
 
+          <div>
+            <div className="text-xs text-muted-foreground mb-1">
+              Current Plan
+            </div>
+            <Badge className="capitalize text-xs">
+              {subscription ?? "free"}
+            </Badge>
+          </div>
+
           <Separator />
 
           <div className="flex items-center justify-between">
@@ -48,6 +181,7 @@ export function SettingsPage() {
               size="sm"
               onClick={clear}
               className="gap-2"
+              data-ocid="settings.signout.button"
             >
               <LogOut className="w-3.5 h-3.5" />
               Sign Out
@@ -83,6 +217,59 @@ export function SettingsPage() {
             <div className="text-xs text-muted-foreground">Providers</div>
           </div>
         </div>
+      </div>
+
+      {/* Data Portability */}
+      <div className="console-panel p-5">
+        <div className="flex items-center gap-2 mb-1">
+          <Download className="w-4 h-4 text-primary" />
+          <h2 className="font-semibold text-sm">Data Portability</h2>
+        </div>
+        <p className="text-xs text-muted-foreground mb-4">
+          LockFree Engine doesn't lock you in. Export your full configuration,
+          migration history, and billing data at any time.
+        </p>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <button
+            type="button"
+            onClick={handleExportJSON}
+            className="flex items-start gap-3 p-4 rounded-lg border border-border hover:border-primary/50 hover:bg-primary/5 transition-colors text-left group"
+            data-ocid="settings.export_json.button"
+          >
+            <FileJson className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
+            <div>
+              <div className="text-sm font-medium group-hover:text-primary transition-colors">
+                Export as JSON
+              </div>
+              <div className="text-xs text-muted-foreground mt-0.5">
+                Full structured export for developers and technical integrations
+              </div>
+            </div>
+          </button>
+
+          <button
+            type="button"
+            onClick={handleExportCSV}
+            className="flex items-start gap-3 p-4 rounded-lg border border-border hover:border-primary/50 hover:bg-primary/5 transition-colors text-left group"
+            data-ocid="settings.export_csv.button"
+          >
+            <FileSpreadsheet className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
+            <div>
+              <div className="text-sm font-medium group-hover:text-primary transition-colors">
+                Export as CSV
+              </div>
+              <div className="text-xs text-muted-foreground mt-0.5">
+                Spreadsheet-friendly format for business reporting
+              </div>
+            </div>
+          </button>
+        </div>
+
+        <p className="text-xs text-muted-foreground mt-3">
+          Exports include engine configurations, migration history, and billing
+          events.
+        </p>
       </div>
 
       {/* About */}

@@ -10,24 +10,23 @@ import Principal "mo:core/Principal";
 import Runtime "mo:core/Runtime";
 
 import Order "mo:core/Order";
+
 import MixinAuthorization "authorization/MixinAuthorization";
 import AccessControl "authorization/access-control";
 
-
-// Migration pattern: We now always specify that migration should be run on upgrade.
 
 actor {
   let accessControlState = AccessControl.initState();
   include MixinAuthorization(accessControlState);
 
-  // Subscription Tier Type
+  // Subscription tier
   public type SubscriptionTier = {
     #free;
     #pro;
+    #business;
     #enterprise;
   };
 
-  // User Profile Type
   public type UserProfile = {
     name : Text;
   };
@@ -35,17 +34,17 @@ actor {
   type BillingEvent = {
     id : Nat;
     userId : Principal;
-    eventType : Text; // "plan_change", "payment_attempt"
+    eventType : Text;
     tier : Text;
     amount : Float;
-    currency : Text; // "USD", "ICP"
+    currency : Text;
     timestamp : Int;
     note : Text;
   };
 
   type SeatMember = {
     principalId : Principal;
-    role : Text; // "admin", "editor", "viewer"
+    role : Text;
     invitedAt : Int;
   };
 
@@ -60,17 +59,13 @@ actor {
   let waitlistEntries = List.empty<WaitlistEntry>();
   var waitlistCounter = 0;
 
-  // Join waitlist — public, no auth required
+  // Join waitlist
   public shared func joinWaitlist(email : Text, name : Text) : async Bool {
-    // Basic validation
     if (email.size() == 0 or name.size() == 0) {
       return false;
     };
-    // Prevent duplicates
     let existing = waitlistEntries.filter(func(e) { e.email == email });
-    if (existing.size() > 0) {
-      return true; // Already on the list, silently succeed
-    };
+    if (existing.size() > 0) { return true };
     let entry : WaitlistEntry = {
       id = waitlistCounter;
       email;
@@ -82,7 +77,6 @@ actor {
     true;
   };
 
-  // Get waitlist entries — admin only
   public query ({ caller }) func getWaitlistEntries() : async [WaitlistEntry] {
     if (not AccessControl.isAdmin(accessControlState, caller)) {
       Runtime.trap("Unauthorized: Admin only");
@@ -90,13 +84,12 @@ actor {
     waitlistEntries.toArray();
   };
 
-  // State
   let userProfiles = Map.empty<Principal, UserProfile>();
   let subscriptions = Map.empty<Principal, SubscriptionTier>();
   let billingEvents = List.empty<BillingEvent>();
   let seats = Map.empty<Principal, List.List<SeatMember>>();
 
-  // User Profile Functions
+  // User Profile
   public query ({ caller }) func getCallerUserProfile() : async ?UserProfile {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can access profiles");
@@ -122,7 +115,7 @@ actor {
   let appCounter = List.empty<Nat>();
   let chatCounter = List.empty<Nat>();
 
-  // Engine Types
+  // Engine
   public type Engine = {
     id : Nat;
     name : Text;
@@ -163,7 +156,7 @@ actor {
   let deployedApps = Map.empty<Nat, DeployedApp>();
   let chatMessages = Map.empty<Nat, ChatMessage>();
 
-  // Engine CRUD Functions
+  // Engine CRUD
   public shared ({ caller }) func createEngine(name : Text, provider : Text, cpu : Nat, ram : Nat, storage : Nat, costPerHour : Float) : async Nat {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can create engines");
@@ -454,7 +447,7 @@ actor {
     };
   };
 
-  // Subscription and Billing Functions
+  // Subscription and Billing
   public query ({ caller }) func getMySubscription() : async Text {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can view subscription");
@@ -466,6 +459,7 @@ actor {
         switch (tier) {
           case (#free) { "free" };
           case (#pro) { "pro" };
+          case (#business) { "business" };
           case (#enterprise) { "enterprise" };
         };
       };
@@ -480,6 +474,7 @@ actor {
     let newTier : SubscriptionTier = switch (tier) {
       case ("free") { #free };
       case ("pro") { #pro };
+      case ("business") { #business };
       case ("enterprise") { #enterprise };
       case (_) { Runtime.trap("Invalid tier") };
     };
@@ -487,6 +482,7 @@ actor {
     let amount : Float = switch (newTier) {
       case (#free) { 0.0 };
       case (#pro) { 199.0 };
+      case (#business) { 199.0 };
       case (#enterprise) { 999.0 };
     };
 
@@ -529,7 +525,6 @@ actor {
       Runtime.trap("Unauthorized: Only users can view usage summary");
     };
 
-    // Count caller's engines
     let userEnginesList = List.empty<Engine>();
     for ((_, engine) in engines.entries()) {
       if (engine.ownerId == caller) {
@@ -538,7 +533,6 @@ actor {
     };
     let enginesCount = userEnginesList.size();
 
-    // Count caller's deployments this month
     let currentTime = Time.now();
     let monthAgo = currentTime - 30 * 24 * 60 * 60 * 1_000_000_000;
 
@@ -557,7 +551,6 @@ actor {
     };
     let deploymentsThisMonth = userDeploymentsList.size();
 
-    // Migrations are not tracked per-user in current implementation
     let migrationsThisMonth = 0;
 
     {
@@ -567,7 +560,7 @@ actor {
     };
   };
 
-  // Seat Management Functions
+  // Seat Management
   public shared ({ caller }) func inviteSeat(member : Principal, role : Text) : async () {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can invite seats");
@@ -650,7 +643,7 @@ actor {
   var migrationCounter = 0;
   let migrationHistory = Map.empty<Principal, List.List<MigrationRecord>>();
 
-  /**
+  /*
   * Returns all migration records for the caller, newest first (descending by id).
   */
   public query ({ caller }) func getMigrationHistory() : async [MigrationRecord] {
@@ -663,7 +656,6 @@ actor {
         [];
       };
       case (?history) {
-        // Sort descending by id
         let records = history.toArray();
         let sorted = records.sort(
           func(a, b) { Nat.compare(b.id, a.id) }
@@ -673,7 +665,7 @@ actor {
     };
   };
 
-  /**
+  /*
   * Migrates an engine to a new provider and returns the migration record.
   * Computes mock savings and updates the engine state.
   */
@@ -689,7 +681,6 @@ actor {
           Runtime.trap("Unauthorized: Only owner can migrate this engine");
         };
 
-        // Compute mock savings based on provider
         let savingsPerMonth = switch (targetProvider) {
           case ("GCP") { 73.0 };
           case ("AWS") { 45.0 };
@@ -697,13 +688,11 @@ actor {
           case (_) { 50.0 };
         };
 
-        // Count apps on this engine
         var appCount = 0;
         for ((_, app) in deployedApps.entries()) {
           if (app.engineId == engine.id) { appCount += 1 };
         };
 
-        // Update engine with new provider and resilience score
         let updatedEngine : Engine = {
           engine with provider = targetProvider;
           status = "running";
@@ -716,7 +705,6 @@ actor {
         };
         engines.add(id, updatedEngine);
 
-        // Create migration record
         let migrationRecord : MigrationRecord = {
           id = migrationCounter;
           engineId = engine.id;
@@ -729,7 +717,6 @@ actor {
           status = "completed";
         };
 
-        // Update migration history
         let userHistory = switch (migrationHistory.get(caller)) {
           case (null) { List.empty<MigrationRecord>() };
           case (?history) { history };
@@ -737,16 +724,14 @@ actor {
         userHistory.add(migrationRecord);
         migrationHistory.add(caller, userHistory);
 
-        // Increment migration counter
         migrationCounter += 1;
 
-        // Return migration record
         migrationRecord;
       };
     };
   };
 
-  /**
+  /*
   * Distributes all caller's engines across providers and computes overall resilience score.
   */
   public shared ({ caller }) func distributeAndGetScore() : async DistributeResult {
@@ -754,7 +739,6 @@ actor {
       Runtime.trap("Unauthorized: Only users can distribute engines");
     };
 
-    // Get all caller's engines
     let userEngines = List.empty<Engine>();
 
     for ((_, engine) in engines.entries()) {
@@ -768,7 +752,6 @@ actor {
 
     let providers = ["AWS", "GCP", "Azure"];
 
-    // Round-robin distribution across providers
     let updatedEngines = List.empty<Engine>();
 
     var totalScore = 0;
@@ -814,5 +797,123 @@ actor {
       case (null) { [] };
       case (?history) { history.toArray() };
     };
+  };
+
+  /////////////////////////
+  // New Admin API      //
+  /////////////////////////
+
+  type ContentSettings = {
+    announcementBanner : Text;
+    demoModeEnabled : Bool;
+    affiliateEnabled : Bool;
+  };
+
+  var contentSettings : ContentSettings = {
+    announcementBanner = "";
+    demoModeEnabled = true;
+    affiliateEnabled = true;
+  };
+
+  type AdminUserRecord = {
+    principalId : Principal;
+    tier : Text;
+  };
+
+  public query ({ caller }) func listAllUsers() : async [AdminUserRecord] {
+    if (not AccessControl.isAdmin(accessControlState, caller)) {
+      Runtime.trap("Unauthorized: Admin only");
+    };
+
+    let adminRecords = List.empty<AdminUserRecord>();
+
+    for ((principal, tier) in subscriptions.entries()) {
+      let tierText = switch (tier) {
+        case (#free) { "free" };
+        case (#pro) { "pro" };
+        case (#business) { "business" };
+        case (#enterprise) { "enterprise" };
+      };
+
+      let record : AdminUserRecord = {
+        principalId = principal;
+        tier = tierText;
+      };
+      adminRecords.add(record);
+    };
+
+    adminRecords.toArray();
+  };
+
+  public shared ({ caller }) func setUserTier(user : Principal, tier : Text) : async () {
+    if (not AccessControl.isAdmin(accessControlState, caller)) {
+      Runtime.trap("Unauthorized: Admin only");
+    };
+
+    let newTier : SubscriptionTier = switch (tier) {
+      case ("free") { #free };
+      case ("pro") { #pro };
+      case ("business") { #business };
+      case ("enterprise") { #enterprise };
+      case (_) { Runtime.trap("Invalid tier") };
+    };
+
+    subscriptions.add(user, newTier);
+  };
+
+  public query ({ caller }) func getAdminAnalytics() : async {
+    totalWaitlist : Nat;
+    totalUsers : Nat;
+    freeCount : Nat;
+    proCount : Nat;
+    businessCount : Nat;
+    enterpriseCount : Nat;
+    totalEngines : Nat;
+  } {
+    if (not AccessControl.isAdmin(accessControlState, caller)) {
+      Runtime.trap("Unauthorized: Admin only");
+    };
+
+    var freeCount = 0;
+    var proCount = 0;
+    var businessCount = 0;
+    var enterpriseCount = 0;
+
+    for ((_, tier) in subscriptions.entries()) {
+      switch (tier) {
+        case (#free) { freeCount += 1 };
+        case (#pro) { proCount += 1 };
+        case (#business) { businessCount += 1 };
+        case (#enterprise) { enterpriseCount += 1 };
+      };
+    };
+
+    {
+      totalWaitlist = waitlistCounter;
+      totalUsers = subscriptions.size();
+      freeCount;
+      proCount;
+      businessCount;
+      enterpriseCount;
+      totalEngines = engines.size();
+    };
+  };
+
+  public query ({ caller }) func getContentSettings() : async ContentSettings {
+    if (not AccessControl.isAdmin(accessControlState, caller)) {
+      Runtime.trap("Unauthorized: Admin only");
+    };
+    contentSettings;
+  };
+
+  public shared ({ caller }) func saveContentSettings(settings : ContentSettings) : async () {
+    if (not AccessControl.isAdmin(accessControlState, caller)) {
+      Runtime.trap("Unauthorized: Admin only");
+    };
+    contentSettings := settings;
+  };
+
+  public query ({ caller }) func getPublicContentSettings() : async ContentSettings {
+    contentSettings;
   };
 };

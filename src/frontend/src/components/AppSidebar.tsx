@@ -13,9 +13,11 @@ import {
   LogOut,
   MessageSquare,
   Settings,
+  ShieldCheck,
   Users,
   X,
 } from "lucide-react";
+import { useIsAdmin } from "../hooks/useAdminQueries";
 import { useInternetIdentity } from "../hooks/useInternetIdentity";
 import { truncatePrincipal } from "../lib/providerUtils";
 import { NavLink } from "./NavLink";
@@ -35,7 +37,7 @@ const navItems = [
   { id: "billing", label: "Billing", icon: CreditCard },
   { id: "referrals", label: "Referrals", icon: Users },
   { id: "partners", label: "Partners", icon: Building2 },
-  { id: "settings", label: "Settings", icon: Settings },
+  { id: "settings", label: "Account Settings", icon: Settings },
   { id: "userguide", label: "User Guide", icon: BookOpen },
 ];
 
@@ -48,6 +50,7 @@ export function AppSidebar({
 }: AppSidebarProps) {
   const { identity } = useInternetIdentity();
   const principal = identity?.getPrincipal().toString() ?? "demo";
+  const { data: isAdmin } = useIsAdmin();
 
   return (
     <>
@@ -75,17 +78,17 @@ export function AppSidebar({
       >
         {/* Logo */}
         <div className="flex items-center justify-between px-4 py-5 border-b border-sidebar-border">
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-2">
             <img
               src="/assets/generated/lockfree-logo-transparent.dim_200x200.png"
-              alt="LockFree Engine"
-              className="w-7 h-7 object-contain flex-shrink-0"
+              alt="LockFreeEngine"
+              className="w-6 h-6 object-contain flex-shrink-0"
               onError={(e) => {
                 (e.target as HTMLImageElement).style.display = "none";
               }}
             />
-            <span className="font-display text-sm font-bold tracking-tight text-foreground">
-              LockFree
+            <span className="font-display text-xs font-bold tracking-tight text-foreground">
+              LockFreeEngine
             </span>
           </div>
           <button
@@ -111,6 +114,18 @@ export function AppSidebar({
               }}
             />
           ))}
+          {isAdmin && (
+            <NavLink
+              icon={ShieldCheck}
+              label="Admin"
+              active={activePage === "admin"}
+              data-ocid="admin.nav.link"
+              onClick={() => {
+                onNavigate("admin");
+                onMobileClose();
+              }}
+            />
+          )}
         </nav>
 
         {/* User info */}

@@ -8,7 +8,16 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
-import { Bell, CreditCard, LogOut, Menu, Search, Settings } from "lucide-react";
+import {
+  Bell,
+  CreditCard,
+  LogOut,
+  Menu,
+  Moon,
+  Search,
+  Settings,
+  Sun,
+} from "lucide-react";
 import { useState } from "react";
 import { useInternetIdentity } from "../hooks/useInternetIdentity";
 import { truncatePrincipal } from "../lib/providerUtils";
@@ -73,6 +82,8 @@ interface TopBarProps {
   isDemoMode?: boolean;
   onNavigate?: (page: string) => void;
   onSignOut?: () => void;
+  theme?: "dark" | "light";
+  onToggleTheme?: () => void;
 }
 
 export function TopBar({
@@ -81,6 +92,8 @@ export function TopBar({
   isDemoMode,
   onNavigate,
   onSignOut,
+  theme = "dark",
+  onToggleTheme,
 }: TopBarProps) {
   const { identity } = useInternetIdentity();
   const principal = identity?.getPrincipal().toString() ?? "demo";
@@ -135,6 +148,24 @@ export function TopBar({
           data-ocid="topbar.search_input"
         />
       </div>
+
+      {/* Theme toggle */}
+      <Button
+        variant="ghost"
+        size="icon"
+        className="w-8 h-8"
+        onClick={onToggleTheme}
+        title={
+          theme === "dark" ? "Switch to light mode" : "Switch to dark mode"
+        }
+        data-ocid="topbar.theme.toggle"
+      >
+        {theme === "dark" ? (
+          <Sun className="w-4 h-4" />
+        ) : (
+          <Moon className="w-4 h-4" />
+        )}
+      </Button>
 
       {/* Notifications dropdown */}
       <DropdownMenu>
@@ -237,7 +268,7 @@ export function TopBar({
         </DropdownMenuTrigger>
         <DropdownMenuContent
           align="end"
-          className="w-48"
+          className="w-52"
           data-ocid="topbar.profile.dropdown_menu"
         >
           <DropdownMenuLabel className="font-normal">
@@ -252,7 +283,7 @@ export function TopBar({
             data-ocid="topbar.profile.settings.button"
           >
             <Settings className="w-3.5 h-3.5 mr-2" />
-            Settings
+            Account Settings
           </DropdownMenuItem>
           <DropdownMenuItem
             onClick={() => onNavigate?.("billing")}

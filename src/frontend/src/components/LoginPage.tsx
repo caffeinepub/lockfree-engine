@@ -1,12 +1,17 @@
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Loader2, Zap } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import { ArrowRight, Loader2 } from "lucide-react";
 import { motion } from "motion/react";
 import { useEffect, useRef } from "react";
 import { useInternetIdentity } from "../hooks/useInternetIdentity";
 
+const DEMO_PREF_KEY = "lockfree_demo_enabled";
+
 interface LoginPageProps {
   onLoadDemo: () => void;
   isLoadingDemo?: boolean;
+  isDemoMode: boolean;
+  onClearDemo: () => void;
 }
 
 // Animated provider network diagram
@@ -188,20 +193,38 @@ function ProviderNetwork() {
   );
 }
 
-export function LoginPage({ onLoadDemo, isLoadingDemo }: LoginPageProps) {
+export function LoginPage({
+  onLoadDemo,
+  isLoadingDemo,
+  isDemoMode,
+  onClearDemo,
+}: LoginPageProps) {
   const { login, isLoggingIn } = useInternetIdentity();
 
-  // Auto-load demo data on mount (800ms delay, fire once)
+  // Auto-load demo data on mount — only if user has NOT explicitly disabled demo mode
   const autoLoadFired = useRef(false);
   // biome-ignore lint/correctness/useExhaustiveDependencies: intentionally fire once on mount; ref guards against re-runs
   useEffect(() => {
     if (autoLoadFired.current) return;
     autoLoadFired.current = true;
+    // Respect the user's explicit preference — don't auto-load if they turned it off
+    if (localStorage.getItem(DEMO_PREF_KEY) === "false") return;
+    if (isDemoMode) return; // already loaded
     const t = setTimeout(() => {
       onLoadDemo();
     }, 800);
     return () => clearTimeout(t);
   }, []); // empty deps intentional — fire once on mount
+
+  function handleDemoToggle(checked: boolean) {
+    if (checked) {
+      localStorage.setItem(DEMO_PREF_KEY, "true");
+      onLoadDemo();
+    } else {
+      localStorage.setItem(DEMO_PREF_KEY, "false");
+      onClearDemo();
+    }
+  }
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden flex flex-col">
@@ -229,14 +252,14 @@ export function LoginPage({ onLoadDemo, isLoadingDemo }: LoginPageProps) {
         <div className="flex items-center gap-2.5">
           <img
             src="/assets/generated/lockfree-logo-transparent.dim_200x200.png"
-            alt="LockFree Engine"
+            alt="LockFreeEngine"
             className="w-8 h-8 object-contain"
             onError={(e) => {
               (e.target as HTMLImageElement).style.display = "none";
             }}
           />
           <span className="font-display text-base font-bold tracking-tight">
-            LockFree Engine
+            LockFreeEngine
           </span>
         </div>
         <div className="flex items-center gap-3">
@@ -307,32 +330,35 @@ export function LoginPage({ onLoadDemo, isLoadingDemo }: LoginPageProps) {
                     </Button>
                   </div>
 
-                  <div className="flex items-center gap-3 mb-3">
+                  <div className="flex items-center gap-3 mb-4">
                     <div className="flex-1 h-px bg-border" />
                     <span className="text-xs text-muted-foreground">or</span>
                     <div className="flex-1 h-px bg-border" />
                   </div>
 
-                  <Button
-                    variant="outline"
-                    className="w-full h-10 text-sm gap-2 active:scale-[0.98]"
-                    onClick={onLoadDemo}
-                    disabled={isLoadingDemo}
-                  >
-                    {isLoadingDemo ? (
-                      <>
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                        Loading demo…
-                      </>
-                    ) : (
-                      <>
-                        <Zap className="w-4 h-4" />
-                        Explore with demo data
-                      </>
-                    )}
-                  </Button>
+                  {/* Demo Data toggle row */}
+                  <div className="flex items-center justify-between gap-4 px-1">
+                    <div className="flex flex-col">
+                      <span className="text-sm font-medium text-foreground flex items-center gap-2">
+                        Demo Data
+                        {isLoadingDemo && (
+                          <Loader2 className="w-3.5 h-3.5 animate-spin text-muted-foreground" />
+                        )}
+                      </span>
+                      <span className="text-xs text-muted-foreground mt-0.5">
+                        Explore the dashboard with simulated engines
+                      </span>
+                    </div>
+                    <Switch
+                      checked={isDemoMode}
+                      onCheckedChange={handleDemoToggle}
+                      disabled={isLoadingDemo}
+                      data-ocid="login.demo.toggle"
+                      aria-label="Toggle demo data"
+                    />
+                  </div>
 
-                  <p className="text-xs text-muted-foreground text-center mt-3 leading-relaxed">
+                  <p className="text-xs text-muted-foreground text-center mt-4 leading-relaxed">
                     No passwords · Self-sovereign identity · No lock-in
                   </p>
                 </div>
