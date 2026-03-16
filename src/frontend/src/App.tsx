@@ -21,6 +21,8 @@ import { SettingsPage } from "./components/SettingsPage";
 import { TopBar } from "./components/TopBar";
 import { UserGuidePage } from "./components/UserGuidePage";
 import { AdminPage } from "./components/admin/AdminPage";
+import { useActor } from "./hooks/useActor";
+import { adminQueryKeys } from "./hooks/useAdminQueries";
 import { useInternetIdentity } from "./hooks/useInternetIdentity";
 import {
   queryKeys,
@@ -118,6 +120,7 @@ const DEMO_PREF_KEY = "lockfree_demo_enabled";
 
 function AppShell() {
   const { identity, isInitializing, login, clear } = useInternetIdentity();
+  const { actor } = useActor();
   useListEngines(); // keep query active for cache
   const { data: subscription = "free" } = useGetMySubscription();
   const { mutateAsync: populateDemo, isPending: isLoadingDemo } =
@@ -168,6 +171,24 @@ function AppShell() {
     }
   }, [identity]);
 
+  // Claim admin on login, then invalidate isAdmin cache so the sidebar re-checks
+  useEffect(() => {
+    if (!identity || !actor) return;
+    actor
+      .claimInitialAdmin()
+      .then(() => {
+        void queryClient.invalidateQueries({
+          queryKey: adminQueryKeys.isAdmin,
+        });
+      })
+      .catch(() => {
+        // Already claimed by someone else — still refresh so the correct value is shown
+        void queryClient.invalidateQueries({
+          queryKey: adminQueryKeys.isAdmin,
+        });
+      });
+  }, [identity, actor, queryClient]);
+
   async function handleLoadDemo() {
     localStorage.setItem(DEMO_PREF_KEY, "true");
     if (!identity) {
@@ -199,6 +220,12 @@ function AppShell() {
     toast.success("Demo data cleared");
   }
 
+  function handleEngineCreated(engine: Engine) {
+    if (isDemoMode) {
+      setDemoEngines((prev) => [...prev, engine]);
+    }
+  }
+
   function handleNavigateToChat(engine?: Engine) {
     setChatEngine(engine);
     setActivePage("chat");
@@ -210,6 +237,7 @@ function AppShell() {
 
   function handleSignOut() {
     clear();
+    localStorage.setItem(DEMO_PREF_KEY, "false");
     setShowLanding(true);
     setIsDemoMode(false);
     setDemoEngines([]);
@@ -295,10 +323,15 @@ function AppShell() {
               isLoadingDemo={isLoadingDemo}
               onNavigateToChat={handleNavigateToChat}
               onClearDemo={handleClearDemo}
+              onEngineCreated={handleEngineCreated}
             />
           )}
           {activePage === "engines" && (
-            <EnginesPage onNavigateToChat={handleNavigateToChat} />
+            <EnginesPage
+              onNavigateToChat={handleNavigateToChat}
+              isDemoMode={isDemoMode}
+              onEngineCreated={handleEngineCreated}
+            />
           )}
           {activePage === "chat" && (
             <ChatPage

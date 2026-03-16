@@ -7,6 +7,7 @@ import { MigrateModal } from "./MigrateModal";
 
 interface CostAlertsProps {
   engines: Engine[];
+  isDemoMode?: boolean;
 }
 
 interface Alert {
@@ -45,7 +46,7 @@ function buildAlerts(engines: Engine[]): Alert[] {
   return alerts;
 }
 
-export function CostAlerts({ engines }: CostAlertsProps) {
+export function CostAlerts({ engines, isDemoMode }: CostAlertsProps) {
   const [dismissedIds, setDismissedIds] = useState<Set<string>>(new Set());
   const [migrateTarget, setMigrateTarget] = useState<Engine | null>(null);
 
@@ -125,6 +126,7 @@ export function CostAlerts({ engines }: CostAlertsProps) {
           engine={migrateTarget}
           open={!!migrateTarget}
           onClose={() => setMigrateTarget(null)}
+          isDemoMode={isDemoMode}
         />
       )}
     </>

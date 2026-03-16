@@ -26,6 +26,7 @@ interface MigrateModalProps {
   engine: Engine;
   open: boolean;
   onClose: () => void;
+  isDemoMode?: boolean;
 }
 
 const providers = ["AWS", "GCP", "Azure"];
@@ -53,7 +54,12 @@ const ITEMS_TO_MIGRATE = [
 
 type Step = "confirm" | "migrating" | "complete";
 
-export function MigrateModal({ engine, open, onClose }: MigrateModalProps) {
+export function MigrateModal({
+  engine,
+  open,
+  onClose,
+  isDemoMode,
+}: MigrateModalProps) {
   const [step, setStep] = useState<Step>("confirm");
   const [targetProvider, setTargetProvider] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
@@ -89,6 +95,13 @@ export function MigrateModal({ engine, open, onClose }: MigrateModalProps) {
     }
   }, [open]);
 
+  // Cleanup interval on unmount
+  useEffect(() => {
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
+  }, []);
+
   function clearProgressInterval() {
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
@@ -96,8 +109,66 @@ export function MigrateModal({ engine, open, onClose }: MigrateModalProps) {
     }
   }
 
+  function runDemoMigration() {
+    if (!targetProvider) return;
+    setStep("migrating");
+    setProgress(0);
+    setPhaseIndex(0);
+
+    // ~8s total: tick every 80ms = 100 ticks
+    let currentProgress = 0;
+    let currentPhase = 0;
+    intervalRef.current = setInterval(() => {
+      currentProgress += 1;
+      setProgress(Math.min(currentProgress, 99));
+
+      const newPhase = Math.min(
+        Math.floor(currentProgress / 25),
+        MIGRATION_PHASES.length - 1,
+      );
+      if (newPhase !== currentPhase) {
+        currentPhase = newPhase;
+        setPhaseIndex(newPhase);
+      }
+
+      if (currentProgress >= 100) {
+        clearProgressInterval();
+        setProgress(100);
+        setPhaseIndex(MIGRATION_PHASES.length - 1);
+
+        // Build a fake migration record
+        const savingsAmt = targetProvider
+          ? (PROVIDER_MONTHLY_COSTS[engine.provider] ?? 240) -
+            (PROVIDER_MONTHLY_COSTS[targetProvider] ?? 167)
+          : 0;
+        const fakeRecord: MigrationRecord = {
+          id: BigInt(Date.now()),
+          engineId: engine.id,
+          engineName: engine.name,
+          fromProvider: engine.provider,
+          toProvider: targetProvider ?? "GCP",
+          timestamp: BigInt(Date.now()) * 1_000_000n,
+          savedPerMonth: savingsAmt,
+          status: "completed",
+          appCount: 3n,
+        };
+        setMigrationRecord(fakeRecord);
+        setTimeout(() => {
+          setStep("complete");
+          toast.success(`${engine.name} migrated to ${targetProvider}!`);
+        }, 400);
+      }
+    }, 80);
+  }
+
   async function handleMigrate() {
     if (!targetProvider) return;
+
+    if (isDemoMode) {
+      runDemoMigration();
+      return;
+    }
+
     setStep("migrating");
     setProgress(0);
     setPhaseIndex(0);
@@ -310,13 +381,19 @@ export function MigrateModal({ engine, open, onClose }: MigrateModalProps) {
 
               {/* Actions */}
               <div className="flex gap-2 pt-1">
-                <Button variant="outline" className="flex-1" onClick={onClose}>
+                <Button
+                  variant="outline"
+                  className="flex-1"
+                  onClick={onClose}
+                  data-ocid="migrate.cancel_button"
+                >
                   Cancel
                 </Button>
                 <Button
                   className="flex-1 gap-2"
                   disabled={!targetProvider}
                   onClick={handleMigrate}
+                  data-ocid="migrate.primary_button"
                 >
                   <ArrowRight className="w-4 h-4" />
                   Migrate Now
@@ -418,7 +495,11 @@ export function MigrateModal({ engine, open, onClose }: MigrateModalProps) {
                 </div>
               )}
             </div>
-            <Button onClick={onClose} className="w-full">
+            <Button
+              onClick={onClose}
+              className="w-full"
+              data-ocid="migrate.confirm_button"
+            >
               Done
             </Button>
           </div>

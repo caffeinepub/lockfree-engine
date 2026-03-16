@@ -41,6 +41,7 @@ interface EngineCardProps {
   onDeployShortcut: (engine: Engine) => void;
   isDeleting?: boolean;
   index?: number;
+  isDemoMode?: boolean;
 }
 
 function ResilienceBar({ score }: { score: number }) {
@@ -85,6 +86,7 @@ export function EngineCard({
   onDeployShortcut,
   isDeleting,
   index = 0,
+  isDemoMode,
 }: EngineCardProps) {
   const [migrateOpen, setMigrateOpen] = useState(false);
   const provider = getProviderConfig(engine.provider);
@@ -229,6 +231,7 @@ export function EngineCard({
                         }
                       : undefined
                   }
+                  data-ocid="engine.primary_button"
                 >
                   <ArrowRightLeft className="w-3 h-3" />
                   Migrate
@@ -305,6 +308,7 @@ export function EngineCard({
         engine={engine}
         open={migrateOpen}
         onClose={() => setMigrateOpen(false)}
+        isDemoMode={isDemoMode}
       />
     </>
   );

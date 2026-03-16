@@ -35,6 +35,7 @@ interface DashboardPageProps {
   isLoadingDemo: boolean;
   onNavigateToChat: (engine?: Engine) => void;
   onClearDemo: () => void;
+  onEngineCreated?: (engine: Engine) => void;
 }
 
 function EngineGridSkeleton() {
@@ -115,6 +116,7 @@ export function DashboardPage({
   isLoadingDemo: _isLoadingDemo,
   onNavigateToChat,
   onClearDemo,
+  onEngineCreated,
 }: DashboardPageProps) {
   const [newModalOpen, setNewModalOpen] = useState(false);
   const [distributeOpen, setDistributeOpen] = useState(false);
@@ -205,7 +207,7 @@ export function DashboardPage({
       )}
 
       {/* Cost alerts */}
-      <CostAlerts engines={engines ?? []} />
+      <CostAlerts engines={engines ?? []} isDemoMode={isDemoMode} />
 
       {/* Summary cards */}
       <SummaryCards engines={engines} isLoading={isLoading} />
@@ -277,6 +279,7 @@ export function DashboardPage({
                 onDeployShortcut={(e) => onNavigateToChat(e)}
                 isDeleting={isDeleting}
                 index={i}
+                isDemoMode={isDemoMode}
               />
             ))}
           </div>
@@ -331,6 +334,8 @@ export function DashboardPage({
       <NewEngineModal
         open={newModalOpen}
         onClose={() => setNewModalOpen(false)}
+        isDemoMode={isDemoMode}
+        onEngineCreated={onEngineCreated}
       />
 
       <DistributeModal

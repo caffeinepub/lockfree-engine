@@ -22,9 +22,15 @@ import { NewEngineModal } from "./NewEngineModal";
 
 interface EnginesPageProps {
   onNavigateToChat: (engine?: Engine) => void;
+  isDemoMode?: boolean;
+  onEngineCreated?: (engine: Engine) => void;
 }
 
-export function EnginesPage({ onNavigateToChat }: EnginesPageProps) {
+export function EnginesPage({
+  onNavigateToChat,
+  isDemoMode,
+  onEngineCreated,
+}: EnginesPageProps) {
   const [newModalOpen, setNewModalOpen] = useState(false);
   const [distributeOpen, setDistributeOpen] = useState(false);
   const [search, setSearch] = useState("");
@@ -211,6 +217,8 @@ export function EnginesPage({ onNavigateToChat }: EnginesPageProps) {
       <NewEngineModal
         open={newModalOpen}
         onClose={() => setNewModalOpen(false)}
+        isDemoMode={isDemoMode}
+        onEngineCreated={onEngineCreated}
       />
 
       <DistributeModal
