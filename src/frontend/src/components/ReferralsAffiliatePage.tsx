@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
+  AlertTriangle,
   Check,
   CheckCircle2,
   Copy,
@@ -26,9 +27,14 @@ import {
   UserCheck,
   Users,
   X,
+  Zap,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import {
+  useGetReferralCount,
+  useReportReferral,
+} from "../hooks/useReferralQueries";
 
 const AFFILIATE_KEY = "lockfree_affiliate";
 const REFERRAL_CREDITS_KEY = "lockfree_referral_credits";
@@ -162,6 +168,10 @@ function AffiliateTab() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [payoutOpen, setPayoutOpen] = useState(false);
+  // Hook must be called unconditionally before any early return
+  const { data: referralCount } = useGetReferralCount(
+    affiliate?.referralCode ?? "",
+  );
 
   function handleRegister(e: React.FormEvent) {
     e.preventDefault();
@@ -327,8 +337,38 @@ function AffiliateTab() {
     );
   }
 
+  const referralUsed =
+    referralCount !== undefined
+      ? Number(referralCount)
+      : (affiliate?.signupCount ?? 0);
+  const REFERRAL_CAP = 50;
+  const capPct = Math.min((referralUsed / REFERRAL_CAP) * 100, 100);
+
   return (
     <div className="space-y-6">
+      {/* Fair-use warning banner */}
+      <div
+        data-ocid="affiliate.fair_use.panel"
+        className="rounded-xl border border-amber-500/30 bg-amber-500/8 px-4 py-3 flex items-start gap-3"
+        style={{ background: "oklch(0.75 0.18 60 / 0.08)" }}
+      >
+        <AlertTriangle
+          className="w-4 h-4 mt-0.5 flex-shrink-0"
+          style={{ color: "oklch(0.82 0.18 60)" }}
+        />
+        <p
+          className="text-xs leading-relaxed"
+          style={{ color: "oklch(0.88 0.12 60)" }}
+        >
+          <strong>Referral Fair Use Notice — </strong>
+          Referrals are reviewed before payout. Accounts generating unusual
+          referral activity are flagged for manual review. Each account is
+          subject to a cap of <strong>50 qualifying referrals</strong>. A
+          referred user must provision at least one engine before their kickback
+          counts.
+        </p>
+      </div>
+
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -343,6 +383,41 @@ function AffiliateTab() {
           <span className="w-1.5 h-1.5 rounded-full bg-[oklch(0.72_0.19_145)] animate-pulse" />
           Active
         </Badge>
+      </div>
+
+      {/* Referral cap indicator */}
+      <div
+        className="rounded-xl border border-border bg-card p-4 space-y-2"
+        data-ocid="affiliate.referral_cap.card"
+      >
+        <div className="flex items-center justify-between text-xs">
+          <span className="text-muted-foreground font-medium">
+            Qualifying Referrals Used
+          </span>
+          <span className="font-mono font-bold text-foreground">
+            {referralUsed} / {REFERRAL_CAP}
+            {referralUsed >= REFERRAL_CAP && (
+              <span className="ml-2 text-amber-400 font-normal">
+                (Cap reached)
+              </span>
+            )}
+          </span>
+        </div>
+        <div className="w-full bg-muted rounded-full h-1.5 overflow-hidden">
+          <div
+            className="h-full rounded-full transition-all duration-500"
+            style={{
+              width: `${capPct}%`,
+              background:
+                capPct >= 100 ? "oklch(0.75 0.18 60)" : "oklch(0.82 0.22 195)",
+            }}
+          />
+        </div>
+        <p className="text-xs text-muted-foreground">
+          {REFERRAL_CAP - referralUsed > 0
+            ? `${REFERRAL_CAP - referralUsed} qualifying referrals remaining before manual review is required to extend.`
+            : "You have reached the referral cap. Contact support to request a cap extension after review."}
+        </p>
       </div>
 
       {/* Links */}
@@ -470,18 +545,40 @@ function AffiliateTab() {
         </div>
       </div>
 
+      {/* Activity requirement note */}
+      <div
+        className="rounded-xl border border-border bg-card/50 p-4 flex gap-3"
+        data-ocid="affiliate.activity_required.panel"
+      >
+        <Zap className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+        <div>
+          <p className="text-xs font-medium text-foreground mb-1">
+            Activity Required for Payout
+          </p>
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            A referred user must{" "}
+            <strong className="text-foreground">
+              provision at least one engine
+            </strong>{" "}
+            before their kickback counts towards your payout total. This ensures
+            all referrals represent genuine platform engagement, not passive
+            signups. The engine must remain active for at least 24 hours.
+          </p>
+        </div>
+      </div>
+
       {/* How it works */}
       <div className="rounded-xl border border-primary/20 bg-primary/5 p-4 flex gap-3">
         <Info className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
         <p className="text-xs text-muted-foreground leading-relaxed">
           <span className="text-foreground font-medium">How it works: </span>
           When someone signs up through your link and upgrades to Pro, you
-          automatically earn 5% of the $29/month fee — that's{" "}
+          automatically earn 5% of the $29/month fee — that&rsquo;s{" "}
           <span className="text-foreground font-semibold">
             $1.45 per active referral
           </span>
-          . Powered by demand-driven compute on ICP. Payouts are processed
-          monthly via your preferred method.
+          . Powered by demand-driven compute on ICP. Payouts are reviewed
+          manually and processed monthly via your preferred method.
         </p>
       </div>
 
@@ -536,6 +633,8 @@ function ReferralTab() {
   const shareLink = affiliate
     ? `${window.location.origin}/ref/${affiliate.referralCode}`
     : `${window.location.origin}/ref/LFE-DEMO01`;
+  const { mutateAsync: reportReferral, isPending: isReporting } =
+    useReportReferral();
 
   // Show demo banner on first visit
   useEffect(() => {
@@ -546,19 +645,47 @@ function ReferralTab() {
     }
   }, []);
 
-  function handleApply(e: React.FormEvent) {
+  async function handleApply(e: React.FormEvent) {
     e.preventDefault();
-    if (!applyCode.trim()) return;
-    const credit: ReferralCredit = {
-      fromCode: applyCode.trim().toUpperCase(),
-      creditedAt: new Date().toISOString(),
-      creditedMonths: 1,
-    };
-    const updated = [...credits, credit];
-    setCredits(updated);
-    localStorage.setItem(REFERRAL_CREDITS_KEY, JSON.stringify(updated));
-    setApplyCode("");
-    toast.success("1 free Pro month credited to your account!");
+    const code = applyCode.trim().toUpperCase();
+    if (!code) return;
+
+    try {
+      const result = await reportReferral(code);
+      if (result.__kind__ === "capReached") {
+        toast.error("This referral code has reached its maximum use limit.");
+        return;
+      }
+      if (result.__kind__ === "flagged") {
+        toast.warning(
+          "This referral code has been flagged for review. Please contact support.",
+        );
+        return;
+      }
+      // ok
+      const credit: ReferralCredit = {
+        fromCode: code,
+        creditedAt: new Date().toISOString(),
+        creditedMonths: 1,
+      };
+      const updated = [...credits, credit];
+      setCredits(updated);
+      localStorage.setItem(REFERRAL_CREDITS_KEY, JSON.stringify(updated));
+      setApplyCode("");
+      toast.success("1 free Pro month credited to your account!");
+    } catch {
+      // Fallback for demo mode (no actor connected)
+      const credit: ReferralCredit = {
+        fromCode: code,
+        creditedAt: new Date().toISOString(),
+        creditedMonths: 1,
+      };
+      const updated = [...credits, credit];
+      setCredits(updated);
+      localStorage.setItem(REFERRAL_CREDITS_KEY, JSON.stringify(updated));
+      setApplyCode("");
+      toast.success("1 free Pro month credited to your account!");
+    }
   }
 
   const allCredits: ReferralCredit[] = bannerVisible
@@ -630,9 +757,14 @@ function ReferralTab() {
               className="font-mono"
             />
           </div>
-          <Button type="submit" className="gap-2 flex-shrink-0">
+          <Button
+            type="submit"
+            className="gap-2 flex-shrink-0"
+            disabled={isReporting}
+            data-ocid="referral.apply.submit_button"
+          >
             <Gift className="w-4 h-4" />
-            Apply
+            {isReporting ? "Checking..." : "Apply"}
           </Button>
         </form>
       </div>

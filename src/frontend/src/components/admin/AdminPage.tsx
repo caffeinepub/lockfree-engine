@@ -4,7 +4,7 @@ import { BarChart3, FileText, Settings2, ShieldOff, Users } from "lucide-react";
 import { useIsAdmin } from "../../hooks/useAdminQueries";
 import { AdminAnalyticsTab } from "./AdminAnalyticsTab";
 import { AdminContentTab } from "./AdminContentTab";
-import { AdminUsersTab } from "./AdminUsersTab";
+import { AdminUsersTab, AdminUsersTabWrapper } from "./AdminUsersTab";
 import { AdminWaitlistTab } from "./AdminWaitlistTab";
 
 export function AdminPage() {
@@ -94,7 +94,7 @@ export function AdminPage() {
         </TabsContent>
 
         <TabsContent value="users" className="mt-6">
-          <AdminUsersTab />
+          <AdminUsersTabWrapper />
         </TabsContent>
 
         <TabsContent value="content" className="mt-6">

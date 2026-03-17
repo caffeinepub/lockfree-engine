@@ -57,6 +57,13 @@ export const ContentSettings = IDL.Record({
   'announcementBanner' : IDL.Text,
   'affiliateEnabled' : IDL.Bool,
 });
+export const FlaggedAffiliate = IDL.Record({
+  'id' : IDL.Nat,
+  'principal' : IDL.Text,
+  'code' : IDL.Text,
+  'flaggedAt' : IDL.Int,
+  'reason' : IDL.Text,
+});
 export const WaitlistEntry = IDL.Record({
   'id' : IDL.Nat,
   'name' : IDL.Text,
@@ -82,6 +89,7 @@ export const idlService = IDL.Service({
   '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
   'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
   'claimInitialAdmin' : IDL.Func([], [IDL.Bool], []),
+  'clearFlaggedAffiliate' : IDL.Func([IDL.Text], [IDL.Bool], []),
   'createEngine' : IDL.Func(
       [IDL.Text, IDL.Text, IDL.Nat, IDL.Nat, IDL.Nat, IDL.Float64],
       [IDL.Nat],
@@ -121,9 +129,11 @@ export const idlService = IDL.Service({
       ['query'],
     ),
   'getEngine' : IDL.Func([IDL.Nat], [Engine], ['query']),
+  'getFlaggedAffiliates' : IDL.Func([], [IDL.Vec(FlaggedAffiliate)], ['query']),
   'getMigrationHistory' : IDL.Func([], [IDL.Vec(MigrationRecord)], ['query']),
   'getMySubscription' : IDL.Func([], [IDL.Text], ['query']),
   'getPublicContentSettings' : IDL.Func([], [ContentSettings], ['query']),
+  'getReferralCount' : IDL.Func([IDL.Text], [IDL.Nat], ['query']),
   'getUsageSummary' : IDL.Func(
       [],
       [
@@ -155,6 +165,17 @@ export const idlService = IDL.Service({
     ),
   'populateDemoData' : IDL.Func([], [], []),
   'removeSeat' : IDL.Func([IDL.Principal], [], []),
+  'reportReferral' : IDL.Func(
+      [IDL.Text],
+      [
+        IDL.Variant({
+          'ok' : IDL.Nat,
+          'capReached' : IDL.Null,
+          'flagged' : IDL.Null,
+        }),
+      ],
+      [],
+    ),
   'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
   'saveContentSettings' : IDL.Func([ContentSettings], [], []),
   'sendMessage' : IDL.Func([IDL.Text, IDL.Opt(IDL.Nat)], [IDL.Text], []),
@@ -215,6 +236,13 @@ export const idlFactory = ({ IDL }) => {
     'announcementBanner' : IDL.Text,
     'affiliateEnabled' : IDL.Bool,
   });
+  const FlaggedAffiliate = IDL.Record({
+    'id' : IDL.Nat,
+    'principal' : IDL.Text,
+    'code' : IDL.Text,
+    'flaggedAt' : IDL.Int,
+    'reason' : IDL.Text,
+  });
   const WaitlistEntry = IDL.Record({
     'id' : IDL.Nat,
     'name' : IDL.Text,
@@ -240,6 +268,7 @@ export const idlFactory = ({ IDL }) => {
     '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
     'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
     'claimInitialAdmin' : IDL.Func([], [IDL.Bool], []),
+    'clearFlaggedAffiliate' : IDL.Func([IDL.Text], [IDL.Bool], []),
     'createEngine' : IDL.Func(
         [IDL.Text, IDL.Text, IDL.Nat, IDL.Nat, IDL.Nat, IDL.Float64],
         [IDL.Nat],
@@ -279,9 +308,15 @@ export const idlFactory = ({ IDL }) => {
         ['query'],
       ),
     'getEngine' : IDL.Func([IDL.Nat], [Engine], ['query']),
+    'getFlaggedAffiliates' : IDL.Func(
+        [],
+        [IDL.Vec(FlaggedAffiliate)],
+        ['query'],
+      ),
     'getMigrationHistory' : IDL.Func([], [IDL.Vec(MigrationRecord)], ['query']),
     'getMySubscription' : IDL.Func([], [IDL.Text], ['query']),
     'getPublicContentSettings' : IDL.Func([], [ContentSettings], ['query']),
+    'getReferralCount' : IDL.Func([IDL.Text], [IDL.Nat], ['query']),
     'getUsageSummary' : IDL.Func(
         [],
         [
@@ -313,6 +348,17 @@ export const idlFactory = ({ IDL }) => {
       ),
     'populateDemoData' : IDL.Func([], [], []),
     'removeSeat' : IDL.Func([IDL.Principal], [], []),
+    'reportReferral' : IDL.Func(
+        [IDL.Text],
+        [
+          IDL.Variant({
+            'ok' : IDL.Nat,
+            'capReached' : IDL.Null,
+            'flagged' : IDL.Null,
+          }),
+        ],
+        [],
+      ),
     'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
     'saveContentSettings' : IDL.Func([ContentSettings], [], []),
     'sendMessage' : IDL.Func([IDL.Text, IDL.Opt(IDL.Nat)], [IDL.Text], []),

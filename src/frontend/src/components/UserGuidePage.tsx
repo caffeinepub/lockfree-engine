@@ -1788,7 +1788,44 @@ const adminBusinessSection: GuideSection = {
           <div className="text-xs text-muted-foreground">
             View all registered users and their current plan tier. Manually
             upgrade or downgrade any user's plan — useful for onboarding early
-            beta testers or handling support requests.
+            beta testers or handling support requests. Each user row also has an{" "}
+            <strong>Export</strong> button — use this to download a copy of that
+            user's data as JSON on their behalf.
+          </div>
+        </div>
+        <div className="rounded-md border border-primary/20 bg-primary/5 p-3 mt-2">
+          <div className="font-medium text-sm mb-1">
+            📤 Handling User Data Requests
+          </div>
+          <div className="text-xs text-muted-foreground space-y-1">
+            <p>
+              If a user contacts you requesting a copy of their data (e.g. for
+              GDPR compliance, account closure, or because they have lost
+              access), follow these steps:
+            </p>
+            <ol className="list-decimal list-inside space-y-1 ml-1">
+              <li>
+                Go to <strong>Admin › Users</strong> and locate the user by
+                their Principal ID.
+              </li>
+              <li>
+                Click the <strong>Export</strong> button on their row.
+              </li>
+              <li>
+                A JSON file containing their engine configurations, migration
+                history, billing tier, and preferences will download
+                automatically.
+              </li>
+              <li>
+                Send the file to the user via your preferred channel (email,
+                direct message, etc.).
+              </li>
+            </ol>
+            <p className="mt-1">
+              If the user still has access to their account, direct them to{" "}
+              <strong>Account Settings › Export My Data</strong> — they can
+              download their own data directly without admin involvement.
+            </p>
           </div>
         </div>
         <div className="rounded-md border border-border p-3">
@@ -2056,325 +2093,338 @@ export function UserGuidePage() {
             </Accordion>
           )}
         </TabsContent>
-      </Tabs>
-
-      {/* Migration Guide Tab */}
-      <TabsContent
-        value="migration"
-        data-ocid="user_guide.migration.panel"
-        className="mt-4 space-y-8"
-      >
-        {/* Business Owners Section */}
-        <div>
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-8 h-8 rounded-lg bg-primary/15 border border-primary/30 flex items-center justify-center flex-shrink-0">
-              <Users className="w-4 h-4 text-primary" />
+        {/* Migration Guide Tab */}
+        <TabsContent
+          value="migration"
+          data-ocid="user_guide.migration.panel"
+          className="mt-4 space-y-8"
+        >
+          {/* Business Owners Section */}
+          <div>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-8 h-8 rounded-lg bg-primary/15 border border-primary/30 flex items-center justify-center flex-shrink-0">
+                <Users className="w-4 h-4 text-primary" />
+              </div>
+              <div>
+                <h2 className="text-base font-semibold text-foreground">
+                  For Business Owners
+                </h2>
+                <p className="text-xs text-muted-foreground">
+                  Plain-language guide to migrating your business to ICP Cloud
+                  Engines
+                </p>
+              </div>
             </div>
-            <div>
-              <h2 className="text-base font-semibold text-foreground">
-                For Business Owners
-              </h2>
-              <p className="text-xs text-muted-foreground">
-                Plain-language guide to migrating your business to ICP Cloud
-                Engines
-              </p>
-            </div>
-          </div>
-          <Accordion type="multiple" className="space-y-2">
-            {[
-              {
-                id: "mg-biz-1",
-                title: 'What does "migrating to the cloud" mean?',
-                icon: Globe,
-                content: (
-                  <div className="space-y-2">
-                    <p>
-                      Migrating to the cloud means moving your apps, data, and
-                      systems from traditional servers — whether on-premise or
-                      hosted on AWS, Azure, or Google Cloud — to a new
-                      infrastructure.
-                    </p>
-                    <p>
-                      With LockFree Engine and the Internet Computer Protocol
-                      (ICP), your data lives on a{" "}
-                      <strong>decentralised network</strong> instead of a single
-                      provider&apos;s infrastructure. No single company owns the
-                      hardware your business runs on.
-                    </p>
-                    <ul className="list-disc list-inside space-y-1 text-muted-foreground ml-2">
-                      <li>Your apps run on globally distributed nodes</li>
-                      <li>No servers to manage, patch, or worry about</li>
-                      <li>Data is tamper-proof and auditable by design</li>
-                    </ul>
-                  </div>
-                ),
-              },
-              {
-                id: "mg-biz-2",
-                title: "Why does vendor lock-in matter?",
-                icon: Shield,
-                content: (
-                  <div className="space-y-2">
-                    <p>
-                      With traditional cloud providers, switching vendors means{" "}
-                      <strong>months of engineering work</strong> — rewriting
-                      APIs, migrating databases, retraining your team, and
-                      paying expensive data egress fees.
-                    </p>
-                    <p>
-                      ICP Cloud Engines are designed for portability from day
-                      one. You can:
-                    </p>
-                    <ul className="list-disc list-inside space-y-1 text-muted-foreground ml-2">
-                      <li>Move between AWS, Google Cloud, and Azure freely</li>
-                      <li>Run across all three providers simultaneously</li>
-                      <li>Switch providers without rebuilding your systems</li>
-                      <li>
-                        Negotiate better pricing because you&apos;re never
-                        trapped
-                      </li>
-                    </ul>
-                  </div>
-                ),
-              },
-              {
-                id: "mg-biz-3",
-                title: "What will my team need to do?",
-                icon: Users,
-                content: (
-                  <div className="space-y-2">
-                    <p>
-                      Your technical team handles the actual migration — we have
-                      a detailed step-by-step guide for them in the{" "}
-                      <strong>For Developers</strong> section below.
-                    </p>
-                    <p>As a business owner, your role is to:</p>
-                    <ul className="list-disc list-inside space-y-1 text-muted-foreground ml-2">
-                      <li>
-                        Define which systems to migrate first (start small)
-                      </li>
-                      <li>Set realistic timelines with your technical lead</li>
-                      <li>
-                        Approve the new cloud engine configuration before
-                        go-live
-                      </li>
-                      <li>
-                        Monitor the LockFree Engine dashboard once it&apos;s
-                        running
-                      </li>
-                    </ul>
-                    <p className="text-muted-foreground">
-                      LockFree Engine gives you a single dashboard to monitor
-                      everything — costs, resilience scores, and migration
-                      status — without needing to touch any technical tools
-                      yourself.
-                    </p>
-                  </div>
-                ),
-              },
-              {
-                id: "mg-biz-4",
-                title: "How does LockFree Engine manage the complexity?",
-                icon: LayoutDashboard,
-                content: (
-                  <div className="space-y-2">
-                    <p>
-                      Instead of juggling the AWS Console, Google Cloud Portal,
-                      and Azure Management Center separately — each with their
-                      own interfaces, billing systems, and alert setups —{" "}
-                      <strong>everything is managed from one place</strong>.
-                    </p>
-                    <p>From the LockFree Engine dashboard you can:</p>
-                    <ul className="list-disc list-inside space-y-1 text-muted-foreground ml-2">
-                      <li>Provision new cloud engines with a few clicks</li>
-                      <li>Track live costs across all providers in one view</li>
-                      <li>
-                        Trigger migrations between providers without
-                        command-line tools
-                      </li>
-                      <li>
-                        Monitor resilience scores and get proactive alerts
-                      </li>
-                      <li>
-                        Manage users and access permissions from one admin panel
-                      </li>
-                    </ul>
-                    <p className="text-muted-foreground">
-                      No command line. No cloud certifications required. Just a
-                      clean dashboard built for both technical and non-technical
-                      teams.
-                    </p>
-                  </div>
-                ),
-              },
-              {
-                id: "mg-biz-5",
-                title: "How do I get started?",
-                icon: Rocket,
-                content: (
-                  <div className="space-y-2">
-                    <p>
-                      LockFree Engine is currently in early access, ahead of the
-                      public launch of the ICP Cloud Engines API.
-                    </p>
-                    <p>
-                      <strong>To get started:</strong>
-                    </p>
-                    <ol className="list-decimal list-inside space-y-1 text-muted-foreground ml-2">
-                      <li>
-                        Join the waitlist on the landing page for early access
-                        priority
-                      </li>
-                      <li>
-                        When the ICP Cloud Engines API launches publicly,
-                        you&apos;ll be onboarded first
-                      </li>
-                      <li>
-                        Enterprise and Business plan users receive dedicated
-                        onboarding support and a guided setup session
-                      </li>
-                    </ol>
-                    <p className="text-muted-foreground mt-2">
-                      Already signed in? Explore the dashboard in Demo Mode to
-                      see exactly how LockFree Engine works before committing to
-                      a plan.
-                    </p>
-                  </div>
-                ),
-              },
-            ].map((section, idx) => (
-              <AccordionItem
-                key={section.id}
-                value={section.id}
-                data-ocid={`user_guide.migration.business.item.${idx + 1}`}
-                className="rounded-lg border border-border bg-card overflow-hidden px-0"
-              >
-                <AccordionTrigger className="px-4 py-3.5 hover:no-underline hover:bg-muted/30 transition-colors [&>svg]:shrink-0">
-                  <div className="flex items-center gap-3 text-left">
-                    <div className="w-7 h-7 rounded-md bg-primary/10 flex items-center justify-center flex-shrink-0">
-                      <section.icon className="w-3.5 h-3.5 text-primary" />
+            <Accordion type="multiple" className="space-y-2">
+              {[
+                {
+                  id: "mg-biz-1",
+                  title: 'What does "migrating to the cloud" mean?',
+                  icon: Globe,
+                  content: (
+                    <div className="space-y-2">
+                      <p>
+                        Migrating to the cloud means moving your apps, data, and
+                        systems from traditional servers — whether on-premise or
+                        hosted on AWS, Azure, or Google Cloud — to a new
+                        infrastructure.
+                      </p>
+                      <p>
+                        With LockFree Engine and the Internet Computer Protocol
+                        (ICP), your data lives on a{" "}
+                        <strong>decentralised network</strong> instead of a
+                        single provider&apos;s infrastructure. No single company
+                        owns the hardware your business runs on.
+                      </p>
+                      <ul className="list-disc list-inside space-y-1 text-muted-foreground ml-2">
+                        <li>Your apps run on globally distributed nodes</li>
+                        <li>No servers to manage, patch, or worry about</li>
+                        <li>Data is tamper-proof and auditable by design</li>
+                      </ul>
                     </div>
-                    <span className="font-medium text-sm">{section.title}</span>
-                  </div>
-                </AccordionTrigger>
-                <AccordionContent className="px-4 pb-4 pt-0">
-                  <div className="text-sm text-foreground/90 leading-relaxed pl-10">
-                    {section.content}
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-            ))}
-          </Accordion>
-        </div>
-
-        {/* Developer Section Separator */}
-        <div className="border-t border-border" />
-
-        {/* Developers Section */}
-        <div>
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-8 h-8 rounded-lg bg-primary/15 border border-primary/30 flex items-center justify-center flex-shrink-0">
-              <Code2 className="w-4 h-4 text-primary" />
-            </div>
-            <div>
-              <h2 className="text-base font-semibold text-foreground">
-                For Developers — Technical Migration Path
-              </h2>
-              <p className="text-xs text-muted-foreground">
-                Step-by-step guide with code snippets for migrating Web2 systems
-                to ICP Cloud Engines
-              </p>
-            </div>
+                  ),
+                },
+                {
+                  id: "mg-biz-2",
+                  title: "Why does vendor lock-in matter?",
+                  icon: Shield,
+                  content: (
+                    <div className="space-y-2">
+                      <p>
+                        With traditional cloud providers, switching vendors
+                        means <strong>months of engineering work</strong> —
+                        rewriting APIs, migrating databases, retraining your
+                        team, and paying expensive data egress fees.
+                      </p>
+                      <p>
+                        ICP Cloud Engines are designed for portability from day
+                        one. You can:
+                      </p>
+                      <ul className="list-disc list-inside space-y-1 text-muted-foreground ml-2">
+                        <li>
+                          Move between AWS, Google Cloud, and Azure freely
+                        </li>
+                        <li>Run across all three providers simultaneously</li>
+                        <li>
+                          Switch providers without rebuilding your systems
+                        </li>
+                        <li>
+                          Negotiate better pricing because you&apos;re never
+                          trapped
+                        </li>
+                      </ul>
+                    </div>
+                  ),
+                },
+                {
+                  id: "mg-biz-3",
+                  title: "What will my team need to do?",
+                  icon: Users,
+                  content: (
+                    <div className="space-y-2">
+                      <p>
+                        Your technical team handles the actual migration — we
+                        have a detailed step-by-step guide for them in the{" "}
+                        <strong>For Developers</strong> section below.
+                      </p>
+                      <p>As a business owner, your role is to:</p>
+                      <ul className="list-disc list-inside space-y-1 text-muted-foreground ml-2">
+                        <li>
+                          Define which systems to migrate first (start small)
+                        </li>
+                        <li>
+                          Set realistic timelines with your technical lead
+                        </li>
+                        <li>
+                          Approve the new cloud engine configuration before
+                          go-live
+                        </li>
+                        <li>
+                          Monitor the LockFree Engine dashboard once it&apos;s
+                          running
+                        </li>
+                      </ul>
+                      <p className="text-muted-foreground">
+                        LockFree Engine gives you a single dashboard to monitor
+                        everything — costs, resilience scores, and migration
+                        status — without needing to touch any technical tools
+                        yourself.
+                      </p>
+                    </div>
+                  ),
+                },
+                {
+                  id: "mg-biz-4",
+                  title: "How does LockFree Engine manage the complexity?",
+                  icon: LayoutDashboard,
+                  content: (
+                    <div className="space-y-2">
+                      <p>
+                        Instead of juggling the AWS Console, Google Cloud
+                        Portal, and Azure Management Center separately — each
+                        with their own interfaces, billing systems, and alert
+                        setups —{" "}
+                        <strong>everything is managed from one place</strong>.
+                      </p>
+                      <p>From the LockFree Engine dashboard you can:</p>
+                      <ul className="list-disc list-inside space-y-1 text-muted-foreground ml-2">
+                        <li>Provision new cloud engines with a few clicks</li>
+                        <li>
+                          Track live costs across all providers in one view
+                        </li>
+                        <li>
+                          Trigger migrations between providers without
+                          command-line tools
+                        </li>
+                        <li>
+                          Monitor resilience scores and get proactive alerts
+                        </li>
+                        <li>
+                          Manage users and access permissions from one admin
+                          panel
+                        </li>
+                      </ul>
+                      <p className="text-muted-foreground">
+                        No command line. No cloud certifications required. Just
+                        a clean dashboard built for both technical and
+                        non-technical teams.
+                      </p>
+                    </div>
+                  ),
+                },
+                {
+                  id: "mg-biz-5",
+                  title: "How do I get started?",
+                  icon: Rocket,
+                  content: (
+                    <div className="space-y-2">
+                      <p>
+                        LockFree Engine is currently in early access, ahead of
+                        the public launch of the ICP Cloud Engines API.
+                      </p>
+                      <p>
+                        <strong>To get started:</strong>
+                      </p>
+                      <ol className="list-decimal list-inside space-y-1 text-muted-foreground ml-2">
+                        <li>
+                          Join the waitlist on the landing page for early access
+                          priority
+                        </li>
+                        <li>
+                          When the ICP Cloud Engines API launches publicly,
+                          you&apos;ll be onboarded first
+                        </li>
+                        <li>
+                          Enterprise and Business plan users receive dedicated
+                          onboarding support and a guided setup session
+                        </li>
+                      </ol>
+                      <p className="text-muted-foreground mt-2">
+                        Already signed in? Explore the dashboard in Demo Mode to
+                        see exactly how LockFree Engine works before committing
+                        to a plan.
+                      </p>
+                    </div>
+                  ),
+                },
+              ].map((section, idx) => (
+                <AccordionItem
+                  key={section.id}
+                  value={section.id}
+                  data-ocid={`user_guide.migration.business.item.${idx + 1}`}
+                  className="rounded-lg border border-border bg-card overflow-hidden px-0"
+                >
+                  <AccordionTrigger className="px-4 py-3.5 hover:no-underline hover:bg-muted/30 transition-colors [&>svg]:shrink-0">
+                    <div className="flex items-center gap-3 text-left">
+                      <div className="w-7 h-7 rounded-md bg-primary/10 flex items-center justify-center flex-shrink-0">
+                        <section.icon className="w-3.5 h-3.5 text-primary" />
+                      </div>
+                      <span className="font-medium text-sm">
+                        {section.title}
+                      </span>
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent className="px-4 pb-4 pt-0">
+                    <div className="text-sm text-foreground/90 leading-relaxed pl-10">
+                      {section.content}
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
           </div>
-          <Accordion type="multiple" className="space-y-2">
-            {[
-              {
-                id: "mg-dev-1",
-                title: "Step 1: Audit Your Existing Stack",
-                icon: ListChecks,
-                content: (
-                  <div className="space-y-2">
-                    <p>
-                      Before writing a single line of migration code, build a
-                      complete inventory of your current infrastructure. This
-                      drives your entire migration plan.
-                    </p>
-                    <p>Catalogue the following:</p>
-                    <ul className="list-disc list-inside space-y-1 text-muted-foreground ml-2">
-                      <li>
-                        <strong>Databases:</strong> PostgreSQL, MySQL, MongoDB,
-                        Redis — note schemas, sizes, and relationships
-                      </li>
-                      <li>
-                        <strong>APIs:</strong> REST or GraphQL endpoints, their
-                        consumers, and SLA requirements
-                      </li>
-                      <li>
-                        <strong>Auth system:</strong> JWT, OAuth2, session-based
-                        — note how identity is stored and verified
-                      </li>
-                      <li>
-                        <strong>File storage:</strong> S3 buckets, GCS, Azure
-                        Blob — note file types, sizes, and access patterns
-                      </li>
-                      <li>
-                        <strong>Background jobs:</strong> Cron tasks, queues,
-                        and event-driven workflows
-                      </li>
-                    </ul>
-                    <p className="text-muted-foreground">
-                      Prioritise the smallest, most self-contained service for
-                      your first migration. A clean success builds team
-                      confidence.
-                    </p>
-                  </div>
-                ),
-              },
-              {
-                id: "mg-dev-2",
-                title: "Step 2: Export Your Data",
-                icon: Download,
-                content: (
-                  <div className="space-y-2">
-                    <p>
-                      Export relational data as CSV or JSON. For NoSQL, use
-                      native export tools. Clean and normalise your data before
-                      import — ICP storage is append-optimised, so clean input
-                      saves cycles later.
-                    </p>
-                    <pre className="text-xs bg-muted/60 border border-border rounded-lg p-3 overflow-x-auto font-mono leading-relaxed mt-2">
-                      <code>{`# PostgreSQL export
+
+          {/* Developer Section Separator */}
+          <div className="border-t border-border" />
+
+          {/* Developers Section */}
+          <div>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-8 h-8 rounded-lg bg-primary/15 border border-primary/30 flex items-center justify-center flex-shrink-0">
+                <Code2 className="w-4 h-4 text-primary" />
+              </div>
+              <div>
+                <h2 className="text-base font-semibold text-foreground">
+                  For Developers — Technical Migration Path
+                </h2>
+                <p className="text-xs text-muted-foreground">
+                  Step-by-step guide with code snippets for migrating Web2
+                  systems to ICP Cloud Engines
+                </p>
+              </div>
+            </div>
+            <Accordion type="multiple" className="space-y-2">
+              {[
+                {
+                  id: "mg-dev-1",
+                  title: "Step 1: Audit Your Existing Stack",
+                  icon: ListChecks,
+                  content: (
+                    <div className="space-y-2">
+                      <p>
+                        Before writing a single line of migration code, build a
+                        complete inventory of your current infrastructure. This
+                        drives your entire migration plan.
+                      </p>
+                      <p>Catalogue the following:</p>
+                      <ul className="list-disc list-inside space-y-1 text-muted-foreground ml-2">
+                        <li>
+                          <strong>Databases:</strong> PostgreSQL, MySQL,
+                          MongoDB, Redis — note schemas, sizes, and
+                          relationships
+                        </li>
+                        <li>
+                          <strong>APIs:</strong> REST or GraphQL endpoints,
+                          their consumers, and SLA requirements
+                        </li>
+                        <li>
+                          <strong>Auth system:</strong> JWT, OAuth2,
+                          session-based — note how identity is stored and
+                          verified
+                        </li>
+                        <li>
+                          <strong>File storage:</strong> S3 buckets, GCS, Azure
+                          Blob — note file types, sizes, and access patterns
+                        </li>
+                        <li>
+                          <strong>Background jobs:</strong> Cron tasks, queues,
+                          and event-driven workflows
+                        </li>
+                      </ul>
+                      <p className="text-muted-foreground">
+                        Prioritise the smallest, most self-contained service for
+                        your first migration. A clean success builds team
+                        confidence.
+                      </p>
+                    </div>
+                  ),
+                },
+                {
+                  id: "mg-dev-2",
+                  title: "Step 2: Export Your Data",
+                  icon: Download,
+                  content: (
+                    <div className="space-y-2">
+                      <p>
+                        Export relational data as CSV or JSON. For NoSQL, use
+                        native export tools. Clean and normalise your data
+                        before import — ICP storage is append-optimised, so
+                        clean input saves cycles later.
+                      </p>
+                      <pre className="text-xs bg-muted/60 border border-border rounded-lg p-3 overflow-x-auto font-mono leading-relaxed mt-2">
+                        <code>{`# PostgreSQL export
 pg_dump --format=json mydb > export.json
 
 # MongoDB export
 mongoexport --db mydb --collection users --out users.json`}</code>
-                    </pre>
-                    <p className="text-muted-foreground">
-                      Strip nulls, normalise timestamps to Unix milliseconds,
-                      and ensure IDs are strings — Motoko uses{" "}
-                      <code className="text-xs bg-muted px-1 rounded">
-                        Text
-                      </code>{" "}
-                      not integers as primary keys by convention.
-                    </p>
-                  </div>
-                ),
-              },
-              {
-                id: "mg-dev-3",
-                title: "Step 3: Model Your Data in Motoko",
-                icon: Database,
-                content: (
-                  <div className="space-y-2">
-                    <p>
-                      Recreate your schema as Motoko types. Use{" "}
-                      <code className="text-xs bg-muted px-1 rounded">
-                        stable var
-                      </code>{" "}
-                      declarations for data that must survive canister upgrades.
-                    </p>
-                    <pre className="text-xs bg-muted/60 border border-border rounded-lg p-3 overflow-x-auto font-mono leading-relaxed mt-2">
-                      <code>{`// Stable storage survives canister upgrades
+                      </pre>
+                      <p className="text-muted-foreground">
+                        Strip nulls, normalise timestamps to Unix milliseconds,
+                        and ensure IDs are strings — Motoko uses{" "}
+                        <code className="text-xs bg-muted px-1 rounded">
+                          Text
+                        </code>{" "}
+                        not integers as primary keys by convention.
+                      </p>
+                    </div>
+                  ),
+                },
+                {
+                  id: "mg-dev-3",
+                  title: "Step 3: Model Your Data in Motoko",
+                  icon: Database,
+                  content: (
+                    <div className="space-y-2">
+                      <p>
+                        Recreate your schema as Motoko types. Use{" "}
+                        <code className="text-xs bg-muted px-1 rounded">
+                          stable var
+                        </code>{" "}
+                        declarations for data that must survive canister
+                        upgrades.
+                      </p>
+                      <pre className="text-xs bg-muted/60 border border-border rounded-lg p-3 overflow-x-auto font-mono leading-relaxed mt-2">
+                        <code>{`// Stable storage survives canister upgrades
 stable var users : [(Text, UserRecord)] = [];
 
 type UserRecord = {
@@ -2383,43 +2433,44 @@ type UserRecord = {
   createdAt: Int;
   tier: Text;
 };`}</code>
-                    </pre>
-                    <p className="text-muted-foreground">
-                      Use{" "}
-                      <code className="text-xs bg-muted px-1 rounded">
-                        HashMap
-                      </code>{" "}
-                      or{" "}
-                      <code className="text-xs bg-muted px-1 rounded">
-                        TrieMap
-                      </code>{" "}
-                      for in-memory lookups, and serialize to stable vars in{" "}
-                      <code className="text-xs bg-muted px-1 rounded">
-                        preupgrade
-                      </code>{" "}
-                      /{" "}
-                      <code className="text-xs bg-muted px-1 rounded">
-                        postupgrade
-                      </code>{" "}
-                      hooks.
-                    </p>
-                  </div>
-                ),
-              },
-              {
-                id: "mg-dev-4",
-                title: "Step 4: Migrate Your Backend Logic",
-                icon: Server,
-                content: (
-                  <div className="space-y-2">
-                    <p>
-                      Replace REST/GraphQL endpoints with canister{" "}
-                      <strong>query</strong> and <strong>update</strong> calls.
-                      Queries are read-only and fast (no consensus required);
-                      updates write to state and go through consensus.
-                    </p>
-                    <pre className="text-xs bg-muted/60 border border-border rounded-lg p-3 overflow-x-auto font-mono leading-relaxed mt-2">
-                      <code>{`// Query (read-only, fast — no consensus)
+                      </pre>
+                      <p className="text-muted-foreground">
+                        Use{" "}
+                        <code className="text-xs bg-muted px-1 rounded">
+                          HashMap
+                        </code>{" "}
+                        or{" "}
+                        <code className="text-xs bg-muted px-1 rounded">
+                          TrieMap
+                        </code>{" "}
+                        for in-memory lookups, and serialize to stable vars in{" "}
+                        <code className="text-xs bg-muted px-1 rounded">
+                          preupgrade
+                        </code>{" "}
+                        /{" "}
+                        <code className="text-xs bg-muted px-1 rounded">
+                          postupgrade
+                        </code>{" "}
+                        hooks.
+                      </p>
+                    </div>
+                  ),
+                },
+                {
+                  id: "mg-dev-4",
+                  title: "Step 4: Migrate Your Backend Logic",
+                  icon: Server,
+                  content: (
+                    <div className="space-y-2">
+                      <p>
+                        Replace REST/GraphQL endpoints with canister{" "}
+                        <strong>query</strong> and <strong>update</strong>{" "}
+                        calls. Queries are read-only and fast (no consensus
+                        required); updates write to state and go through
+                        consensus.
+                      </p>
+                      <pre className="text-xs bg-muted/60 border border-border rounded-lg p-3 overflow-x-auto font-mono leading-relaxed mt-2">
+                        <code>{`// Query (read-only, fast — no consensus)
 public query func getUser(id: Text) : async ?UserRecord {
   HashMap.get(usersMap, Text.equal, Text.hash, id)
 };
@@ -2429,33 +2480,33 @@ public func createUser(record: UserRecord) : async Bool {
   HashMap.put(usersMap, Text.equal, Text.hash, record.id, record);
   true
 };`}</code>
-                    </pre>
-                    <p className="text-muted-foreground">
-                      Tip: design your data access patterns for queries wherever
-                      possible. Updates are ~2-4 seconds due to consensus;
-                      queries respond in milliseconds.
-                    </p>
-                  </div>
-                ),
-              },
-              {
-                id: "mg-dev-5",
-                title: "Step 5: Update Authentication",
-                icon: Key,
-                content: (
-                  <div className="space-y-2">
-                    <p>
-                      Replace JWT/OAuth with <strong>Internet Identity</strong>.
-                      Use{" "}
-                      <code className="text-xs bg-muted px-1 rounded">
-                        @dfinity/auth-client
-                      </code>{" "}
-                      in the frontend. No passwords, no tokens — users
-                      authenticate with their device (Face ID, Touch ID,
-                      hardware key).
-                    </p>
-                    <pre className="text-xs bg-muted/60 border border-border rounded-lg p-3 overflow-x-auto font-mono leading-relaxed mt-2">
-                      <code>{`import { AuthClient } from "@dfinity/auth-client";
+                      </pre>
+                      <p className="text-muted-foreground">
+                        Tip: design your data access patterns for queries
+                        wherever possible. Updates are ~2-4 seconds due to
+                        consensus; queries respond in milliseconds.
+                      </p>
+                    </div>
+                  ),
+                },
+                {
+                  id: "mg-dev-5",
+                  title: "Step 5: Update Authentication",
+                  icon: Key,
+                  content: (
+                    <div className="space-y-2">
+                      <p>
+                        Replace JWT/OAuth with{" "}
+                        <strong>Internet Identity</strong>. Use{" "}
+                        <code className="text-xs bg-muted px-1 rounded">
+                          @dfinity/auth-client
+                        </code>{" "}
+                        in the frontend. No passwords, no tokens — users
+                        authenticate with their device (Face ID, Touch ID,
+                        hardware key).
+                      </p>
+                      <pre className="text-xs bg-muted/60 border border-border rounded-lg p-3 overflow-x-auto font-mono leading-relaxed mt-2">
+                        <code>{`import { AuthClient } from "@dfinity/auth-client";
 
 const authClient = await AuthClient.create();
 await authClient.login({
@@ -2466,32 +2517,32 @@ await authClient.login({
     const actor = createActor(canisterId, { agentOptions: { identity } });
   },
 });`}</code>
-                    </pre>
-                    <p className="text-muted-foreground">
-                      Each user gets a unique{" "}
-                      <code className="text-xs bg-muted px-1 rounded">
-                        Principal
-                      </code>{" "}
-                      — a cryptographic identity that serves as both their user
-                      ID and authorization credential in one.
-                    </p>
-                  </div>
-                ),
-              },
-              {
-                id: "mg-dev-6",
-                title: "Step 6: Handle File Storage",
-                icon: HardDrive,
-                content: (
-                  <div className="space-y-2">
-                    <p>
-                      Replace S3/GCS with ICP blob storage. The standard
-                      canister message limit is 2MB, so use the LockFree Engine
-                      blob storage component for larger files. Files are served
-                      via HTTP URLs cached at the edge.
-                    </p>
-                    <pre className="text-xs bg-muted/60 border border-border rounded-lg p-3 overflow-x-auto font-mono leading-relaxed mt-2">
-                      <code>{`// Upload a file via blob storage component
+                      </pre>
+                      <p className="text-muted-foreground">
+                        Each user gets a unique{" "}
+                        <code className="text-xs bg-muted px-1 rounded">
+                          Principal
+                        </code>{" "}
+                        — a cryptographic identity that serves as both their
+                        user ID and authorization credential in one.
+                      </p>
+                    </div>
+                  ),
+                },
+                {
+                  id: "mg-dev-6",
+                  title: "Step 6: Handle File Storage",
+                  icon: HardDrive,
+                  content: (
+                    <div className="space-y-2">
+                      <p>
+                        Replace S3/GCS with ICP blob storage. The standard
+                        canister message limit is 2MB, so use the LockFree
+                        Engine blob storage component for larger files. Files
+                        are served via HTTP URLs cached at the edge.
+                      </p>
+                      <pre className="text-xs bg-muted/60 border border-border rounded-lg p-3 overflow-x-auto font-mono leading-relaxed mt-2">
+                        <code>{`// Upload a file via blob storage component
 const { uploadFile } = useBlobStorage();
 
 const url = await uploadFile(file, {
@@ -2501,32 +2552,32 @@ const url = await uploadFile(file, {
 
 // url is a permanent HTTP URL you can store in your canister
 // e.g. https://<canister-id>.raw.ic0.app/blob/<id>`}</code>
-                    </pre>
-                    <p className="text-muted-foreground">
-                      For large media files (video, high-res images), the blob
-                      storage component handles chunking automatically — no
-                      manual splitting required.
-                    </p>
-                  </div>
-                ),
-              },
-              {
-                id: "mg-dev-7",
-                title: "Step 7: Deploy Your Canister on ICP",
-                icon: Rocket,
-                content: (
-                  <div className="space-y-2">
-                    <p>
-                      Use{" "}
-                      <code className="text-xs bg-muted px-1 rounded">
-                        dfx deploy
-                      </code>{" "}
-                      to push your Motoko canister to the ICP mainnet. The
-                      canister ID becomes your permanent backend address — no
-                      servers to manage, no uptime to monitor.
-                    </p>
-                    <pre className="text-xs bg-muted/60 border border-border rounded-lg p-3 overflow-x-auto font-mono leading-relaxed mt-2">
-                      <code>{`# Deploy to ICP mainnet
+                      </pre>
+                      <p className="text-muted-foreground">
+                        For large media files (video, high-res images), the blob
+                        storage component handles chunking automatically — no
+                        manual splitting required.
+                      </p>
+                    </div>
+                  ),
+                },
+                {
+                  id: "mg-dev-7",
+                  title: "Step 7: Deploy Your Canister on ICP",
+                  icon: Rocket,
+                  content: (
+                    <div className="space-y-2">
+                      <p>
+                        Use{" "}
+                        <code className="text-xs bg-muted px-1 rounded">
+                          dfx deploy
+                        </code>{" "}
+                        to push your Motoko canister to the ICP mainnet. The
+                        canister ID becomes your permanent backend address — no
+                        servers to manage, no uptime to monitor.
+                      </p>
+                      <pre className="text-xs bg-muted/60 border border-border rounded-lg p-3 overflow-x-auto font-mono leading-relaxed mt-2">
+                        <code>{`# Deploy to ICP mainnet
 dfx deploy --network ic
 
 # Your canister is now live at:
@@ -2534,83 +2585,87 @@ dfx deploy --network ic
 
 # Check canister status
 dfx canister --network ic status <canister-id>`}</code>
-                    </pre>
-                    <p className="text-muted-foreground">
-                      Cycles are ICP&apos;s compute resource. Top up your
-                      canister with cycles before deployment — it needs a
-                      minimum balance to execute calls. Use the{" "}
-                      <a
-                        href="https://nns.ic0.app"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="underline underline-offset-2 hover:text-primary"
-                      >
-                        NNS dapp
-                      </a>{" "}
-                      to convert ICP to cycles.
-                    </p>
-                  </div>
-                ),
-              },
-              {
-                id: "mg-dev-8",
-                title:
-                  "Step 8: Provision Your Cloud Engine via LockFree Engine",
-                icon: Zap,
-                content: (
-                  <div className="space-y-2">
-                    <p>
-                      With your canister deployed, return to LockFree Engine and
-                      provision a Cloud Engine pointing to your canister ID.
-                      From here, all management is handled from the dashboard:
-                    </p>
-                    <ul className="list-disc list-inside space-y-1 text-muted-foreground ml-2">
-                      <li>Scaling and performance tuning</li>
-                      <li>Migration between providers (AWS → GCP → Azure)</li>
-                      <li>
-                        Live cost tracking and optimisation recommendations
-                      </li>
-                      <li>Resilience monitoring and automated failover</li>
-                    </ul>
-                    <div className="mt-3 p-3 rounded-lg border border-primary/30 bg-primary/5">
-                      <p className="text-sm font-medium text-primary">
-                        When the ICP Cloud Engines API launches publicly, your
-                        setup will automatically unlock dedicated subnet
-                        resources — no reconfiguration required.
-                      </p>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        Ready to provision? Join the waitlist on the landing
-                        page for early access priority.
+                      </pre>
+                      <p className="text-muted-foreground">
+                        Cycles are ICP&apos;s compute resource. Top up your
+                        canister with cycles before deployment — it needs a
+                        minimum balance to execute calls. Use the{" "}
+                        <a
+                          href="https://nns.ic0.app"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="underline underline-offset-2 hover:text-primary"
+                        >
+                          NNS dapp
+                        </a>{" "}
+                        to convert ICP to cycles.
                       </p>
                     </div>
-                  </div>
-                ),
-              },
-            ].map((section, idx) => (
-              <AccordionItem
-                key={section.id}
-                value={section.id}
-                data-ocid={`user_guide.migration.developer.item.${idx + 1}`}
-                className="rounded-lg border border-border bg-card overflow-hidden px-0"
-              >
-                <AccordionTrigger className="px-4 py-3.5 hover:no-underline hover:bg-muted/30 transition-colors [&>svg]:shrink-0">
-                  <div className="flex items-center gap-3 text-left">
-                    <div className="w-7 h-7 rounded-md bg-primary/10 flex items-center justify-center flex-shrink-0">
-                      <section.icon className="w-3.5 h-3.5 text-primary" />
+                  ),
+                },
+                {
+                  id: "mg-dev-8",
+                  title:
+                    "Step 8: Provision Your Cloud Engine via LockFree Engine",
+                  icon: Zap,
+                  content: (
+                    <div className="space-y-2">
+                      <p>
+                        With your canister deployed, return to LockFree Engine
+                        and provision a Cloud Engine pointing to your canister
+                        ID. From here, all management is handled from the
+                        dashboard:
+                      </p>
+                      <ul className="list-disc list-inside space-y-1 text-muted-foreground ml-2">
+                        <li>Scaling and performance tuning</li>
+                        <li>Migration between providers (AWS → GCP → Azure)</li>
+                        <li>
+                          Live cost tracking and optimisation recommendations
+                        </li>
+                        <li>Resilience monitoring and automated failover</li>
+                      </ul>
+                      <div className="mt-3 p-3 rounded-lg border border-primary/30 bg-primary/5">
+                        <p className="text-sm font-medium text-primary">
+                          When the ICP Cloud Engines API launches publicly, your
+                          setup will automatically unlock dedicated subnet
+                          resources — no reconfiguration required.
+                        </p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          Ready to provision? Join the waitlist on the landing
+                          page for early access priority.
+                        </p>
+                      </div>
                     </div>
-                    <span className="font-medium text-sm">{section.title}</span>
-                  </div>
-                </AccordionTrigger>
-                <AccordionContent className="px-4 pb-4 pt-0">
-                  <div className="text-sm text-foreground/90 leading-relaxed pl-10">
-                    {section.content}
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-            ))}
-          </Accordion>
-        </div>
-      </TabsContent>
+                  ),
+                },
+              ].map((section, idx) => (
+                <AccordionItem
+                  key={section.id}
+                  value={section.id}
+                  data-ocid={`user_guide.migration.developer.item.${idx + 1}`}
+                  className="rounded-lg border border-border bg-card overflow-hidden px-0"
+                >
+                  <AccordionTrigger className="px-4 py-3.5 hover:no-underline hover:bg-muted/30 transition-colors [&>svg]:shrink-0">
+                    <div className="flex items-center gap-3 text-left">
+                      <div className="w-7 h-7 rounded-md bg-primary/10 flex items-center justify-center flex-shrink-0">
+                        <section.icon className="w-3.5 h-3.5 text-primary" />
+                      </div>
+                      <span className="font-medium text-sm">
+                        {section.title}
+                      </span>
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent className="px-4 pb-4 pt-0">
+                    <div className="text-sm text-foreground/90 leading-relaxed pl-10">
+                      {section.content}
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          </div>
+        </TabsContent>
+      </Tabs>
 
       {/* Footer */}
       <div className="text-center py-6 text-xs text-muted-foreground border-t border-border">

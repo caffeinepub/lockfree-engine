@@ -23,7 +23,7 @@ export function useIsAdmin() {
       return actor.isCallerAdmin();
     },
     enabled: !!actor && !isFetching,
-    staleTime: 60_000,
+    staleTime: 0,
   });
 }
 
@@ -127,6 +127,37 @@ export function useSetUserTier() {
         Principal.fromText(params.principalId),
         params.tier,
       );
+    },
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: adminQueryKeys.users });
+      void qc.invalidateQueries({ queryKey: adminQueryKeys.analytics });
+    },
+  });
+}
+
+// Extended actor type to include deleteUserData which may be present in newer
+// backend versions but is not yet reflected in the generated backendInterface.
+type ActorWithDeleteUserData = {
+  deleteUserData: (principal: unknown) => Promise<boolean>;
+};
+
+function hasDeleteUserData(a: unknown): a is ActorWithDeleteUserData {
+  return typeof (a as ActorWithDeleteUserData).deleteUserData === "function";
+}
+
+export function useDeleteUserData() {
+  const { actor } = useActor();
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (principalId: string) => {
+      if (!actor) throw new Error("Not connected");
+      if (!hasDeleteUserData(actor)) {
+        throw new Error(
+          "deleteUserData is not available in this backend version",
+        );
+      }
+      const { Principal } = await import("@icp-sdk/core/principal");
+      return actor.deleteUserData(Principal.fromText(principalId));
     },
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: adminQueryKeys.users });

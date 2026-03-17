@@ -112,6 +112,13 @@ export interface WaitlistEntry {
     submittedAt: bigint;
     email: string;
 }
+export interface FlaggedAffiliate {
+    id: bigint;
+    principal: string;
+    code: string;
+    flaggedAt: bigint;
+    reason: string;
+}
 export interface DistributeResult {
     updatedEngines: Array<Engine>;
     overallResilienceScore: bigint;
@@ -160,6 +167,7 @@ export interface backendInterface {
     _initializeAccessControlWithSecret(userSecret: string): Promise<void>;
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
     claimInitialAdmin(): Promise<boolean>;
+    clearFlaggedAffiliate(code: string): Promise<boolean>;
     createEngine(name: string, provider: string, cpu: bigint, ram: bigint, storage: bigint, costPerHour: number): Promise<bigint>;
     deleteEngine(id: bigint): Promise<void>;
     deployApp(engineId: bigint, _prompt: string): Promise<string>;
@@ -183,9 +191,11 @@ export interface backendInterface {
         engineCosts: Array<[bigint, number]>;
     }>;
     getEngine(id: bigint): Promise<Engine>;
+    getFlaggedAffiliates(): Promise<Array<FlaggedAffiliate>>;
     getMigrationHistory(): Promise<Array<MigrationRecord>>;
     getMySubscription(): Promise<string>;
     getPublicContentSettings(): Promise<ContentSettings>;
+    getReferralCount(code: string): Promise<bigint>;
     getUsageSummary(): Promise<{
         enginesCount: bigint;
         deploymentsThisMonth: bigint;
@@ -203,6 +213,16 @@ export interface backendInterface {
     migrateEngineWithDetails(id: bigint, targetProvider: string): Promise<MigrationRecord>;
     populateDemoData(): Promise<void>;
     removeSeat(member: Principal): Promise<void>;
+    reportReferral(code: string): Promise<{
+        __kind__: "ok";
+        ok: bigint;
+    } | {
+        __kind__: "capReached";
+        capReached: null;
+    } | {
+        __kind__: "flagged";
+        flagged: null;
+    }>;
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
     saveContentSettings(settings: ContentSettings): Promise<void>;
     sendMessage(content: string, _engineId: bigint | null): Promise<string>;
@@ -266,6 +286,20 @@ export class Backend implements backendInterface {
             }
         } else {
             const result = await this.actor.claimInitialAdmin();
+            return result;
+        }
+    }
+    async clearFlaggedAffiliate(arg0: string): Promise<boolean> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.clearFlaggedAffiliate(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.clearFlaggedAffiliate(arg0);
             return result;
         }
     }
@@ -448,6 +482,20 @@ export class Backend implements backendInterface {
             return result;
         }
     }
+    async getFlaggedAffiliates(): Promise<Array<FlaggedAffiliate>> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getFlaggedAffiliates();
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getFlaggedAffiliates();
+            return result;
+        }
+    }
     async getMigrationHistory(): Promise<Array<MigrationRecord>> {
         if (this.processError) {
             try {
@@ -487,6 +535,20 @@ export class Backend implements backendInterface {
             }
         } else {
             const result = await this.actor.getPublicContentSettings();
+            return result;
+        }
+    }
+    async getReferralCount(arg0: string): Promise<bigint> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getReferralCount(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getReferralCount(arg0);
             return result;
         }
     }
@@ -676,6 +738,29 @@ export class Backend implements backendInterface {
             return result;
         }
     }
+    async reportReferral(arg0: string): Promise<{
+        __kind__: "ok";
+        ok: bigint;
+    } | {
+        __kind__: "capReached";
+        capReached: null;
+    } | {
+        __kind__: "flagged";
+        flagged: null;
+    }> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.reportReferral(arg0);
+                return from_candid_variant_n6(this._uploadFile, this._downloadFile, result);
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.reportReferral(arg0);
+            return from_candid_variant_n6(this._uploadFile, this._downloadFile, result);
+        }
+    }
     async saveCallerUserProfile(arg0: UserProfile): Promise<void> {
         if (this.processError) {
             try {
@@ -707,14 +792,14 @@ export class Backend implements backendInterface {
     async sendMessage(arg0: string, arg1: bigint | null): Promise<string> {
         if (this.processError) {
             try {
-                const result = await this.actor.sendMessage(arg0, to_candid_opt_n6(this._uploadFile, this._downloadFile, arg1));
+                const result = await this.actor.sendMessage(arg0, to_candid_opt_n7(this._uploadFile, this._downloadFile, arg1));
                 return result;
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
-            const result = await this.actor.sendMessage(arg0, to_candid_opt_n6(this._uploadFile, this._downloadFile, arg1));
+            const result = await this.actor.sendMessage(arg0, to_candid_opt_n7(this._uploadFile, this._downloadFile, arg1));
             return result;
         }
     }
@@ -776,10 +861,37 @@ function from_candid_variant_n5(_uploadFile: (file: ExternalBlob) => Promise<Uin
 }): UserRole {
     return "admin" in value ? UserRole.admin : "user" in value ? UserRole.user : "guest" in value ? UserRole.guest : value;
 }
+function from_candid_variant_n6(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+    ok: bigint;
+} | {
+    capReached: null;
+} | {
+    flagged: null;
+}): {
+    __kind__: "ok";
+    ok: bigint;
+} | {
+    __kind__: "capReached";
+    capReached: null;
+} | {
+    __kind__: "flagged";
+    flagged: null;
+} {
+    return "ok" in value ? {
+        __kind__: "ok",
+        ok: value.ok
+    } : "capReached" in value ? {
+        __kind__: "capReached",
+        capReached: value.capReached
+    } : "flagged" in value ? {
+        __kind__: "flagged",
+        flagged: value.flagged
+    } : value;
+}
 function to_candid_UserRole_n1(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: UserRole): _UserRole {
     return to_candid_variant_n2(_uploadFile, _downloadFile, value);
 }
-function to_candid_opt_n6(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: bigint | null): [] | [bigint] {
+function to_candid_opt_n7(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: bigint | null): [] | [bigint] {
     return value === null ? candid_none() : candid_some(value);
 }
 function to_candid_variant_n2(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: UserRole): {

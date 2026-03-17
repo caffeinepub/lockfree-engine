@@ -43,6 +43,13 @@ export interface Engine {
   'createdAt' : bigint,
   'resilienceScore' : bigint,
 }
+export interface FlaggedAffiliate {
+  'id' : bigint,
+  'principal' : string,
+  'code' : string,
+  'flaggedAt' : bigint,
+  'reason' : string,
+}
 export interface MigrationRecord {
   'id' : bigint,
   'status' : string,
@@ -74,6 +81,7 @@ export interface _SERVICE {
   '_initializeAccessControlWithSecret' : ActorMethod<[string], undefined>,
   'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
   'claimInitialAdmin' : ActorMethod<[], boolean>,
+  'clearFlaggedAffiliate' : ActorMethod<[string], boolean>,
   'createEngine' : ActorMethod<
     [string, string, bigint, bigint, bigint, number],
     bigint
@@ -103,9 +111,11 @@ export interface _SERVICE {
     { 'totalCost' : number, 'engineCosts' : Array<[bigint, number]> }
   >,
   'getEngine' : ActorMethod<[bigint], Engine>,
+  'getFlaggedAffiliates' : ActorMethod<[], Array<FlaggedAffiliate>>,
   'getMigrationHistory' : ActorMethod<[], Array<MigrationRecord>>,
   'getMySubscription' : ActorMethod<[], string>,
   'getPublicContentSettings' : ActorMethod<[], ContentSettings>,
+  'getReferralCount' : ActorMethod<[string], bigint>,
   'getUsageSummary' : ActorMethod<
     [],
     {
@@ -126,6 +136,12 @@ export interface _SERVICE {
   'migrateEngineWithDetails' : ActorMethod<[bigint, string], MigrationRecord>,
   'populateDemoData' : ActorMethod<[], undefined>,
   'removeSeat' : ActorMethod<[Principal], undefined>,
+  'reportReferral' : ActorMethod<
+    [string],
+    { 'ok' : bigint } |
+      { 'capReached' : null } |
+      { 'flagged' : null }
+  >,
   'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,
   'saveContentSettings' : ActorMethod<[ContentSettings], undefined>,
   'sendMessage' : ActorMethod<[string, [] | [bigint]], string>,

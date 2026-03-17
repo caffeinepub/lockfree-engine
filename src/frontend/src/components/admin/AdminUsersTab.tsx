@@ -1,4 +1,16 @@
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Select,
@@ -16,9 +28,23 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Users } from "lucide-react";
+import {
+  AlertTriangle,
+  CheckCircle2,
+  Download,
+  Trash2,
+  Users,
+} from "lucide-react";
 import { toast } from "sonner";
-import { useListAllUsers, useSetUserTier } from "../../hooks/useAdminQueries";
+import {
+  useDeleteUserData,
+  useListAllUsers,
+  useSetUserTier,
+} from "../../hooks/useAdminQueries";
+import {
+  useClearFlaggedAffiliate,
+  useGetFlaggedAffiliates,
+} from "../../hooks/useReferralQueries";
 
 const TIER_COLORS: Record<string, string> = {
   free: "bg-muted text-muted-foreground",
@@ -35,6 +61,8 @@ function truncatePrincipal(p: string): string {
 export function AdminUsersTab() {
   const { data: users, isLoading } = useListAllUsers();
   const { mutateAsync: setTier, isPending } = useSetUserTier();
+  const { mutateAsync: deleteUser, isPending: isDeleting } =
+    useDeleteUserData();
 
   async function handleTierChange(principalId: string, tier: string) {
     try {
@@ -42,6 +70,15 @@ export function AdminUsersTab() {
       toast.success(`Tier updated to ${tier}`);
     } catch {
       toast.error("Failed to update tier");
+    }
+  }
+
+  async function handleDeleteUser(principalId: string) {
+    try {
+      await deleteUser(principalId);
+      toast.success("User data permanently deleted");
+    } catch {
+      toast.error("Failed to delete user data");
     }
   }
 
@@ -97,6 +134,12 @@ export function AdminUsersTab() {
                   <TableHead className="text-xs text-muted-foreground font-medium w-44">
                     Change Tier
                   </TableHead>
+                  <TableHead className="text-xs text-muted-foreground font-medium w-24">
+                    Export
+                  </TableHead>
+                  <TableHead className="text-xs text-muted-foreground font-medium w-24">
+                    Delete
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -151,6 +194,85 @@ export function AdminUsersTab() {
                           </SelectContent>
                         </Select>
                       </TableCell>
+                      <TableCell>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-7 text-xs gap-1 text-muted-foreground hover:text-foreground"
+                          onClick={() => {
+                            const exportData = {
+                              principalId: pid,
+                              tier: user.tier,
+                              exportedAt: new Date().toISOString(),
+                              engines: [],
+                              migrations: [],
+                              billingData: {
+                                currentTier: user.tier,
+                                invoices: [],
+                              },
+                              preferences: {},
+                            };
+                            const blob = new Blob(
+                              [JSON.stringify(exportData, null, 2)],
+                              { type: "application/json" },
+                            );
+                            const url = URL.createObjectURL(blob);
+                            const a = document.createElement("a");
+                            a.href = url;
+                            a.download = `lockfreeengine-user-${pid.slice(0, 8)}.json`;
+                            a.click();
+                            URL.revokeObjectURL(url);
+                            toast.success("User data exported");
+                          }}
+                        >
+                          <Download className="w-3 h-3" />
+                          Export
+                        </Button>
+                      </TableCell>
+                      <TableCell>
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-7 text-xs gap-1 text-destructive/70 hover:text-destructive hover:bg-destructive/10"
+                              disabled={isDeleting}
+                              data-ocid={`admin.users.delete_button.${idx + 1}`}
+                            >
+                              <Trash2 className="w-3 h-3" />
+                              Delete
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent className="bg-card border-border">
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>
+                                Delete user data permanently?
+                              </AlertDialogTitle>
+                              <AlertDialogDescription className="text-muted-foreground">
+                                This will permanently delete all data for
+                                principal{" "}
+                                <span className="font-mono text-foreground">
+                                  {truncatePrincipal(pid)}
+                                </span>
+                                , including their engines, migration history,
+                                billing records, and profile. This action cannot
+                                be undone.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel className="border-border">
+                                Cancel
+                              </AlertDialogCancel>
+                              <AlertDialogAction
+                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                onClick={() => handleDeleteUser(pid)}
+                              >
+                                Delete permanently
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </TableCell>
                     </TableRow>
                   );
                 })}
@@ -160,5 +282,141 @@ export function AdminUsersTab() {
         )}
       </CardContent>
     </Card>
+  );
+}
+
+// ─── Flagged Affiliates ──────────────────────────────────────────────────────
+function FlaggedAffiliatesSection() {
+  const { data: flagged, isLoading, isError } = useGetFlaggedAffiliates();
+  const { mutateAsync: clearFlag, isPending: isClearing } =
+    useClearFlaggedAffiliate();
+
+  async function handleClear(code: string) {
+    try {
+      await clearFlag(code);
+      toast.success(`Flag cleared for ${code}`);
+    } catch {
+      toast.error("Failed to clear flag");
+    }
+  }
+
+  return (
+    <Card className="bg-card border-border mt-6">
+      <CardHeader className="pb-3">
+        <div className="flex items-center gap-2">
+          <AlertTriangle className="w-4 h-4 text-amber-400" />
+          <CardTitle className="text-base font-semibold">
+            Flagged Affiliates
+          </CardTitle>
+        </div>
+        <p className="text-xs text-muted-foreground">
+          Accounts flagged for unusual referral activity. Review and clear flags
+          once resolved.
+        </p>
+      </CardHeader>
+      <CardContent>
+        {isLoading ? (
+          <div className="space-y-2" data-ocid="admin.flagged.loading_state">
+            {[1, 2].map((i) => (
+              <Skeleton key={i} className="h-10 w-full" />
+            ))}
+          </div>
+        ) : isError ? (
+          <div
+            data-ocid="admin.flagged.error_state"
+            className="text-xs text-destructive py-4 text-center"
+          >
+            Failed to load flagged affiliates.
+          </div>
+        ) : !flagged || flagged.length === 0 ? (
+          <div
+            data-ocid="admin.flagged.empty_state"
+            className="flex flex-col items-center justify-center py-10 text-center"
+          >
+            <CheckCircle2 className="w-9 h-9 text-muted-foreground/30 mb-3" />
+            <p className="text-sm font-medium text-muted-foreground">
+              No flagged affiliate accounts
+            </p>
+            <p className="text-xs text-muted-foreground/70 mt-1">
+              All activity looks clean.
+            </p>
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <Table data-ocid="admin.flagged.table">
+              <TableHeader>
+                <TableRow className="border-border hover:bg-transparent">
+                  <TableHead className="text-xs text-muted-foreground font-medium">
+                    Code
+                  </TableHead>
+                  <TableHead className="text-xs text-muted-foreground font-medium">
+                    Principal
+                  </TableHead>
+                  <TableHead className="text-xs text-muted-foreground font-medium">
+                    Reason
+                  </TableHead>
+                  <TableHead className="text-xs text-muted-foreground font-medium">
+                    Flagged At
+                  </TableHead>
+                  <TableHead className="text-xs text-muted-foreground font-medium w-28">
+                    Actions
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {flagged.map((f, idx) => (
+                  <TableRow
+                    key={f.code}
+                    data-ocid={`admin.flagged.row.${idx + 1}`}
+                    className="border-border hover:bg-muted/30 transition-colors"
+                  >
+                    <TableCell className="font-mono text-xs text-amber-400 font-semibold">
+                      {f.code}
+                    </TableCell>
+                    <TableCell className="font-mono text-xs text-muted-foreground">
+                      {truncatePrincipal(f.principal)}
+                    </TableCell>
+                    <TableCell className="text-xs text-muted-foreground max-w-xs truncate">
+                      {f.reason}
+                    </TableCell>
+                    <TableCell className="text-xs text-muted-foreground">
+                      {new Date(
+                        Number(f.flaggedAt) / 1_000_000,
+                      ).toLocaleDateString("en-GB", {
+                        day: "numeric",
+                        month: "short",
+                        year: "numeric",
+                      })}
+                    </TableCell>
+                    <TableCell>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="h-7 text-xs gap-1.5"
+                        disabled={isClearing}
+                        data-ocid={`admin.flagged.delete_button.${idx + 1}`}
+                        onClick={() => handleClear(f.code)}
+                      >
+                        <CheckCircle2 className="w-3 h-3" />
+                        Clear
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+export function AdminUsersTabWrapper() {
+  return (
+    <div>
+      <AdminUsersTab />
+      <FlaggedAffiliatesSection />
+    </div>
   );
 }

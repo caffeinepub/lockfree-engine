@@ -164,7 +164,7 @@ export function DashboardPage({
             data-ocid="dashboard.announcement.panel"
           >
             <Megaphone className="w-4 h-4 text-amber-400 flex-shrink-0 mt-0.5" />
-            <span className="text-amber-400 flex-1 leading-relaxed">
+            <span className="text-amber-400 flex-1 leading-relaxed min-w-0 break-words">
               {announcementBanner}
             </span>
             <button
@@ -183,12 +183,12 @@ export function DashboardPage({
       {/* Demo mode banner */}
       {isDemoMode && (
         <motion.div
-          className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-status-provisioning/10 border border-status-provisioning/20 text-sm"
+          className="flex items-center gap-2 flex-wrap px-4 py-2.5 rounded-lg bg-status-provisioning/10 border border-status-provisioning/20 text-sm"
           initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
         >
           <span className="w-2 h-2 rounded-full bg-status-provisioning animate-pulse flex-shrink-0" />
-          <span className="text-status-provisioning font-medium">
+          <span className="text-status-provisioning font-medium min-w-0">
             Demo Mode
           </span>
           <span className="text-muted-foreground flex-1 hidden sm:inline">

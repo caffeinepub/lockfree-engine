@@ -3,10 +3,20 @@ import { Input } from "@/components/ui/input";
 import {
   ArrowRight,
   CheckCircle2,
+  Code2,
+  Copy,
+  Download,
   Globe,
+  KeyRound,
   Layers,
   Loader2,
+  LogOut,
+  MapPin,
+  Network,
   Shield,
+  TrendingUp,
+  Truck,
+  Users2,
   Zap,
 } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
@@ -18,6 +28,7 @@ interface LandingPageProps {
   onSignIn: () => void;
   onTryDemo: () => void;
   isLoadingDemo?: boolean;
+  onTerms?: () => void;
 }
 
 // Animated provider network diagram
@@ -188,6 +199,75 @@ const FEATURES = [
   },
 ];
 
+const CLOUD_ENGINE_FEATURES = [
+  {
+    icon: MapPin,
+    title: "Park it anywhere",
+    desc: "Move between AWS, Google Cloud, or Azure without rebuilding from scratch. Your workload runs the same way regardless of where it's deployed.",
+  },
+  {
+    icon: TrendingUp,
+    title: "Scale up or down",
+    desc: "Need more power today? Upgrade the engine. Quieter period? Downsize and save money. You control the dials.",
+  },
+  {
+    icon: Copy,
+    title: "Run multiple trucks",
+    desc: "Spin up several engines in different locations for resilience and speed. Distribute load across regions with a click.",
+  },
+  {
+    icon: LogOut,
+    title: "Pick up and leave",
+    desc: "If one provider gets too expensive or goes down, you migrate to another without losing your business. Zero lock-in, ever.",
+  },
+];
+
+const TECH_STACK = [
+  {
+    badge: "// motoko",
+    icon: Code2,
+    title: "Motoko Backend",
+    desc: "The entire application logic runs in a Motoko canister on ICP. Motoko is a programming language purpose-built for the Internet Computer — memory-safe, actor-based, and compiled to WebAssembly. No servers, no databases, no Docker.",
+    color: "oklch(0.78 0.18 55)",
+    bgColor: "oklch(0.78 0.18 55 / 0.07)",
+    borderColor: "oklch(0.78 0.18 55 / 0.22)",
+  },
+  {
+    badge: "// react + typescript",
+    icon: Globe,
+    title: "React Frontend",
+    desc: "The UI is a standard React + TypeScript app, served directly from the canister via ICP's HTTP gateway. No CDN, no hosting bill, no outage risk from a third-party provider.",
+    color: "oklch(0.68 0.18 220)",
+    bgColor: "oklch(0.68 0.18 220 / 0.07)",
+    borderColor: "oklch(0.68 0.18 220 / 0.22)",
+  },
+  {
+    badge: "// dfinity",
+    icon: Shield,
+    title: "Internet Identity",
+    desc: "Authentication uses DFINITY's Internet Identity — a cryptographic, self-sovereign identity system. No passwords, no email, no data broker. You own your identity.",
+    color: "oklch(0.82 0.22 195)",
+    bgColor: "oklch(0.82 0.22 195 / 0.07)",
+    borderColor: "oklch(0.82 0.22 195 / 0.22)",
+  },
+  {
+    badge: "// icp nns",
+    icon: Network,
+    title: "Network Nervous System",
+    desc: "The ICP network is governed by the NNS — an on-chain DAO that manages upgrades, node operators, and subnet allocation. Cloud Engines are private subnets allocated by the NNS, giving enterprises dedicated, configurable compute on ICP.",
+    color: "oklch(0.72 0.2 310)",
+    bgColor: "oklch(0.72 0.2 310 / 0.07)",
+    borderColor: "oklch(0.72 0.2 310 / 0.22)",
+  },
+];
+
+const STACK_TRACE = [
+  "React UI",
+  "Motoko Canister",
+  "ICP Network",
+  "Cloud Engine",
+];
+
 const HOW_IT_WORKS = [
   {
     step: "01",
@@ -297,6 +377,7 @@ export function LandingPage({
   onSignIn,
   onTryDemo,
   isLoadingDemo,
+  onTerms,
 }: LandingPageProps) {
   const { isLoggingIn } = useInternetIdentity();
 
@@ -571,6 +652,283 @@ export function LandingPage({
         </div>
       </section>
 
+      {/* ── What is a Cloud Engine? ── */}
+      <section
+        className="relative z-10 py-24 px-5 sm:px-8 md:px-12 border-y border-border/30"
+        style={{ background: "oklch(0.12 0.014 243 / 0.5)" }}
+      >
+        <div className="max-w-5xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+            {/* Left column — text */}
+            <motion.div
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            >
+              {/* Badge */}
+              <div
+                className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full border text-xs font-mono mb-6"
+                style={{
+                  background: "oklch(0.82 0.22 195 / 0.06)",
+                  borderColor: "oklch(0.82 0.22 195 / 0.25)",
+                  color: "oklch(0.82 0.22 195)",
+                }}
+              >
+                <Truck className="w-3 h-3" />
+                What is a Cloud Engine?
+              </div>
+
+              <h2
+                className="font-display font-bold tracking-tight mb-5"
+                style={{ fontSize: "clamp(1.75rem, 4vw, 2.5rem)" }}
+              >
+                Your cloud. Fully portable.
+              </h2>
+
+              <p className="text-sm md:text-base text-muted-foreground leading-relaxed mb-5">
+                Think of it like owning a food truck instead of a restaurant. A
+                traditional restaurant is fixed in one location — you're stuck
+                with one landlord, one location, and if you want to move, it's a
+                huge, expensive ordeal. A cloud engine is your food truck. It
+                contains everything you need to run your business, and you can
+                take it anywhere.
+              </p>
+
+              <p className="text-sm text-muted-foreground/75 leading-relaxed italic">
+                LockFree Engine is the dashboard that makes all of this possible
+                — from one place, across every major cloud provider.
+              </p>
+            </motion.div>
+
+            {/* Right column — 2x2 feature cards */}
+            <motion.div
+              className="grid grid-cols-1 sm:grid-cols-2 gap-4"
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: "-40px" }}
+              variants={{
+                hidden: {},
+                visible: { transition: { staggerChildren: 0.1 } },
+              }}
+            >
+              {CLOUD_ENGINE_FEATURES.map((feat) => (
+                <motion.div
+                  key={feat.title}
+                  className="border border-border/40 bg-card/30 rounded-xl p-5 flex flex-col gap-3"
+                  variants={{
+                    hidden: { opacity: 0, y: 18 },
+                    visible: {
+                      opacity: 1,
+                      y: 0,
+                      transition: { duration: 0.48, ease: [0.22, 1, 0.36, 1] },
+                    },
+                  }}
+                >
+                  <div
+                    className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0"
+                    style={{
+                      background: "oklch(0.82 0.22 195 / 0.08)",
+                      border: "1px solid oklch(0.82 0.22 195 / 0.22)",
+                    }}
+                  >
+                    <feat.icon
+                      className="w-4 h-4"
+                      style={{ color: "oklch(0.82 0.22 195)" }}
+                    />
+                  </div>
+                  <div>
+                    <div className="font-display font-semibold text-sm text-foreground mb-1">
+                      {feat.title}
+                    </div>
+                    <div className="text-xs text-muted-foreground leading-relaxed">
+                      {feat.desc}
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Technical Depth: Built on a different kind of cloud ── */}
+      <section
+        className="relative z-10 py-24 px-5 sm:px-8 md:px-12 border-b border-border/30 overflow-hidden"
+        style={{ background: "oklch(0.11 0.014 243 / 0.6)" }}
+      >
+        {/* Subtle dot-grid overlay */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            backgroundImage:
+              "radial-gradient(circle, oklch(0.82 0.22 195 / 0.06) 1px, transparent 1px)",
+            backgroundSize: "28px 28px",
+          }}
+        />
+        {/* Atmospheric focal glow */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background:
+              "radial-gradient(ellipse 80% 60% at 50% 0%, oklch(0.82 0.22 195 / 0.04) 0%, transparent 70%)",
+          }}
+        />
+
+        <div className="max-w-5xl mx-auto relative">
+          {/* Section header */}
+          <motion.div
+            className="text-center mb-14"
+            initial={{ opacity: 0, y: 18 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <div
+              className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full border text-xs font-mono mb-5"
+              style={{
+                background: "oklch(0.82 0.22 195 / 0.06)",
+                borderColor: "oklch(0.82 0.22 195 / 0.25)",
+                color: "oklch(0.82 0.22 195)",
+              }}
+            >
+              <Code2 className="w-3 h-3" />
+              Under the hood
+            </div>
+            <h2
+              className="font-display font-bold tracking-tight mb-4"
+              style={{ fontSize: "clamp(1.75rem, 4vw, 2.5rem)" }}
+            >
+              Built on a different kind of cloud.
+            </h2>
+            <p className="text-muted-foreground max-w-xl mx-auto leading-relaxed text-sm md:text-base">
+              Every part of LockFree Engine runs on the Internet Computer — no
+              AWS, no GCP, no Azure under the hood. Here's exactly what that
+              means.
+            </p>
+          </motion.div>
+
+          {/* 2×2 tech stack cards */}
+          <motion.div
+            className="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-10"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-40px" }}
+            variants={{
+              hidden: {},
+              visible: { transition: { staggerChildren: 0.1 } },
+            }}
+          >
+            {TECH_STACK.map((card) => (
+              <motion.div
+                key={card.title}
+                className="group relative flex flex-col gap-4 p-6 rounded-2xl border backdrop-blur-sm overflow-hidden"
+                style={{
+                  background: card.bgColor,
+                  borderColor: card.borderColor,
+                }}
+                variants={{
+                  hidden: { opacity: 0, y: 22 },
+                  visible: {
+                    opacity: 1,
+                    y: 0,
+                    transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] },
+                  },
+                }}
+              >
+                {/* Corner glow on hover */}
+                <div
+                  className="absolute -top-10 -right-10 w-28 h-28 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+                  style={{
+                    background: `radial-gradient(circle, ${card.color.replace(")", " / 0.15)")} 0%, transparent 70%)`,
+                  }}
+                />
+
+                {/* Badge row */}
+                <div className="flex items-center justify-between">
+                  <span
+                    className="font-mono text-[10px] font-semibold tracking-wider px-2.5 py-1 rounded-md border"
+                    style={{
+                      color: card.color,
+                      borderColor: card.borderColor,
+                      background: card.bgColor,
+                    }}
+                  >
+                    {card.badge}
+                  </span>
+                  <div
+                    className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
+                    style={{
+                      background: card.bgColor,
+                      border: `1px solid ${card.borderColor}`,
+                    }}
+                  >
+                    <card.icon
+                      className="w-4 h-4"
+                      style={{ color: card.color }}
+                    />
+                  </div>
+                </div>
+
+                {/* Content */}
+                <div>
+                  <h3 className="font-display font-semibold text-base mb-2 text-foreground">
+                    {card.title}
+                  </h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    {card.desc}
+                  </p>
+                </div>
+              </motion.div>
+            ))}
+          </motion.div>
+
+          {/* Stack trace bar */}
+          <motion.div
+            className="flex items-center justify-center"
+            initial={{ opacity: 0, y: 12 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+          >
+            <div
+              className="inline-flex items-center gap-0 rounded-xl border px-1 py-1 overflow-x-auto max-w-full"
+              style={{
+                borderColor: "oklch(0.82 0.22 195 / 0.18)",
+                background: "oklch(0.13 0.016 243 / 0.8)",
+              }}
+            >
+              {STACK_TRACE.map((step, i) => (
+                <div key={step} className="flex items-center">
+                  <motion.span
+                    className="font-mono text-xs px-3.5 py-2 rounded-lg whitespace-nowrap"
+                    style={{ color: "oklch(0.82 0.22 195)" }}
+                    initial={{ opacity: 0 }}
+                    whileInView={{ opacity: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.4 + i * 0.1 }}
+                  >
+                    {step}
+                  </motion.span>
+                  {i < STACK_TRACE.length - 1 && (
+                    <motion.span
+                      className="font-mono text-xs px-1 select-none"
+                      style={{ color: "oklch(0.82 0.22 195 / 0.35)" }}
+                      initial={{ opacity: 0 }}
+                      whileInView={{ opacity: 1 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: 0.5 + i * 0.1 }}
+                    >
+                      →
+                    </motion.span>
+                  )}
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
       {/* ── How it works ── */}
       <section className="relative z-10 py-24 px-5 sm:px-8 md:px-12">
         <div className="max-w-5xl mx-auto">
@@ -581,8 +939,18 @@ export function LandingPage({
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
           >
-            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-card/50 border border-border/50 text-xs font-mono text-muted-foreground mb-5">
-              <Layers className="w-3 h-3" />
+            <div
+              className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full border text-xs font-mono mb-5"
+              style={{
+                background: "oklch(0.82 0.22 195 / 0.06)",
+                borderColor: "oklch(0.82 0.22 195 / 0.25)",
+                color: "oklch(0.82 0.22 195)",
+              }}
+            >
+              <Layers
+                className="w-3 h-3"
+                style={{ color: "oklch(0.82 0.22 195)" }}
+              />
               How it works
             </div>
             <h2
@@ -630,6 +998,108 @@ export function LandingPage({
                 </div>
                 <div className="text-sm text-muted-foreground leading-relaxed">
                   {step.desc}
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Security & Trust ── */}
+      <section className="relative z-10 py-20 px-5 sm:px-8 md:px-12 border-t border-border/30">
+        <div className="max-w-5xl mx-auto">
+          <motion.div
+            className="text-center mb-12"
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+          >
+            <div
+              className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full border text-xs font-mono mb-5"
+              style={{
+                background: "oklch(0.82 0.22 195 / 0.06)",
+                borderColor: "oklch(0.82 0.22 195 / 0.25)",
+                color: "oklch(0.82 0.22 195)",
+              }}
+            >
+              <Shield
+                className="w-3 h-3"
+                style={{ color: "oklch(0.82 0.22 195)" }}
+              />
+              Security &amp; Trust
+            </div>
+            <h2
+              className="font-display font-bold tracking-tight mb-4"
+              style={{ fontSize: "clamp(1.75rem, 4vw, 2.5rem)" }}
+            >
+              Built on infrastructure you can trust.
+            </h2>
+            <p className="text-muted-foreground max-w-lg mx-auto leading-relaxed">
+              No centralised server. No password database. No lock-in. These
+              aren&rsquo;t marketing claims &mdash; they&rsquo;re technical
+              facts about how ICP works.
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            {[
+              {
+                icon: Shield,
+                title: "ICP Architecture",
+                body: "No centralised server. Your data lives in tamper-proof canisters on the Internet Computer, replicated across independent node providers worldwide. No single point of failure or control.",
+                accent: "0.82 0.22 195",
+              },
+              {
+                icon: KeyRound,
+                title: "Internet Identity",
+                body: "No passwords stored. Authentication uses cryptographic keys via DFINITY's Internet Identity protocol. Your login cannot be stolen from a database because there is no password database.",
+                accent: "0.72 0.19 145",
+              },
+              {
+                icon: Users2,
+                title: "Referral Fair Use",
+                body: "All referral and affiliate activity is monitored for abuse. Payouts require a genuine new user to provision at least one engine. A 50-referral cap and manual review process protect all participants.",
+                accent: "0.75 0.18 60",
+              },
+              {
+                icon: Download,
+                title: "Data Sovereignty",
+                body: "Export your full account data at any time as JSON or CSV from Account Settings. LockFree Engine does not lock you in &mdash; true to our name. Your data belongs to you.",
+                accent: "0.72 0.17 290",
+              },
+            ].map((card, i) => (
+              <motion.div
+                key={card.title}
+                className="rounded-xl border border-border/50 bg-card/30 backdrop-blur-sm p-6 flex gap-4"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-30px" }}
+                transition={{ duration: 0.5, delay: i * 0.08 }}
+              >
+                <div
+                  className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5"
+                  style={{
+                    background: `oklch(${card.accent} / 0.1)`,
+                    border: `1px solid oklch(${card.accent} / 0.25)`,
+                  }}
+                >
+                  <card.icon
+                    className="w-4.5 h-4.5"
+                    style={{
+                      color: `oklch(${card.accent})`,
+                      width: 18,
+                      height: 18,
+                    }}
+                  />
+                </div>
+                <div>
+                  <h3 className="font-display font-semibold text-foreground text-sm mb-1.5">
+                    {card.title}
+                  </h3>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    {card.body}
+                  </p>
                 </div>
               </motion.div>
             ))}
@@ -706,15 +1176,28 @@ export function LandingPage({
 
       {/* ── Footer ── */}
       <footer className="relative z-10 text-center text-xs text-muted-foreground py-5 px-6 border-t border-border/20">
-        © {new Date().getFullYear()}. Built with love using{" "}
-        <a
-          href={`https://caffeine.ai?utm_source=caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(window.location.hostname)}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-primary hover:underline transition-colors"
-        >
-          caffeine.ai
-        </a>
+        <div className="flex items-center justify-center gap-4 flex-wrap">
+          <span>
+            © {new Date().getFullYear()}. Built with love using{" "}
+            <a
+              href={`https://caffeine.ai?utm_source=caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(window.location.hostname)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary hover:underline transition-colors"
+            >
+              caffeine.ai
+            </a>
+          </span>
+          <span className="text-border/60">·</span>
+          <button
+            type="button"
+            data-ocid="landing.terms.link"
+            onClick={() => onTerms?.()}
+            className="hover:text-foreground transition-colors"
+          >
+            Terms of Service
+          </button>
+        </div>
       </footer>
     </div>
   );

@@ -30,6 +30,13 @@ export interface WaitlistEntry {
     submittedAt: bigint;
     email: string;
 }
+export interface FlaggedAffiliate {
+    id: bigint;
+    principal: string;
+    code: string;
+    flaggedAt: bigint;
+    reason: string;
+}
 export interface DistributeResult {
     updatedEngines: Array<Engine>;
     overallResilienceScore: bigint;
@@ -76,8 +83,10 @@ export enum UserRole {
 export interface backendInterface {
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
     claimInitialAdmin(): Promise<boolean>;
+    clearFlaggedAffiliate(code: string): Promise<boolean>;
     createEngine(name: string, provider: string, cpu: bigint, ram: bigint, storage: bigint, costPerHour: number): Promise<bigint>;
     deleteEngine(id: bigint): Promise<void>;
+    deleteUserData(user: Principal): Promise<boolean>;
     deployApp(engineId: bigint, _prompt: string): Promise<string>;
     distributeAcrossProviders(): Promise<void>;
     distributeAndGetScore(): Promise<DistributeResult>;
@@ -99,9 +108,11 @@ export interface backendInterface {
         engineCosts: Array<[bigint, number]>;
     }>;
     getEngine(id: bigint): Promise<Engine>;
+    getFlaggedAffiliates(): Promise<Array<FlaggedAffiliate>>;
     getMigrationHistory(): Promise<Array<MigrationRecord>>;
     getMySubscription(): Promise<string>;
     getPublicContentSettings(): Promise<ContentSettings>;
+    getReferralCount(code: string): Promise<bigint>;
     getUsageSummary(): Promise<{
         enginesCount: bigint;
         deploymentsThisMonth: bigint;
@@ -119,6 +130,16 @@ export interface backendInterface {
     migrateEngineWithDetails(id: bigint, targetProvider: string): Promise<MigrationRecord>;
     populateDemoData(): Promise<void>;
     removeSeat(member: Principal): Promise<void>;
+    reportReferral(code: string): Promise<{
+        __kind__: "ok";
+        ok: bigint;
+    } | {
+        __kind__: "capReached";
+        capReached: null;
+    } | {
+        __kind__: "flagged";
+        flagged: null;
+    }>;
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
     saveContentSettings(settings: ContentSettings): Promise<void>;
     sendMessage(content: string, _engineId: bigint | null): Promise<string>;

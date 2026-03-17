@@ -18,6 +18,7 @@ import { PartnersPage } from "./components/PartnersPage";
 import { PricingModal } from "./components/PricingModal";
 import { ReferralsAffiliatePage } from "./components/ReferralsAffiliatePage";
 import { SettingsPage } from "./components/SettingsPage";
+import { TermsPage } from "./components/TermsPage";
 import { TopBar } from "./components/TopBar";
 import { UserGuidePage } from "./components/UserGuidePage";
 import { AdminPage } from "./components/admin/AdminPage";
@@ -138,6 +139,7 @@ function AppShell() {
   const [pricingOpen, setPricingOpen] = useState(false);
   const [tourOpen, setTourOpen] = useState(false);
   const [showLanding, setShowLanding] = useState(true);
+  const [showTerms, setShowTerms] = useState(false);
 
   // Safety-net: inject client-side demo engines into the React Query cache whenever they change
   useEffect(() => {
@@ -171,7 +173,9 @@ function AppShell() {
     }
   }, [identity]);
 
-  // Claim admin on login, then invalidate isAdmin cache so the sidebar re-checks
+  // Claim admin on login — first non-anonymous caller becomes admin.
+  // After the call (success or failure), both invalidate AND immediately refetch
+  // so the sidebar admin link appears without requiring a page reload.
   useEffect(() => {
     if (!identity || !actor) return;
     actor
@@ -180,12 +184,13 @@ function AppShell() {
         void queryClient.invalidateQueries({
           queryKey: adminQueryKeys.isAdmin,
         });
+        void queryClient.refetchQueries({ queryKey: adminQueryKeys.isAdmin });
       })
       .catch(() => {
-        // Already claimed by someone else — still refresh so the correct value is shown
         void queryClient.invalidateQueries({
           queryKey: adminQueryKeys.isAdmin,
         });
+        void queryClient.refetchQueries({ queryKey: adminQueryKeys.isAdmin });
       });
   }, [identity, actor, queryClient]);
 
@@ -266,6 +271,11 @@ function AppShell() {
     );
   }
 
+  // Terms page
+  if (showTerms) {
+    return <TermsPage onBack={() => setShowTerms(false)} />;
+  }
+
   // Landing page
   if (showLanding && !identity) {
     return (
@@ -276,6 +286,7 @@ function AppShell() {
         }}
         onTryDemo={() => setShowLanding(false)}
         isLoadingDemo={isLoadingDemo}
+        onTerms={() => setShowTerms(true)}
       />
     );
   }
@@ -288,6 +299,7 @@ function AppShell() {
         isLoadingDemo={isLoadingDemo}
         isDemoMode={isDemoMode}
         onClearDemo={handleClearDemo}
+        onTerms={() => setShowTerms(true)}
       />
     );
   }

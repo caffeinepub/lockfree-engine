@@ -12,6 +12,7 @@ interface LoginPageProps {
   isLoadingDemo?: boolean;
   isDemoMode: boolean;
   onClearDemo: () => void;
+  onTerms?: () => void;
 }
 
 // Animated provider network diagram
@@ -198,6 +199,7 @@ export function LoginPage({
   isLoadingDemo,
   isDemoMode,
   onClearDemo,
+  onTerms,
 }: LoginPageProps) {
   const { login, isLoggingIn } = useInternetIdentity();
 
@@ -404,15 +406,28 @@ export function LoginPage({
 
       {/* Footer */}
       <footer className="relative z-10 text-center text-xs text-muted-foreground py-4 px-6">
-        © {new Date().getFullYear()}. Built with love using{" "}
-        <a
-          href={`https://caffeine.ai?utm_source=caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(window.location.hostname)}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-primary hover:underline"
-        >
-          caffeine.ai
-        </a>
+        <div className="flex items-center justify-center gap-3 flex-wrap">
+          <span>
+            © {new Date().getFullYear()}. Built with love using{" "}
+            <a
+              href={`https://caffeine.ai?utm_source=caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(window.location.hostname)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary hover:underline"
+            >
+              caffeine.ai
+            </a>
+          </span>
+          <span className="text-border/60">·</span>
+          <button
+            type="button"
+            data-ocid="login.terms.link"
+            onClick={() => onTerms?.()}
+            className="hover:text-foreground transition-colors"
+          >
+            Terms of Service
+          </button>
+        </div>
       </footer>
     </div>
   );

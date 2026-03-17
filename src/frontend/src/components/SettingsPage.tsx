@@ -8,15 +8,16 @@ import {
   FileSpreadsheet,
   Info,
   LogOut,
+  Scale,
   Shield,
 } from "lucide-react";
 import { useInternetIdentity } from "../hooks/useInternetIdentity";
 import {
   useGetBillingEvents,
   useGetMigrationHistory,
+  useGetMySubscription,
   useListEngines,
 } from "../hooks/useQueries";
-import { useGetMySubscription } from "../hooks/useQueries";
 
 function downloadFile(filename: string, content: string, mimeType: string) {
   const blob = new Blob([content], { type: mimeType });
@@ -27,6 +28,29 @@ function downloadFile(filename: string, content: string, mimeType: string) {
   a.click();
   URL.revokeObjectURL(url);
 }
+
+const DATA_RIGHTS = [
+  {
+    right: "Right of Access",
+    description:
+      "You can request a full copy of all data we hold about you at any time. Use the export buttons below or contact an admin.",
+  },
+  {
+    right: "Right to Erasure",
+    description:
+      "You can request permanent deletion of your account and all associated data. Contact an admin and they will action this from the Admin panel.",
+  },
+  {
+    right: "Right to Portability",
+    description:
+      "You can download your data in JSON or CSV format at any time using the export buttons below — ready to import into another system.",
+  },
+  {
+    right: "Right to Rectification",
+    description:
+      "If any data we hold about you is inaccurate, contact an admin and we will correct it promptly.",
+  },
+];
 
 export function SettingsPage() {
   const { identity, clear } = useInternetIdentity();
@@ -86,7 +110,6 @@ export function SettingsPage() {
     const payload = buildExportPayload();
     const sections: string[] = [];
 
-    // Account section
     sections.push("ACCOUNT");
     sections.push("Principal,Plan,Exported At");
     sections.push(
@@ -94,7 +117,6 @@ export function SettingsPage() {
     );
     sections.push("");
 
-    // Engines section
     sections.push("ENGINES");
     sections.push(
       "ID,Name,Provider,Status,CPU,RAM (GB),Storage (GB),Cost Per Hour",
@@ -106,7 +128,6 @@ export function SettingsPage() {
     }
     sections.push("");
 
-    // Migration history section
     sections.push("MIGRATION HISTORY");
     sections.push(
       "ID,Engine ID,From Provider,To Provider,Status,Cost Savings,Timestamp",
@@ -118,7 +139,6 @@ export function SettingsPage() {
     }
     sections.push("");
 
-    // Billing events section
     sections.push("BILLING EVENTS");
     sections.push("ID,Event Type,Amount,Description,Timestamp");
     for (const b of payload.billingEvents) {
@@ -190,7 +210,7 @@ export function SettingsPage() {
         </div>
       </div>
 
-      {/* Engine summary */}
+      {/* Infrastructure Summary */}
       <div className="console-panel p-5">
         <div className="flex items-center gap-2 mb-4">
           <Info className="w-4 h-4 text-primary" />
@@ -217,6 +237,42 @@ export function SettingsPage() {
             <div className="text-xs text-muted-foreground">Providers</div>
           </div>
         </div>
+      </div>
+
+      {/* Your Data Rights */}
+      <div className="console-panel p-5">
+        <div className="flex items-center gap-2 mb-1">
+          <Scale className="w-4 h-4 text-primary" />
+          <h2 className="font-semibold text-sm">Your Data Rights</h2>
+        </div>
+        <p className="text-xs text-muted-foreground mb-4">
+          LockFree Engine honours data rights inspired by the EU General Data
+          Protection Regulation (GDPR), regardless of your location. You have
+          four core rights:
+        </p>
+
+        <div className="space-y-3">
+          {DATA_RIGHTS.map(({ right, description }) => (
+            <div
+              key={right}
+              className="rounded-lg border border-border bg-muted/20 px-4 py-3"
+            >
+              <div className="text-xs font-semibold text-foreground mb-0.5">
+                {right}
+              </div>
+              <div className="text-xs text-muted-foreground">{description}</div>
+            </div>
+          ))}
+        </div>
+
+        <p className="text-xs text-muted-foreground mt-4">
+          To exercise your right to erasure, contact an admin directly. For full
+          details see our{" "}
+          <a href="/terms" className="text-primary hover:underline">
+            Terms of Service
+          </a>
+          , section 4.
+        </p>
       </div>
 
       {/* Data Portability */}
