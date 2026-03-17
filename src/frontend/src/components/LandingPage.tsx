@@ -375,8 +375,8 @@ function WaitlistForm() {
 
 export function LandingPage({
   onSignIn,
-  onTryDemo,
-  isLoadingDemo,
+  onTryDemo: _onTryDemo,
+  isLoadingDemo: _isLoadingDemo,
   onTerms,
 }: LandingPageProps) {
   const { isLoggingIn } = useInternetIdentity();
@@ -441,9 +441,8 @@ export function LandingPage({
           </div>
           <Button
             data-ocid="nav.button"
-            variant="outline"
             size="sm"
-            className="text-xs h-8 px-4 font-medium border-border/60 hover:border-primary/50 hover:bg-primary/5 transition-all"
+            className="text-xs h-8 px-4 font-medium"
             onClick={onSignIn}
             disabled={isLoggingIn}
           >
@@ -1131,11 +1130,10 @@ export function LandingPage({
               Ready to break free?
             </h2>
             <p className="text-muted-foreground mb-10 leading-relaxed">
-              Sign in to get full access, or try the live demo — no sign-up
-              required.
+              Sign in to get full access, try the live demo.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <div className="flex justify-center">
               <Button
                 data-ocid="footer.primary_button"
                 size="lg"
@@ -1150,26 +1148,7 @@ export function LandingPage({
                 )}
                 Sign In with Internet Identity
               </Button>
-              <Button
-                data-ocid="footer.secondary_button"
-                variant="outline"
-                size="lg"
-                className="h-12 px-8 font-semibold gap-2 text-sm border-border/60 hover:border-primary/50 hover:bg-primary/5 transition-all"
-                onClick={onTryDemo}
-                disabled={isLoadingDemo}
-              >
-                {isLoadingDemo ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  <Zap className="w-4 h-4" />
-                )}
-                Explore with Demo Data
-              </Button>
             </div>
-
-            <p className="text-xs text-muted-foreground mt-6">
-              No passwords · Self-sovereign identity · No lock-in
-            </p>
           </motion.div>
         </div>
       </section>
