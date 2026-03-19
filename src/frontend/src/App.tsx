@@ -23,7 +23,7 @@ import { TopBar } from "./components/TopBar";
 import { UserGuidePage } from "./components/UserGuidePage";
 import { AdminPage } from "./components/admin/AdminPage";
 import { useActor } from "./hooks/useActor";
-import { adminQueryKeys } from "./hooks/useAdminQueries";
+import { adminQueryKeys, useIsAdmin } from "./hooks/useAdminQueries";
 import { useInternetIdentity } from "./hooks/useInternetIdentity";
 import {
   queryKeys,
@@ -124,6 +124,8 @@ function AppShell() {
   const { actor } = useActor();
   useListEngines(); // keep query active for cache
   const { data: subscription = "free" } = useGetMySubscription();
+  const { data: isAdmin } = useIsAdmin();
+  const effectiveTier = isAdmin ? "enterprise" : subscription;
   const { mutateAsync: populateDemo, isPending: isLoadingDemo } =
     usePopulateDemoData();
   const queryClient = useQueryClient();
@@ -348,13 +350,18 @@ function AppShell() {
           {activePage === "chat" && (
             <ChatPage
               preselectedEngine={chatEngine}
-              subscription={subscription}
+              subscription={effectiveTier}
               onOpenPricing={() => setPricingOpen(true)}
             />
           )}
-          {activePage === "settings" && <SettingsPage />}
+          {activePage === "settings" && (
+            <SettingsPage isAdmin={isAdmin ?? false} />
+          )}
           {activePage === "billing" && (
-            <BillingPage onPricingOpen={() => setPricingOpen(true)} />
+            <BillingPage
+              onPricingOpen={() => setPricingOpen(true)}
+              overrideTier={effectiveTier}
+            />
           )}
           {activePage === "referrals" && <ReferralsAffiliatePage />}
           {activePage === "partners" && (
@@ -385,7 +392,7 @@ function AppShell() {
       <PricingModal
         open={pricingOpen}
         onClose={() => setPricingOpen(false)}
-        currentTier={subscription}
+        currentTier={effectiveTier}
         onUpgrade={handleUpgrade}
       />
     </div>

@@ -52,12 +52,13 @@ const DATA_RIGHTS = [
   },
 ];
 
-export function SettingsPage() {
+export function SettingsPage({ isAdmin = false }: { isAdmin?: boolean }) {
   const { identity, clear } = useInternetIdentity();
   const { data: engines } = useListEngines();
   const { data: migrations } = useGetMigrationHistory();
   const { data: billingEvents } = useGetBillingEvents();
-  const { data: subscription } = useGetMySubscription();
+  const { data: _subscription } = useGetMySubscription();
+  const subscription = isAdmin ? "enterprise" : _subscription;
   const principal = identity?.getPrincipal().toString() ?? "demo-mode";
 
   function buildExportPayload() {
@@ -366,6 +367,15 @@ export function SettingsPage() {
             className="flex items-center gap-1.5 text-xs text-primary hover:underline"
           >
             Built with caffeine.ai
+            <ExternalLink className="w-3 h-3" />
+          </a>
+          <span className="text-muted-foreground">·</span>
+          <a
+            href="/terms"
+            className="flex items-center gap-1.5 text-xs text-primary hover:underline"
+            data-ocid="settings.terms.link"
+          >
+            Terms of Service
             <ExternalLink className="w-3 h-3" />
           </a>
         </div>

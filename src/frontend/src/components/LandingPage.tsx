@@ -326,48 +326,50 @@ function WaitlistForm() {
           </div>
         </motion.div>
       ) : (
-        <motion.form
-          key="form"
-          onSubmit={handleSubmit}
-          className="flex flex-col sm:flex-row gap-2.5"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-        >
-          <Input
-            data-ocid="waitlist.input"
-            placeholder="Your name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="h-11 bg-card/50 border-border/60 text-sm flex-1 placeholder:text-muted-foreground/60 focus:border-primary/50"
-            required
-            disabled={isPending}
-          />
-          <Input
-            data-ocid="waitlist_email.input"
-            type="email"
-            placeholder="Email address"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="h-11 bg-card/50 border-border/60 text-sm flex-1 placeholder:text-muted-foreground/60 focus:border-primary/50"
-            required
-            disabled={isPending}
-          />
-          <Button
-            data-ocid="waitlist.submit_button"
-            type="submit"
-            className="h-11 px-6 font-semibold gap-2 text-sm shrink-0 shadow-glow-sm"
-            disabled={isPending || !name.trim() || !email.trim()}
+        <>
+          <motion.form
+            key="form"
+            onSubmit={handleSubmit}
+            className="flex flex-col sm:flex-row gap-2.5"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
           >
-            {isPending ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            ) : (
-              <>
-                Join Waitlist
-                <ArrowRight className="w-4 h-4" />
-              </>
-            )}
-          </Button>
-        </motion.form>
+            <Input
+              data-ocid="waitlist.input"
+              placeholder="Your name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="h-11 bg-card/50 border-border/60 text-sm flex-1 placeholder:text-muted-foreground/60 focus:border-primary/50"
+              required
+              disabled={isPending}
+            />
+            <Input
+              data-ocid="waitlist_email.input"
+              type="email"
+              placeholder="Email address"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="h-11 bg-card/50 border-border/60 text-sm flex-1 placeholder:text-muted-foreground/60 focus:border-primary/50"
+              required
+              disabled={isPending}
+            />
+            <Button
+              data-ocid="waitlist.submit_button"
+              type="submit"
+              className="h-11 px-6 font-semibold gap-2 text-sm shrink-0 shadow-glow-sm"
+              disabled={isPending || !name.trim() || !email.trim()}
+            >
+              {isPending ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <>
+                  Join Waitlist
+                  <ArrowRight className="w-4 h-4" />
+                </>
+              )}
+            </Button>
+          </motion.form>
+        </>
       )}
     </AnimatePresence>
   );
@@ -439,6 +441,14 @@ export function LandingPage({
             <span className="w-1.5 h-1.5 rounded-full bg-status-running animate-pulse" />
             ICP Mainnet
           </div>
+          <button
+            type="button"
+            onClick={() => onTerms?.()}
+            className="hidden sm:block text-xs text-muted-foreground hover:text-foreground transition-colors"
+            data-ocid="nav.terms.link"
+          >
+            Terms
+          </button>
           <Button
             data-ocid="nav.button"
             size="sm"
@@ -1036,8 +1046,8 @@ export function LandingPage({
             </h2>
             <p className="text-muted-foreground max-w-lg mx-auto leading-relaxed">
               No centralised server. No password database. No lock-in. These
-              aren&rsquo;t marketing claims &mdash; they&rsquo;re technical
-              facts about how ICP works.
+              aren't marketing claims — they're technical facts about how ICP
+              works.
             </p>
           </motion.div>
 
@@ -1064,7 +1074,7 @@ export function LandingPage({
               {
                 icon: Download,
                 title: "Data Sovereignty",
-                body: "Export your full account data at any time as JSON or CSV from Account Settings. LockFree Engine does not lock you in &mdash; true to our name. Your data belongs to you.",
+                body: "Export your full account data at any time as JSON or CSV from Account Settings. LockFree Engine does not lock you in — true to our name. Your data belongs to you.",
                 accent: "0.72 0.17 290",
               },
             ].map((card, i) => (
@@ -1137,9 +1147,17 @@ export function LandingPage({
               <Button
                 data-ocid="footer.primary_button"
                 size="lg"
-                className="h-12 px-8 font-semibold gap-2 text-sm shadow-glow"
+                className="h-12 px-8 font-semibold gap-2 text-sm"
                 onClick={onSignIn}
                 disabled={isLoggingIn}
+                style={{
+                  background: "oklch(0.52 0.17 160)",
+                  color: "white",
+                  border: "1px solid oklch(0.65 0.2 160 / 0.8)",
+                  boxShadow:
+                    "0 0 20px oklch(0.6 0.2 160 / 0.9), 0 0 50px oklch(0.55 0.2 160 / 0.6), 0 0 80px oklch(0.5 0.2 160 / 0.35)",
+                  animation: "emerald-pulse 1.8s ease-in-out infinite",
+                }}
               >
                 {isLoggingIn ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
@@ -1155,28 +1173,17 @@ export function LandingPage({
 
       {/* ── Footer ── */}
       <footer className="relative z-10 text-center text-xs text-muted-foreground py-5 px-6 border-t border-border/20">
-        <div className="flex items-center justify-center gap-4 flex-wrap">
-          <span>
-            © {new Date().getFullYear()}. Built with love using{" "}
-            <a
-              href={`https://caffeine.ai?utm_source=caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(window.location.hostname)}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-primary hover:underline transition-colors"
-            >
-              caffeine.ai
-            </a>
-          </span>
-          <span className="text-border/60">·</span>
-          <button
-            type="button"
-            data-ocid="landing.terms.link"
-            onClick={() => onTerms?.()}
-            className="hover:text-foreground transition-colors"
+        <span>
+          © {new Date().getFullYear()}. Built with love using{" "}
+          <a
+            href={`https://caffeine.ai?utm_source=caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(window.location.hostname)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-primary hover:underline transition-colors"
           >
-            Terms of Service
-          </button>
-        </div>
+            caffeine.ai
+          </a>
+        </span>
       </footer>
     </div>
   );

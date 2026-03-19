@@ -88,22 +88,30 @@ function EmptyEnginesState({
         {/* Demo Data toggle row */}
         <div className="flex items-center justify-between gap-6 bg-card border border-border rounded-lg px-4 py-3 w-full max-w-xs">
           <div className="flex flex-col text-left">
-            <span className="text-sm font-medium text-foreground">
+            <span className="text-sm font-semibold text-emerald-300">
               Demo Data
             </span>
             <span className="text-xs text-muted-foreground mt-0.5">
               Load simulated engines to explore
             </span>
           </div>
-          <Switch
-            checked={isDemoMode}
-            onCheckedChange={(checked) => {
-              if (checked) onDemo();
-              else onClearDemo();
-            }}
-            data-ocid="dashboard.demo.toggle"
-            aria-label="Toggle demo data"
-          />
+          <div className="relative">
+            <div className="absolute -inset-3 rounded-full bg-emerald-400/60 animate-pulse blur-md pointer-events-none" />
+            <div
+              className="absolute -inset-1 rounded-full bg-emerald-300/80 animate-pulse blur-sm pointer-events-none"
+              style={{ animationDelay: "0.4s" }}
+            />
+            <Switch
+              checked={isDemoMode}
+              onCheckedChange={(checked) => {
+                if (checked) onDemo();
+                else onClearDemo();
+              }}
+              data-ocid="dashboard.demo.toggle"
+              aria-label="Toggle demo data"
+              className="relative z-10"
+            />
+          </div>
         </div>
       </div>
     </motion.div>

@@ -42,6 +42,7 @@ import { SeatManagement } from "./SeatManagement";
 
 interface BillingPageProps {
   onPricingOpen?: () => void;
+  overrideTier?: string;
 }
 
 const WHITE_LABEL_KEY = "lockfree_whitelabel";
@@ -414,9 +415,10 @@ function UsageMeter({ label, value, max, warn, onUpgrade }: UsageMeterProps) {
   );
 }
 
-export function BillingPage({ onPricingOpen }: BillingPageProps) {
-  const { data: subscription = "free", isLoading: subLoading } =
+export function BillingPage({ onPricingOpen, overrideTier }: BillingPageProps) {
+  const { data: _subscription = "free", isLoading: subLoading } =
     useGetMySubscription();
+  const subscription = overrideTier ?? _subscription;
   const { data: billingEvents = [], isLoading: eventsLoading } =
     useGetBillingEvents();
   const { data: usage, isLoading: usageLoading } = useGetUsageSummary();

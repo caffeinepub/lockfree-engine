@@ -341,7 +341,7 @@ export function LoginPage({
                   {/* Demo Data toggle row */}
                   <div className="flex items-center justify-between gap-4 px-1">
                     <div className="flex flex-col">
-                      <span className="text-sm font-medium text-foreground flex items-center gap-2">
+                      <span className="text-sm font-semibold text-emerald-300 flex items-center gap-2">
                         Demo Data
                         {isLoadingDemo && (
                           <Loader2 className="w-3.5 h-3.5 animate-spin text-muted-foreground" />
@@ -351,13 +351,21 @@ export function LoginPage({
                         Explore the dashboard with simulated engines
                       </span>
                     </div>
-                    <Switch
-                      checked={isDemoMode}
-                      onCheckedChange={handleDemoToggle}
-                      disabled={isLoadingDemo}
-                      data-ocid="login.demo.toggle"
-                      aria-label="Toggle demo data"
-                    />
+                    <div className="relative">
+                      <div className="absolute -inset-3 rounded-full bg-emerald-400/60 animate-pulse blur-md pointer-events-none" />
+                      <div
+                        className="absolute -inset-1 rounded-full bg-emerald-300/80 animate-pulse blur-sm pointer-events-none"
+                        style={{ animationDelay: "0.4s" }}
+                      />
+                      <Switch
+                        checked={isDemoMode}
+                        onCheckedChange={handleDemoToggle}
+                        disabled={isLoadingDemo}
+                        data-ocid="login.demo.toggle"
+                        aria-label="Toggle demo data"
+                        className="relative z-10"
+                      />
+                    </div>
                   </div>
 
                   <p className="text-xs text-muted-foreground text-center mt-4 leading-relaxed">
