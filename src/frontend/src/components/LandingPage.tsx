@@ -2,7 +2,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
   ArrowRight,
+  Calendar,
   CheckCircle2,
+  Clock,
   Code2,
   Copy,
   Download,
@@ -13,7 +15,9 @@ import {
   LogOut,
   MapPin,
   Network,
+  Rocket,
   Shield,
+  Star,
   TrendingUp,
   Truck,
   Users2,
@@ -253,6 +257,84 @@ const HOW_IT_WORKS = [
   },
 ];
 
+const ROADMAP_PHASES = [
+  {
+    phase: "Phase 1",
+    label: "Now: Visualization & Demo",
+    period: "Q1 2026 — Current",
+    status: "LIVE" as const,
+    accent: "oklch(0.72 0.19 145)",
+    accentBg: "oklch(0.72 0.19 145 / 0.08)",
+    accentBorder: "oklch(0.72 0.19 145 / 0.28)",
+    items: [
+      "Interactive dashboard demo",
+      "Engine provisioning simulation",
+      "Migration flow simulation",
+      "AI Deploy Chat",
+      "Affiliate & referral program",
+    ],
+  },
+  {
+    phase: "Phase 2",
+    label: "Beta API Access",
+    period: "Q4 2026 — Upcoming",
+    status: "UPCOMING" as const,
+    accent: "oklch(0.82 0.22 195)",
+    accentBg: "oklch(0.82 0.22 195 / 0.06)",
+    accentBorder: "oklch(0.82 0.22 195 / 0.22)",
+    items: [
+      "ICP Cloud Engines API integration (Mission 70)",
+      "Real engine provisioning on ICP",
+      "Live cost metering in ICP cycles",
+      "Dedicated subnet allocation via NNS",
+      "Beta partner onboarding",
+    ],
+  },
+  {
+    phase: "Phase 3",
+    label: "Full Production",
+    period: "Q2 2027 — Future",
+    status: "FUTURE" as const,
+    accent: "oklch(0.72 0.2 310)",
+    accentBg: "oklch(0.72 0.2 310 / 0.06)",
+    accentBorder: "oklch(0.72 0.2 310 / 0.22)",
+    items: [
+      "Multi-region engine orchestration",
+      "Enterprise SLA guarantees",
+      "White-label platform licensing",
+      "Full NNS governance integration",
+      "Public API for third-party integrations",
+    ],
+  },
+];
+
+const VISION_CARDS = [
+  {
+    icon: Layers,
+    title: "The Infrastructure Layer",
+    body: "Every developer building on ICP will need a way to provision, manage, and migrate cloud engines. LockFree Engine becomes the canonical tool for that — the AWS Console equivalent for the Internet Computer era.",
+    accent: "oklch(0.82 0.22 195)",
+    accentBg: "oklch(0.82 0.22 195 / 0.07)",
+    accentBorder: "oklch(0.82 0.22 195 / 0.22)",
+  },
+  {
+    icon: Users2,
+    title: "The Enterprise Standard",
+    body: "Fortune 500 teams and Web3-native companies alike will use white-labeled LockFree Engine deployments to manage their own cloud engine fleets. Demand-driven compute, no contracts, no lock-in.",
+    accent: "oklch(0.74 0.19 145)",
+    accentBg: "oklch(0.74 0.19 145 / 0.07)",
+    accentBorder: "oklch(0.74 0.19 145 / 0.22)",
+  },
+  {
+    icon: Globe,
+    title: "The Open Ecosystem",
+    body: "A public API and affiliate ecosystem means any tool, platform, or marketplace can integrate cloud engine management. LockFree Engine becomes infrastructure, not just an app.",
+    accent: "oklch(0.72 0.2 310)",
+    accentBg: "oklch(0.72 0.2 310 / 0.07)",
+    accentBorder: "oklch(0.72 0.2 310 / 0.22)",
+  },
+];
+
 function WaitlistForm() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -489,7 +571,7 @@ export function LandingPage({
                 </h1>
 
                 <motion.p
-                  className="text-base md:text-lg text-muted-foreground leading-relaxed mb-9 max-w-md"
+                  className="text-base md:text-lg text-muted-foreground leading-relaxed mb-6 max-w-md"
                   style={{ fontWeight: 400 }}
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -500,10 +582,35 @@ export function LandingPage({
                   contracts, no lock-in, ever.
                 </motion.p>
 
+                {/* Dom quote credibility badge */}
+                <motion.div
+                  className="flex items-start gap-0 mb-8 max-w-md"
+                  initial={{ opacity: 0, x: -8 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.5, delay: 0.42 }}
+                >
+                  <div
+                    className="w-0.5 self-stretch rounded-full shrink-0 mr-3"
+                    style={{ background: "oklch(0.82 0.22 195 / 0.55)" }}
+                  />
+                  <p
+                    className="font-mono text-xs italic leading-relaxed"
+                    style={{ color: "oklch(0.72 0.12 195)" }}
+                  >
+                    &ldquo;A visualization of what cloud engines can do.&rdquo;
+                    <span
+                      className="not-italic ml-1.5 font-medium"
+                      style={{ color: "oklch(0.60 0.08 195)" }}
+                    >
+                      — Dominic Williams, DFINITY
+                    </span>
+                  </p>
+                </motion.div>
+
                 <motion.div
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.45 }}
+                  transition={{ duration: 0.5, delay: 0.48 }}
                 >
                   <WaitlistForm />
                 </motion.div>
@@ -558,7 +665,7 @@ export function LandingPage({
                 {[
                   { val: "3", label: "Providers" },
                   { val: "<5s", label: "Migration" },
-                  { val: "∞", label: "Uptime" },
+                  { val: "\u221e", label: "Uptime" },
                 ].map((s) => (
                   <div key={s.label} className="text-center">
                     <div
@@ -1080,6 +1187,449 @@ export function LandingPage({
               </motion.div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* ── Dom Testimonial ── */}
+      <section
+        className="relative z-10 py-28 px-5 sm:px-8 md:px-12 border-t border-border/30 overflow-hidden"
+        style={{ background: "oklch(0.12 0.014 243 / 0.5)" }}
+      >
+        {/* Radial focal glow */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background:
+              "radial-gradient(ellipse 70% 60% at 50% 50%, oklch(0.82 0.22 195 / 0.06) 0%, transparent 65%)",
+          }}
+        />
+        {/* Subtle top shimmer */}
+        <div
+          className="absolute top-0 left-0 right-0 h-px pointer-events-none"
+          style={{
+            background:
+              "linear-gradient(to right, transparent, oklch(0.82 0.22 195 / 0.3) 40%, oklch(0.82 0.22 195 / 0.3) 60%, transparent)",
+          }}
+        />
+
+        <div className="max-w-3xl mx-auto text-center relative">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-40px" }}
+            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          >
+            {/* DFINITY badge */}
+            <div className="flex justify-center mb-8">
+              <div
+                className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full border text-xs font-mono"
+                style={{
+                  background: "oklch(0.82 0.22 195 / 0.06)",
+                  borderColor: "oklch(0.82 0.22 195 / 0.25)",
+                  color: "oklch(0.82 0.22 195)",
+                }}
+              >
+                <span className="w-1.5 h-1.5 rounded-full bg-primary" />
+                DFINITY Foundation
+              </div>
+            </div>
+
+            {/* Giant decorative opening quote */}
+            <div
+              className="font-display leading-none select-none mb-2 text-center"
+              style={{
+                fontSize: "6rem",
+                color: "oklch(0.82 0.22 195 / 0.18)",
+                lineHeight: 0.85,
+                marginBottom: "-1.5rem",
+              }}
+              aria-hidden="true"
+            >
+              &ldquo;
+            </div>
+
+            {/* Quote text */}
+            <blockquote>
+              <p
+                className="font-display italic font-medium leading-relaxed mb-8 text-foreground"
+                style={{ fontSize: "clamp(1.1rem, 2.5vw, 1.45rem)" }}
+              >
+                Ha that&apos;s cool.. kind of a visualization of what cloud
+                engines can do? I like
+              </p>
+
+              {/* Attribution */}
+              <footer>
+                <div className="flex flex-col items-center gap-1.5">
+                  <div
+                    className="w-8 h-px mb-2"
+                    style={{ background: "oklch(0.82 0.22 195 / 0.4)" }}
+                  />
+                  <cite className="not-italic font-display font-semibold text-foreground text-base">
+                    Dominic Williams
+                  </cite>
+                  <p className="text-sm text-muted-foreground font-medium">
+                    Founder &amp; Chief Scientist, DFINITY Foundation
+                  </p>
+                  <p
+                    className="font-mono text-xs mt-2 italic"
+                    style={{ color: "oklch(0.60 0.08 195)" }}
+                  >
+                    Unsolicited reaction on seeing LockFree Engine for the first
+                    time
+                  </p>
+                </div>
+              </footer>
+            </blockquote>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ── Roadmap ── */}
+      <section
+        className="relative z-10 py-24 px-5 sm:px-8 md:px-12 border-t border-border/30 overflow-hidden"
+        style={{ background: "oklch(0.11 0.014 243 / 0.7)" }}
+      >
+        {/* Background glow */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background:
+              "radial-gradient(ellipse 90% 55% at 50% 100%, oklch(0.82 0.22 195 / 0.04) 0%, transparent 65%)",
+          }}
+        />
+
+        <div className="max-w-5xl mx-auto relative">
+          {/* Section header */}
+          <motion.div
+            className="text-center mb-16"
+            initial={{ opacity: 0, y: 18 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <div
+              className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full border text-xs font-mono mb-5"
+              style={{
+                background: "oklch(0.82 0.22 195 / 0.06)",
+                borderColor: "oklch(0.82 0.22 195 / 0.25)",
+                color: "oklch(0.82 0.22 195)",
+              }}
+            >
+              <Calendar className="w-3 h-3" />
+              Roadmap
+            </div>
+            <h2
+              className="font-display font-bold tracking-tight mb-4"
+              style={{ fontSize: "clamp(1.75rem, 4vw, 2.5rem)" }}
+            >
+              The road to full cloud freedom.
+            </h2>
+            <p className="text-muted-foreground max-w-xl mx-auto leading-relaxed text-sm md:text-base">
+              LockFree Engine is a working demo today. When the ICP Cloud
+              Engines API goes public, this becomes the real thing.
+            </p>
+          </motion.div>
+
+          {/* Desktop: horizontal connector line */}
+          <div className="hidden lg:block relative mb-2">
+            <div
+              className="absolute left-[16.66%] right-[16.66%] top-[2.2rem] h-px"
+              style={{
+                background:
+                  "linear-gradient(to right, oklch(0.72 0.19 145 / 0.5), oklch(0.82 0.22 195 / 0.5), oklch(0.72 0.2 310 / 0.5))",
+              }}
+            />
+          </div>
+
+          {/* Phase cards */}
+          <motion.div
+            className="grid grid-cols-1 lg:grid-cols-3 gap-5"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-40px" }}
+            variants={{
+              hidden: {},
+              visible: { transition: { staggerChildren: 0.14 } },
+            }}
+          >
+            {ROADMAP_PHASES.map((phase) => (
+              <motion.div
+                key={phase.phase}
+                className="relative flex flex-col rounded-2xl border backdrop-blur-sm overflow-hidden"
+                style={{
+                  background: phase.accentBg,
+                  borderColor: phase.accentBorder,
+                }}
+                variants={{
+                  hidden: { opacity: 0, y: 24 },
+                  visible: {
+                    opacity: 1,
+                    y: 0,
+                    transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] },
+                  },
+                }}
+              >
+                {/* Top status bar */}
+                <div
+                  className="h-0.5 w-full"
+                  style={{
+                    background:
+                      phase.status === "LIVE"
+                        ? `linear-gradient(to right, ${phase.accent}, ${phase.accent.replace(")", " / 0.3)")})`
+                        : `linear-gradient(to right, ${phase.accent.replace(")", " / 0.25)")}, transparent)`,
+                  }}
+                />
+
+                <div className="p-6 flex flex-col gap-4 flex-1">
+                  {/* Phase label + status pill */}
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <div
+                        className="font-mono text-[10px] font-semibold tracking-widest uppercase mb-1"
+                        style={{ color: phase.accent }}
+                      >
+                        {phase.phase}
+                      </div>
+                      <div className="font-display font-semibold text-foreground text-base leading-tight">
+                        {phase.label}
+                      </div>
+                    </div>
+                    <div
+                      className="shrink-0 flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[10px] font-mono font-semibold whitespace-nowrap"
+                      style={{
+                        background:
+                          phase.status === "LIVE"
+                            ? `${phase.accent.replace(")", " / 0.15)")}`
+                            : "oklch(0.14 0.016 243 / 0.8)",
+                        borderColor:
+                          phase.status === "LIVE"
+                            ? `${phase.accent.replace(")", " / 0.4)")}`
+                            : "oklch(0.25 0.016 243)",
+                        color:
+                          phase.status === "LIVE"
+                            ? phase.accent
+                            : "oklch(0.55 0.02 240)",
+                        boxShadow:
+                          phase.status === "LIVE"
+                            ? `0 0 10px ${phase.accent.replace(")", " / 0.3)")}`
+                            : "none",
+                      }}
+                    >
+                      {phase.status === "LIVE" && (
+                        <span
+                          className="w-1.5 h-1.5 rounded-full animate-pulse"
+                          style={{ background: phase.accent }}
+                        />
+                      )}
+                      {phase.status}
+                    </div>
+                  </div>
+
+                  {/* Period */}
+                  <div
+                    className="flex items-center gap-1.5 font-mono text-xs"
+                    style={{ color: "oklch(0.55 0.02 240)" }}
+                  >
+                    <Clock className="w-3 h-3" />
+                    {phase.period}
+                  </div>
+
+                  {/* Items */}
+                  <ul className="flex flex-col gap-2 mt-1">
+                    {phase.items.map((item) => (
+                      <li key={item} className="flex items-start gap-2.5">
+                        <div
+                          className="w-1.5 h-1.5 rounded-full mt-1.5 shrink-0"
+                          style={{
+                            background:
+                              phase.status === "LIVE"
+                                ? phase.accent
+                                : "oklch(0.35 0.016 243)",
+                          }}
+                        />
+                        <span
+                          className="text-sm leading-relaxed"
+                          style={{
+                            color:
+                              phase.status === "LIVE"
+                                ? "oklch(0.88 0.008 240)"
+                                : "oklch(0.6 0.014 240)",
+                          }}
+                        >
+                          {item}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ── Vision / Future State ── */}
+      <section
+        className="relative z-10 py-28 px-5 sm:px-8 md:px-12 border-t border-border/30 overflow-hidden"
+        style={{ background: "oklch(0.09 0.016 245)" }}
+      >
+        {/* Multi-point atmospheric glow */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background:
+              "radial-gradient(ellipse 70% 55% at 20% 50%, oklch(0.82 0.22 195 / 0.05) 0%, transparent 60%), " +
+              "radial-gradient(ellipse 50% 50% at 80% 40%, oklch(0.72 0.2 310 / 0.05) 0%, transparent 55%), " +
+              "radial-gradient(ellipse 60% 40% at 50% 100%, oklch(0.74 0.19 145 / 0.04) 0%, transparent 60%)",
+          }}
+        />
+        {/* Top shimmer line */}
+        <div
+          className="absolute top-0 left-0 right-0 h-px pointer-events-none"
+          style={{
+            background:
+              "linear-gradient(to right, transparent 0%, oklch(0.72 0.2 310 / 0.3) 30%, oklch(0.82 0.22 195 / 0.4) 50%, oklch(0.74 0.19 145 / 0.3) 70%, transparent 100%)",
+          }}
+        />
+
+        <div className="max-w-5xl mx-auto relative">
+          {/* Section header */}
+          <motion.div
+            className="text-center mb-16"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <div
+              className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full border text-xs font-mono mb-5"
+              style={{
+                background: "oklch(0.82 0.22 195 / 0.06)",
+                borderColor: "oklch(0.82 0.22 195 / 0.25)",
+                color: "oklch(0.82 0.22 195)",
+              }}
+            >
+              <Rocket className="w-3 h-3" />
+              Vision 2027
+            </div>
+            <h2
+              className="font-display font-bold tracking-tight mb-5"
+              style={{ fontSize: "clamp(2.2rem, 5vw, 3.5rem)" }}
+            >
+              What this becomes.
+            </h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto leading-relaxed text-sm md:text-base">
+              When the ICP Cloud Engines API launches publicly, LockFree Engine
+              transforms from a visualization into the definitive multi-cloud
+              management layer for the Internet Computer ecosystem.
+            </p>
+          </motion.div>
+
+          {/* Vision cards */}
+          <motion.div
+            className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-16"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-40px" }}
+            variants={{
+              hidden: {},
+              visible: { transition: { staggerChildren: 0.14 } },
+            }}
+          >
+            {VISION_CARDS.map((card) => (
+              <motion.div
+                key={card.title}
+                className="group relative rounded-2xl border p-7 flex flex-col gap-5 overflow-hidden"
+                style={{
+                  background: card.accentBg,
+                  borderColor: card.accentBorder,
+                }}
+                variants={{
+                  hidden: { opacity: 0, y: 28 },
+                  visible: {
+                    opacity: 1,
+                    y: 0,
+                    transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] },
+                  },
+                }}
+              >
+                {/* Hover corner glow */}
+                <div
+                  className="absolute -top-12 -right-12 w-36 h-36 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"
+                  style={{
+                    background: `radial-gradient(circle, ${card.accent.replace(")", " / 0.18)")} 0%, transparent 70%)`,
+                  }}
+                />
+
+                {/* Icon */}
+                <div
+                  className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0"
+                  style={{
+                    background: card.accentBg,
+                    border: `1px solid ${card.accentBorder}`,
+                    boxShadow: `0 0 18px ${card.accent.replace(")", " / 0.15)")}`,
+                  }}
+                >
+                  <card.icon
+                    className="w-5 h-5"
+                    style={{ color: card.accent }}
+                  />
+                </div>
+
+                <div>
+                  <h3
+                    className="font-display font-semibold text-base mb-3"
+                    style={{ color: card.accent }}
+                  >
+                    {card.title}
+                  </h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    {card.body}
+                  </p>
+                </div>
+              </motion.div>
+            ))}
+          </motion.div>
+
+          {/* Closing statement */}
+          <motion.div
+            className="text-center"
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <div
+              className="inline-block rounded-2xl border px-8 py-6 max-w-2xl"
+              style={{
+                background:
+                  "linear-gradient(135deg, oklch(0.82 0.22 195 / 0.06) 0%, oklch(0.72 0.2 310 / 0.04) 100%)",
+                borderColor: "oklch(0.82 0.22 195 / 0.2)",
+                boxShadow:
+                  "0 0 40px oklch(0.82 0.22 195 / 0.05), inset 0 1px 0 oklch(0.82 0.22 195 / 0.08)",
+              }}
+            >
+              <Star
+                className="w-5 h-5 mx-auto mb-4"
+                style={{ color: "oklch(0.82 0.22 195 / 0.5)" }}
+              />
+              <p
+                className="font-display font-bold italic leading-snug"
+                style={{
+                  fontSize: "clamp(1.1rem, 2.2vw, 1.3rem)",
+                  background:
+                    "linear-gradient(125deg, oklch(0.92 0.14 195) 0%, oklch(0.82 0.22 195) 40%, oklch(0.72 0.2 310) 80%)",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                  backgroundClip: "text",
+                }}
+              >
+                &ldquo;We&apos;re not waiting for the future. We&apos;re
+                building the dashboard for it.&rdquo;
+              </p>
+            </div>
+          </motion.div>
         </div>
       </section>
 

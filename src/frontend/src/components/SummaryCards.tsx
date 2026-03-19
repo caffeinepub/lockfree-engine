@@ -1,9 +1,9 @@
-import { Skeleton } from "@/components/ui/skeleton";
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Skeleton } from "@/components/ui/skeleton";
 import { ArrowRightLeft, Cpu, DollarSign, Info, Shield } from "lucide-react";
 import type { Engine } from "../backend.d.ts";
 import { formatCostPerMonth } from "../lib/providerUtils";
@@ -111,19 +111,19 @@ export function SummaryCards({ engines, isLoading }: SummaryCardsProps) {
                 className="w-4 h-4"
                 style={{ color: card.accentColor }}
               />
-              <Tooltip>
-                <TooltipTrigger asChild>
+              <Popover>
+                <PopoverTrigger asChild>
                   <button
                     type="button"
                     className="text-muted-foreground/50 hover:text-muted-foreground transition-colors"
                   >
                     <Info className="w-3.5 h-3.5" />
                   </button>
-                </TooltipTrigger>
-                <TooltipContent side="top" className="max-w-52">
+                </PopoverTrigger>
+                <PopoverContent side="top" className="max-w-52 text-sm p-3">
                   <p>{card.tooltip}</p>
-                </TooltipContent>
-              </Tooltip>
+                </PopoverContent>
+              </Popover>
             </div>
 
             {/* Value — visually dominant */}
