@@ -497,3 +497,16 @@
       oklch(0.55 0.2 160 / 0.35), 0 0 45px oklch(0.5 0.2 160 / 0.18);
   }
 }
+
+@keyframes emerald-pulse-text {
+  0%,
+  100% {
+    color: oklch(0.72 0.19 145);
+    text-shadow: 0 0 12px oklch(0.72 0.19 145 / 0.6);
+  }
+  50% {
+    color: oklch(0.82 0.22 145);
+    text-shadow: 0 0 20px oklch(0.72 0.19 145 / 0.9), 0 0 40px
+      oklch(0.72 0.19 145 / 0.4);
+  }
+}

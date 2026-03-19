@@ -175,23 +175,18 @@ function AppShell() {
     }
   }, [identity]);
 
-  // Claim admin on login — first non-anonymous caller becomes admin.
-  // After the call (success or failure), both invalidate AND immediately refetch
-  // so the sidebar admin link appears without requiring a page reload.
+  // Claim admin on login — seed the query cache immediately from the return value
+  // so the sidebar admin link appears without a second round-trip.
   useEffect(() => {
     if (!identity || !actor) return;
     actor
       .claimInitialAdmin()
-      .then(() => {
-        void queryClient.invalidateQueries({
-          queryKey: adminQueryKeys.isAdmin,
-        });
-        void queryClient.refetchQueries({ queryKey: adminQueryKeys.isAdmin });
+      .then((result) => {
+        // Immediately write the definitive answer into the cache — no extra round-trip
+        queryClient.setQueryData(adminQueryKeys.isAdmin, result);
       })
       .catch(() => {
-        void queryClient.invalidateQueries({
-          queryKey: adminQueryKeys.isAdmin,
-        });
+        // On failure, fall back to a fresh query
         void queryClient.refetchQueries({ queryKey: adminQueryKeys.isAdmin });
       });
   }, [identity, actor, queryClient]);

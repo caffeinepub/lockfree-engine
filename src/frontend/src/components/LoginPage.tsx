@@ -150,37 +150,6 @@ function ProviderNetwork() {
         />
       </svg>
 
-      {/* Labels below nodes */}
-      <div className="absolute inset-0 pointer-events-none">
-        <motion.div
-          className="absolute text-xs font-mono font-semibold"
-          style={{ top: "4%", left: "64%", color: "oklch(0.72 0.18 55)" }}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.8 }}
-        >
-          Amazon
-        </motion.div>
-        <motion.div
-          className="absolute text-xs font-mono font-semibold"
-          style={{ top: "66%", left: "4%", color: "oklch(0.65 0.18 220)" }}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.95 }}
-        >
-          Google
-        </motion.div>
-        <motion.div
-          className="absolute text-xs font-mono font-semibold"
-          style={{ top: "72%", left: "70%", color: "oklch(0.72 0.17 195)" }}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.1 }}
-        >
-          Microsoft
-        </motion.div>
-      </div>
-
       {/* Migrate arrow badge */}
       <motion.div
         className="absolute bottom-4 left-1/2 -translate-x-1/2 text-xs font-mono text-muted-foreground bg-card border border-border px-2.5 py-1 rounded-full whitespace-nowrap"
@@ -339,15 +308,15 @@ export function LoginPage({
                   </div>
 
                   {/* Demo Data toggle row */}
-                  <div className="flex items-center justify-between gap-4 px-1">
+                  <div className="flex items-center justify-between gap-4 px-3 py-4 bg-emerald-950/30 border border-emerald-800/40 rounded-lg">
                     <div className="flex flex-col">
-                      <span className="text-sm font-semibold text-emerald-300 flex items-center gap-2">
+                      <span className="text-base font-bold text-emerald-300 flex items-center gap-2">
                         Demo Data
                         {isLoadingDemo && (
-                          <Loader2 className="w-3.5 h-3.5 animate-spin text-muted-foreground" />
+                          <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
                         )}
                       </span>
-                      <span className="text-xs text-muted-foreground mt-0.5">
+                      <span className="text-sm text-muted-foreground mt-0.5">
                         Explore the dashboard with simulated engines
                       </span>
                     </div>
@@ -363,7 +332,7 @@ export function LoginPage({
                         disabled={isLoadingDemo}
                         data-ocid="login.demo.toggle"
                         aria-label="Toggle demo data"
-                        className="relative z-10"
+                        className="relative z-10 scale-125"
                       />
                     </div>
                   </div>

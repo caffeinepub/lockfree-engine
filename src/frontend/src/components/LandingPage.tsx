@@ -141,39 +141,6 @@ function ProviderNetwork() {
           }}
         />
       </svg>
-
-      <div className="absolute inset-0 pointer-events-none">
-        {(
-          [
-            {
-              label: "Amazon",
-              style: { top: "4%", left: "64%", color: "oklch(0.74 0.18 55)" },
-              delay: 0.8,
-            },
-            {
-              label: "Google",
-              style: { top: "66%", left: "4%", color: "oklch(0.68 0.18 220)" },
-              delay: 0.95,
-            },
-            {
-              label: "Microsoft",
-              style: { top: "72%", left: "68%", color: "oklch(0.74 0.17 195)" },
-              delay: 1.1,
-            },
-          ] as const
-        ).map(({ label, style, delay }) => (
-          <motion.div
-            key={label}
-            className="absolute text-xs font-mono font-semibold"
-            style={style}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay }}
-          >
-            {label}
-          </motion.div>
-        ))}
-      </div>
     </div>
   );
 }
@@ -1139,8 +1106,17 @@ export function LandingPage({
             >
               Ready to break free?
             </h2>
-            <p className="text-muted-foreground mb-10 leading-relaxed">
-              Sign in to get full access, try the live demo.
+            <p className="text-lg md:text-xl mb-10 leading-relaxed text-muted-foreground">
+              Sign in to get full access,{" "}
+              <span
+                style={{
+                  color: "oklch(0.72 0.19 145)",
+                  animation: "emerald-pulse-text 1.8s ease-in-out infinite",
+                }}
+              >
+                try the live demo
+              </span>
+              .
             </p>
 
             <div className="flex justify-center">
