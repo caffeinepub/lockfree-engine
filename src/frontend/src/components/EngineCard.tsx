@@ -104,6 +104,7 @@ export function EngineCard({
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: index * 0.05 }}
         layout
+        data-tour-id={`engine-card-${index}`}
       >
         {/* Provider accent bar — the primary identity signal */}
         <div
@@ -253,6 +254,7 @@ export function EngineCard({
                   variant="ghost"
                   className="h-7 px-2.5 text-xs gap-1.5"
                   onClick={() => onDeployShortcut(engine)}
+                  data-tour-id={`ai-deploy-btn-${index}`}
                 >
                   <Terminal className="w-3 h-3" />
                   Deploy

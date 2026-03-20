@@ -989,6 +989,83 @@ const businessSections: GuideSection[] = [
       </div>
     ),
   },
+  {
+    id: "whats-coming-biz",
+    title: "What's Coming",
+    icon: Rocket,
+    content: (
+      <div className="space-y-3">
+        <p>
+          LockFree Engine is already built and waiting. When the ICP Cloud
+          Engines API (Mission 70) goes public, the simulation becomes reality.
+          Here is what unlocks:
+        </p>
+        <div className="space-y-2">
+          <div className="rounded-md border border-border p-3">
+            <div className="font-medium text-sm mb-1">
+              🌐 Real Multi-Cloud Provisioning
+            </div>
+            <div className="text-xs text-muted-foreground">
+              Spin up genuine cloud engines across providers from a single
+              dashboard — not simulated, fully live.
+            </div>
+          </div>
+          <div className="rounded-md border border-border p-3">
+            <div className="font-medium text-sm mb-1">
+              💡 Live AI Cost Optimisation
+            </div>
+            <div className="text-xs text-muted-foreground">
+              Real-time AI recommendations based on actual usage patterns and
+              live pricing data from every provider.
+            </div>
+          </div>
+          <div className="rounded-md border border-border p-3">
+            <div className="font-medium text-sm mb-1">
+              ⚡ One-Click Migration with Zero Downtime
+            </div>
+            <div className="text-xs text-muted-foreground">
+              Move your entire workload between cloud providers without your
+              users noticing a thing.
+            </div>
+          </div>
+          <div className="rounded-md border border-border p-3">
+            <div className="font-medium text-sm mb-1">
+              📈 Automated Demand-Driven Scaling
+            </div>
+            <div className="text-xs text-muted-foreground">
+              Your engines grow and shrink automatically based on real demand —
+              no manual intervention required.
+            </div>
+          </div>
+          <div className="rounded-md border border-border p-3">
+            <div className="font-medium text-sm mb-1">
+              🛡️ Enterprise SLA Guarantees
+            </div>
+            <div className="text-xs text-muted-foreground">
+              Contractual uptime guarantees backed by ICP's decentralised
+              infrastructure — not a single provider's promise.
+            </div>
+          </div>
+        </div>
+        <p className="text-sm text-muted-foreground italic">
+          "LockFree Engine is already built and waiting. When the API goes live,
+          the simulation becomes reality."
+        </p>
+        <p className="text-xs text-muted-foreground">
+          Follow the Mission 70 roadmap at{" "}
+          <a
+            href="https://forum.dfinity.org"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-primary underline"
+          >
+            forum.dfinity.org
+          </a>
+          .
+        </p>
+      </div>
+    ),
+  },
 ];
 
 // ─── Developer Sections ───────────────────────────────────────────────────────
@@ -1737,6 +1814,101 @@ dfx canister --network ic id lockfree_frontend`}</pre>
           Follow existing patterns in useQueries.ts for React Query setup. Use
           the <code className="text-xs bg-muted px-1 rounded">useActor</code>{" "}
           hook to access the backend actor — do not import it directly.
+        </p>
+      </div>
+    ),
+  },
+  {
+    id: "whats-coming-dev",
+    title: "What's Coming",
+    icon: Rocket,
+    content: (
+      <div className="space-y-3">
+        <p>
+          When the ICP Cloud Engines API (Mission 70) goes public, every
+          simulated call in LockFree Engine will be replaced with a real
+          endpoint. Here is what the developer surface looks like:
+        </p>
+        <div className="space-y-2">
+          <div className="rounded-md border border-border p-3">
+            <div className="font-medium text-sm mb-1">
+              🔌 Real API Endpoints
+            </div>
+            <div className="text-xs text-muted-foreground">
+              All simulated provisioning and migration calls will map to live
+              ICP Cloud Engine RPC methods. Drop-in replacement — no
+              architectural changes needed.
+            </div>
+          </div>
+          <div className="rounded-md border border-border p-3 font-mono">
+            <div className="font-medium text-sm mb-1 font-sans">
+              Subnet Migration
+            </div>
+            <code className="text-xs text-primary">
+              await cloud_engine.migrate(targetSubnet);
+            </code>
+            <div className="text-xs text-muted-foreground mt-1 font-sans">
+              Live cross-subnet migration with automatic state transfer and
+              zero-downtime cutover.
+            </div>
+          </div>
+          <div className="rounded-md border border-border p-3">
+            <div className="font-medium text-sm mb-1">
+              ⚖️ Demand-Driven Scaling via NNS
+            </div>
+            <div className="text-xs text-muted-foreground">
+              NNS governance controls subnet capacity allocation. Your engine
+              scales in response to on-chain demand signals — no manual scaling
+              policies.
+            </div>
+          </div>
+          <div className="rounded-md border border-border p-3 font-mono">
+            <div className="font-medium text-sm mb-1 font-sans">
+              WASM Hot-Swap
+            </div>
+            <code className="text-xs text-primary">
+              await cloud_engine.upgradeModule(newWasmBytes);
+            </code>
+            <div className="text-xs text-muted-foreground mt-1 font-sans">
+              Hot-swap your WASM module without downtime. State is preserved
+              across the upgrade boundary.
+            </div>
+          </div>
+          <div className="rounded-md border border-border p-3">
+            <div className="font-medium text-sm mb-1">
+              🌍 Multi-Region Canister Replication
+            </div>
+            <div className="text-xs text-muted-foreground">
+              Replicate your canister state across geographic subnets for
+              latency reduction and regional resilience.
+            </div>
+          </div>
+          <div className="rounded-md border border-border p-3">
+            <div className="font-medium text-sm mb-1">
+              ⛓️ Chain Fusion Cross-Chain Compute
+            </div>
+            <div className="text-xs text-muted-foreground">
+              Direct integration with ICP Chain Fusion for cross-chain compute
+              triggers — your cloud engine can react to events on Ethereum,
+              Bitcoin, and other chains natively.
+            </div>
+          </div>
+        </div>
+        <p className="text-sm text-muted-foreground italic">
+          "LockFree Engine is already built and waiting. When the API goes live,
+          the simulation becomes reality."
+        </p>
+        <p className="text-xs text-muted-foreground">
+          Track Mission 70 progress at{" "}
+          <a
+            href="https://forum.dfinity.org"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-primary underline"
+          >
+            forum.dfinity.org
+          </a>
+          .
         </p>
       </div>
     ),

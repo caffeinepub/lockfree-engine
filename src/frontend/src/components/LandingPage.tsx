@@ -4,7 +4,6 @@ import {
   ArrowRight,
   Calendar,
   CheckCircle2,
-  Clock,
   Code2,
   Copy,
   Download,
@@ -261,7 +260,6 @@ const ROADMAP_PHASES = [
   {
     phase: "Phase 1",
     label: "Now: Visualization & Demo",
-    period: "Q1 2026 — Current",
     status: "LIVE" as const,
     accent: "oklch(0.72 0.19 145)",
     accentBg: "oklch(0.72 0.19 145 / 0.08)",
@@ -277,7 +275,6 @@ const ROADMAP_PHASES = [
   {
     phase: "Phase 2",
     label: "Beta API Access",
-    period: "Q4 2026 — Upcoming",
     status: "UPCOMING" as const,
     accent: "oklch(0.82 0.22 195)",
     accentBg: "oklch(0.82 0.22 195 / 0.06)",
@@ -293,7 +290,6 @@ const ROADMAP_PHASES = [
   {
     phase: "Phase 3",
     label: "Full Production",
-    period: "Q2 2027 — Future",
     status: "FUTURE" as const,
     accent: "oklch(0.72 0.2 310)",
     accentBg: "oklch(0.72 0.2 310 / 0.06)",
@@ -1427,13 +1423,6 @@ export function LandingPage({
                   </div>
 
                   {/* Period */}
-                  <div
-                    className="flex items-center gap-1.5 font-mono text-xs"
-                    style={{ color: "oklch(0.55 0.02 240)" }}
-                  >
-                    <Clock className="w-3 h-3" />
-                    {phase.period}
-                  </div>
 
                   {/* Items */}
                   <ul className="flex flex-col gap-2 mt-1">

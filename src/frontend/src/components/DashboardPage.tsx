@@ -16,12 +16,13 @@ import {
   X,
 } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import type { ContentSettings, Engine } from "../backend.d.ts";
 import { useActor } from "../hooks/useActor";
 import { useDeleteEngine, useListEngines } from "../hooks/useQueries";
 import { CostAlerts } from "./CostAlerts";
+import { DEMO_TOUR_SEEN_KEY, DemoTour } from "./DemoTour";
 import { DistributeModal } from "./DistributeModal";
 import { EngineCard } from "./EngineCard";
 import { LiveCostDashboard } from "./LiveCostDashboard";
@@ -129,6 +130,7 @@ export function DashboardPage({
   const [newModalOpen, setNewModalOpen] = useState(false);
   const [distributeOpen, setDistributeOpen] = useState(false);
   const [bannerDismissed, setBannerDismissed] = useState(false);
+  const [demoTourOpen, setDemoTourOpen] = useState(false);
   const { data: engines, isLoading } = useListEngines();
   const { mutate: deleteEngine, isPending: isDeleting } = useDeleteEngine();
   const { actor } = useActor();
@@ -149,6 +151,17 @@ export function DashboardPage({
   });
 
   const announcementBanner = publicSettings?.announcementBanner ?? "";
+
+  // Auto-trigger demo tour when demo mode activates (only if not seen before)
+  useEffect(() => {
+    if (!isDemoMode) return;
+    const seen = localStorage.getItem(DEMO_TOUR_SEEN_KEY);
+    if (seen) return;
+    const t = setTimeout(() => {
+      setDemoTourOpen(true);
+    }, 800);
+    return () => clearTimeout(t);
+  }, [isDemoMode]);
 
   function handleDelete(id: bigint) {
     deleteEngine(id, {
@@ -204,10 +217,19 @@ export function DashboardPage({
           </span>
           <button
             type="button"
+            onClick={() => setDemoTourOpen(true)}
+            className="text-xs font-medium px-2 py-1 rounded text-status-provisioning/80 hover:text-status-provisioning transition-colors"
+            data-ocid="demo_tour.open_modal_button"
+          >
+            Take the Tour
+          </button>
+          <button
+            type="button"
             onClick={onClearDemo}
-            className="ml-auto flex-shrink-0 text-xs font-semibold px-3 py-1.5 rounded-md bg-white/15 hover:bg-white/25 text-white border border-white/30 transition-colors"
+            className="flex-shrink-0 text-xs font-semibold px-3 py-1.5 rounded-md bg-white/15 hover:bg-white/25 text-white border border-white/30 transition-colors"
             data-ocid="dashboard.demo.toggle"
             aria-label="Exit demo mode"
+            data-tour-id="exit-demo-btn"
           >
             Exit Demo
           </button>
@@ -218,7 +240,9 @@ export function DashboardPage({
       <CostAlerts engines={engines ?? []} isDemoMode={isDemoMode} />
 
       {/* Summary cards */}
-      <SummaryCards engines={engines} isLoading={isLoading} />
+      <div data-tour-id="summary-cards">
+        <SummaryCards engines={engines} isLoading={isLoading} />
+      </div>
 
       {/* Engines section */}
       <div>
@@ -261,6 +285,8 @@ export function DashboardPage({
               size="sm"
               className="h-8 gap-2 text-xs"
               onClick={() => setNewModalOpen(true)}
+              data-tour-id="new-engine-btn"
+              data-ocid="engines.primary_button"
             >
               <Plus className="w-3.5 h-3.5" />
               New Engine
@@ -351,6 +377,8 @@ export function DashboardPage({
         onClose={() => setDistributeOpen(false)}
         engines={engines ?? []}
       />
+
+      <DemoTour open={demoTourOpen} onClose={() => setDemoTourOpen(false)} />
     </div>
   );
 }

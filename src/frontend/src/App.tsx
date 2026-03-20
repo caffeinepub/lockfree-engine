@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import type { Engine } from "./backend.d.ts";
 import { AppSidebar } from "./components/AppSidebar";
 import { BillingPage } from "./components/BillingPage";
+import { ChangelogPage } from "./components/ChangelogPage";
 import { ChatPage } from "./components/ChatPage";
 import { DashboardPage } from "./components/DashboardPage";
 import { EnginesPage } from "./components/EnginesPage";
@@ -102,6 +103,7 @@ type Page =
   | "referrals"
   | "partners"
   | "userguide"
+  | "changelog"
   | "admin";
 
 const PAGE_TITLES: Record<Page, string> = {
@@ -113,6 +115,7 @@ const PAGE_TITLES: Record<Page, string> = {
   referrals: "Referrals & Affiliates",
   partners: "Partners",
   userguide: "User Guide",
+  changelog: "Changelog",
   admin: "Admin",
 };
 
@@ -363,6 +366,7 @@ function AppShell() {
             <PartnersPage onNavigate={(p) => setActivePage(p as Page)} />
           )}
           {activePage === "userguide" && <UserGuidePage />}
+          {activePage === "changelog" && <ChangelogPage />}
           {activePage === "admin" && <AdminPage />}
         </main>
 
