@@ -5,6 +5,8 @@ import {
   Award,
   BarChart3,
   Building2,
+  Check,
+  CheckCircle2,
   ChevronRight,
   Shield,
   Star,
@@ -184,6 +186,12 @@ function TierCard({
 export function PartnersPage({ onNavigate }: PartnersPageProps) {
   const [referralCount, setReferralCount] = useState(50);
   const [engineTierIndex, setEngineTierIndex] = useState(0);
+  const [applyState, setApplyState] = useState<"idle" | "applying" | "success">(
+    "idle",
+  );
+  const [calcApplyState, setCalcApplyState] = useState<
+    "idle" | "loading" | "success"
+  >("idle");
 
   const tier = getPartnerTier(referralCount);
   const kickbackRate = getKickbackRate(referralCount);
@@ -212,6 +220,24 @@ export function PartnersPage({ onNavigate }: PartnersPageProps) {
     [],
   );
 
+  const tierLabel =
+    tier === "bronze" ? "Bronze" : tier === "silver" ? "Silver" : "Gold";
+
+  function handleRegisterClick() {
+    setApplyState("applying");
+    setTimeout(() => {
+      setApplyState("success");
+    }, 1500);
+  }
+
+  function handleCalcApply() {
+    setCalcApplyState("loading");
+    setTimeout(() => {
+      setCalcApplyState("success");
+      setTimeout(() => setCalcApplyState("idle"), 4000);
+    }, 1000);
+  }
+
   return (
     <div className="max-w-4xl mx-auto space-y-8 pb-8">
       {/* Page header */}
@@ -221,8 +247,8 @@ export function PartnersPage({ onNavigate }: PartnersPageProps) {
         </h1>
         <p className="text-sm text-muted-foreground mt-0.5 max-w-2xl">
           Earn from every engine provisioned through your network — powered by
-          ICP's demand-driven compute model. No vendor lock-in, no middlemen,
-          on-chain transparency.
+          ICP&apos;s demand-driven compute model. No vendor lock-in, no
+          middlemen, on-chain transparency.
         </p>
       </div>
 
@@ -400,6 +426,38 @@ export function PartnersPage({ onNavigate }: PartnersPageProps) {
                   Based on {referralCount} consistent monthly referrals
                 </div>
               </div>
+
+              {/* Calculator Apply button */}
+              {calcApplyState === "success" ? (
+                <div className="rounded-xl border border-[oklch(0.72_0.19_145/0.4)] bg-[oklch(0.72_0.19_145/0.08)] px-4 py-3 flex items-center gap-2.5 transition-all duration-300 animate-in fade-in zoom-in-95">
+                  <CheckCircle2 className="w-4 h-4 text-[oklch(0.82_0.19_145)] flex-shrink-0" />
+                  <p className="text-xs text-[oklch(0.82_0.19_145)]">
+                    <strong>Application submitted</strong> for{" "}
+                    <span className="capitalize">{tierLabel}</span> tier — check
+                    your affiliate dashboard
+                  </p>
+                </div>
+              ) : (
+                <Button
+                  className="w-full gap-2"
+                  variant="outline"
+                  disabled={calcApplyState === "loading"}
+                  onClick={handleCalcApply}
+                  data-ocid="partners.calc_apply.button"
+                >
+                  {calcApplyState === "loading" ? (
+                    <>
+                      <span className="w-4 h-4 rounded-full border-2 border-primary/30 border-t-primary animate-spin" />
+                      Submitting...
+                    </>
+                  ) : (
+                    <>
+                      <Zap className="w-4 h-4" />
+                      Start Earning as {tierLabel} Partner
+                    </>
+                  )}
+                </Button>
+              )}
             </div>
           </div>
         </div>
@@ -449,23 +507,80 @@ export function PartnersPage({ onNavigate }: PartnersPageProps) {
       </div>
 
       {/* CTA */}
-      <div className="rounded-xl border border-primary/25 bg-primary/5 p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-        <div>
-          <h3 className="font-display font-bold text-foreground text-lg">
-            Ready to become a partner?
-          </h3>
-          <p className="text-sm text-muted-foreground mt-0.5">
-            Join the affiliate program and start earning from the ICP ecosystem.
-          </p>
+      {applyState === "success" ? (
+        <div className="rounded-xl border border-[oklch(0.72_0.19_145/0.4)] bg-[oklch(0.72_0.19_145/0.08)] p-6 flex flex-col items-center gap-4 text-center transition-all duration-300 animate-in fade-in zoom-in-95">
+          <div className="w-14 h-14 rounded-full flex items-center justify-center bg-[oklch(0.72_0.19_145/0.2)] border border-[oklch(0.72_0.19_145/0.4)]">
+            <Check
+              className="w-7 h-7 text-[oklch(0.82_0.19_145)]"
+              strokeWidth={2.5}
+            />
+          </div>
+          <div>
+            <h3 className="font-display font-bold text-foreground text-lg">
+              Application Submitted!
+            </h3>
+            <p className="text-sm text-muted-foreground mt-1 max-w-sm mx-auto">
+              Welcome to the LockFree Partner Network. We&apos;ll review your
+              application and assign your tier based on referral volume.
+            </p>
+          </div>
+          <div
+            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-bold border"
+            style={{
+              background: `${tierColors[tier].accent}20`,
+              borderColor: `${tierColors[tier].accent}50`,
+              color: tierColors[tier].accent,
+            }}
+          >
+            {tier === "gold" ? (
+              <Star className="w-4 h-4 fill-current" />
+            ) : tier === "silver" ? (
+              <Award className="w-4 h-4" />
+            ) : (
+              <Shield className="w-4 h-4" />
+            )}
+            {tierLabel} Partner
+          </div>
+          <Button
+            className="gap-2 mt-2"
+            onClick={() => onNavigate("referrals")}
+            data-ocid="partners.setup_affiliate.button"
+          >
+            <Users className="w-4 h-4" />
+            Set Up Your Affiliate Account
+          </Button>
         </div>
-        <Button
-          className="gap-2 flex-shrink-0"
-          onClick={() => onNavigate("referrals")}
-        >
-          <Users className="w-4 h-4" />
-          Register as Affiliate
-        </Button>
-      </div>
+      ) : (
+        <div className="rounded-xl border border-primary/25 bg-primary/5 p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div>
+            <h3 className="font-display font-bold text-foreground text-lg">
+              Ready to become a partner?
+            </h3>
+            <p className="text-sm text-muted-foreground mt-0.5">
+              Join the affiliate program and start earning from the ICP
+              ecosystem.
+            </p>
+          </div>
+          <Button
+            className="gap-2 flex-shrink-0"
+            disabled={applyState === "applying"}
+            onClick={handleRegisterClick}
+            data-ocid="partners.register_affiliate.button"
+          >
+            {applyState === "applying" ? (
+              <>
+                <span className="w-4 h-4 rounded-full border-2 border-primary-foreground/30 border-t-primary-foreground animate-spin" />
+                Submitting...
+              </>
+            ) : (
+              <>
+                <Users className="w-4 h-4" />
+                Register as Affiliate
+              </>
+            )}
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

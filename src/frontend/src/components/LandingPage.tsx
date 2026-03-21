@@ -682,7 +682,7 @@ export function LandingPage({
       </section>
 
       {/* ── Features strip ── */}
-      <section className="relative z-10 py-20 border-y border-border/30 bg-card/20 backdrop-blur-sm px-5 sm:px-8 md:px-12">
+      <section className="relative z-10 py-24 border-y border-border/30 bg-card/20 backdrop-blur-sm px-5 sm:px-8 md:px-12">
         <div className="max-w-5xl mx-auto">
           <motion.div
             className="grid grid-cols-1 md:grid-cols-3 gap-6"
@@ -1038,7 +1038,7 @@ export function LandingPage({
             >
               Three steps to total cloud freedom.
             </h2>
-            <p className="text-muted-foreground max-w-lg mx-auto leading-relaxed">
+            <p className="text-sm md:text-base text-muted-foreground max-w-lg mx-auto leading-relaxed">
               From zero to multi-cloud in minutes. Provision, deploy, then
               migrate instantly — no DevOps PhD required.
             </p>
@@ -1085,10 +1085,10 @@ export function LandingPage({
       </section>
 
       {/* ── Security & Trust ── */}
-      <section className="relative z-10 py-20 px-5 sm:px-8 md:px-12 border-t border-border/30">
+      <section className="relative z-10 py-24 px-5 sm:px-8 md:px-12 border-t border-border/30">
         <div className="max-w-5xl mx-auto">
           <motion.div
-            className="text-center mb-12"
+            className="text-center mb-14"
             initial={{ opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -1114,7 +1114,7 @@ export function LandingPage({
             >
               Built on infrastructure you can trust.
             </h2>
-            <p className="text-muted-foreground max-w-lg mx-auto leading-relaxed">
+            <p className="text-sm md:text-base text-muted-foreground max-w-lg mx-auto leading-relaxed">
               No centralised server. No password database. No lock-in. These
               aren't marketing claims — they're technical facts about how ICP
               works.
@@ -1504,7 +1504,7 @@ export function LandingPage({
             </div>
             <h2
               className="font-display font-bold tracking-tight mb-5"
-              style={{ fontSize: "clamp(2.2rem, 5vw, 3.5rem)" }}
+              style={{ fontSize: "clamp(2rem, 4.5vw, 3rem)" }}
             >
               What this becomes.
             </h2>
@@ -1645,7 +1645,7 @@ export function LandingPage({
             >
               Ready to break free?
             </h2>
-            <p className="text-lg md:text-xl mb-10 leading-relaxed text-muted-foreground">
+            <p className="text-base md:text-lg mb-10 leading-relaxed text-muted-foreground">
               Sign in to get full access,{" "}
               <span
                 style={{

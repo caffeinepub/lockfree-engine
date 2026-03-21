@@ -5,8 +5,8 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Sparkles } from "lucide-react";
-import { motion } from "motion/react";
-import { useState } from "react";
+import { AnimatePresence, motion } from "motion/react";
+import { useEffect, useRef, useState } from "react";
 import {
   Area,
   AreaChart,
@@ -105,13 +105,12 @@ function ResilienceGauge({
   const color =
     clampedScore >= 70 ? "#22c55e" : clampedScore >= 40 ? "#f59e0b" : "#ef4444";
 
-  // SVG arc path
   const R = 48;
   const cx = 60;
   const cy = 60;
   const startAngle = -210;
   const endAngle = 30;
-  const totalAngle = endAngle - startAngle; // 240 degrees
+  const totalAngle = endAngle - startAngle;
   const progressAngle = startAngle + (clampedScore / 100) * totalAngle;
 
   function polarToCartesian(
@@ -147,7 +146,6 @@ function ResilienceGauge({
             aria-label={`Resilience score: ${clampedScore}%`}
           >
             <title>Resilience score: {clampedScore}%</title>
-            {/* Track */}
             <path
               d={trackPath}
               fill="none"
@@ -155,7 +153,6 @@ function ResilienceGauge({
               strokeWidth="8"
               strokeLinecap="round"
             />
-            {/* Progress arc */}
             {progressPath && (
               <path
                 d={progressPath}
@@ -166,7 +163,6 @@ function ResilienceGauge({
                 style={{ filter: `drop-shadow(0 0 4px ${color}80)` }}
               />
             )}
-            {/* Score label */}
             <text
               x={cx}
               y={cy - 4}
@@ -195,7 +191,6 @@ function ResilienceGauge({
               Resilience
             </text>
           </svg>
-          {/* Provider count badge */}
           <div
             className="text-xs font-semibold px-2 py-0.5 rounded-full tabular-nums -mt-1"
             style={{
@@ -216,11 +211,114 @@ function ResilienceGauge({
   );
 }
 
+// ── Animated cost number ──────────────────────────────────────────────────
+function AnimatedCost({
+  value,
+  suffix = "",
+}: { value: string; suffix?: string }) {
+  return (
+    <AnimatePresence mode="popLayout">
+      <motion.span
+        key={value}
+        initial={{ opacity: 0, y: -6 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: 6 }}
+        transition={{ duration: 0.3, ease: "easeOut" }}
+        className="inline-block"
+      >
+        {value}
+        {suffix}
+      </motion.span>
+    </AnimatePresence>
+  );
+}
+
+// ── Live ticker hook (demo mode only) ─────────────────────────────────────
+function useLiveCostMultiplier(isDemoMode: boolean) {
+  const [multiplier, setMultiplier] = useState(1.0);
+  const [secondsSinceUpdate, setSecondsSinceUpdate] = useState(0);
+  const tickRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const secRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  useEffect(() => {
+    if (!isDemoMode) {
+      setMultiplier(1.0);
+      return;
+    }
+
+    // Update cost every 8-12 seconds with a tiny random fluctuation
+    function scheduleTick() {
+      const delay = 8000 + Math.random() * 4000;
+      tickRef.current = setTimeout(() => {
+        const delta = (Math.random() - 0.48) * 0.025; // ±2.5%
+        setMultiplier((prev) => Math.max(0.92, Math.min(1.08, prev + delta)));
+        setSecondsSinceUpdate(0);
+        scheduleTick();
+      }, delay);
+    }
+
+    // Seconds-since-update counter
+    secRef.current = setInterval(() => {
+      setSecondsSinceUpdate((s) => s + 1);
+    }, 1000);
+
+    scheduleTick();
+
+    return () => {
+      if (tickRef.current) clearTimeout(tickRef.current);
+      if (secRef.current) clearInterval(secRef.current);
+    };
+  }, [isDemoMode]);
+
+  return { multiplier, secondsSinceUpdate };
+}
+
+// ── Live trend data updater (demo mode only) ──────────────────────────────
+function useLiveTrendData(
+  baseTrendData: { day: string; cost: number }[],
+  isDemoMode: boolean,
+) {
+  const [trendData, setTrendData] = useState(baseTrendData);
+
+  // Update when baseTrendData changes (new engines etc.)
+  useEffect(() => {
+    setTrendData(baseTrendData);
+  }, [baseTrendData]);
+
+  useEffect(() => {
+    if (!isDemoMode) return;
+
+    function scheduleTrendTick() {
+      const delay = 12000 + Math.random() * 6000;
+      return setTimeout(() => {
+        setTrendData((prev) =>
+          prev.map((d, i) => ({
+            ...d,
+            cost: +(
+              d.cost *
+              (0.985 + i * 0.003 + Math.random() * 0.02)
+            ).toFixed(2),
+          })),
+        );
+        scheduleTrendTick();
+      }, delay);
+    }
+
+    const t = scheduleTrendTick();
+    return () => clearTimeout(t);
+  }, [isDemoMode]);
+
+  return trendData;
+}
+
 // ── Main component ──────────────────────────────────────────────────────────
-export function LiveCostDashboard() {
+export function LiveCostDashboard({
+  isDemoMode = false,
+}: { isDemoMode?: boolean }) {
   const [optimizeOpen, setOptimizeOpen] = useState(false);
   const { data: cost, isLoading: costLoading } = useCostSummary();
   const { data: engines, isLoading: enginesLoading } = useListEngines();
+  const { multiplier, secondsSinceUpdate } = useLiveCostMultiplier(isDemoMode);
 
   const isLoading = costLoading || enginesLoading;
   const engineList: Engine[] = engines ?? [];
@@ -236,7 +334,6 @@ export function LiveCostDashboard() {
     };
   });
 
-  // Fallback: use listEngines if cost summary doesn't have engine costs yet
   const displayBarData =
     barData.length > 0
       ? barData
@@ -246,31 +343,46 @@ export function LiveCostDashboard() {
           monthly: e.costPerHour * 720,
         }));
 
-  // Total monthly
-  const totalMonthlyUSD =
+  // Apply live multiplier in demo mode
+  const animatedBarData = isDemoMode
+    ? displayBarData.map((d) => ({
+        ...d,
+        monthly: +(d.monthly * multiplier).toFixed(2),
+      }))
+    : displayBarData;
+
+  const rawTotalMonthlyUSD =
     displayBarData.reduce((sum, d) => sum + d.monthly, 0) ||
     (cost?.totalCost ?? 0) * 720;
+  const totalMonthlyUSD = isDemoMode
+    ? +(rawTotalMonthlyUSD * multiplier).toFixed(2)
+    : rawTotalMonthlyUSD;
   const totalMonthlyICP = totalMonthlyUSD / ICP_RATE;
 
-  // 7-day trend simulation
+  // 7-day trend
   const dayLabels = last7DayLabels();
-  const trendData = dayLabels.map((day, d) => ({
+  const baseTrendData = dayLabels.map((day, d) => ({
     day,
     cost:
-      totalMonthlyUSD > 0
-        ? +(totalMonthlyUSD * (0.92 + d * 0.018 + Math.sin(d) * 0.02)).toFixed(
-            2,
-          )
+      rawTotalMonthlyUSD > 0
+        ? +(
+            rawTotalMonthlyUSD *
+            (0.92 + d * 0.018 + Math.sin(d) * 0.02)
+          ).toFixed(2)
         : +(80 + d * 4 + Math.sin(d) * 3).toFixed(2),
   }));
+  const trendData = useLiveTrendData(baseTrendData, isDemoMode);
 
-  // Resilience score
   const avgResilience =
     engineList.length > 0
       ? engineList.reduce((sum, e) => sum + Number(e.resilienceScore), 0) /
         engineList.length
       : 0;
   const uniqueProviders = new Set(engineList.map((e) => e.provider)).size;
+
+  // Format display values for animation key
+  const displayUSD = `$${totalMonthlyUSD.toFixed(2)}`;
+  const displayICP = `≈ ${totalMonthlyICP.toFixed(2)} ICP/month`;
 
   return (
     <>
@@ -284,15 +396,31 @@ export function LiveCostDashboard() {
         <div className="flex items-start justify-between gap-4 flex-wrap">
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1">
-              {/* Live pulse */}
               <span className="relative flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-status-running animate-pulse flex-shrink-0" />
-                <span className="text-xs text-status-running font-semibold uppercase tracking-wider">
-                  Live
+                <span
+                  className="w-2 h-2 rounded-full flex-shrink-0"
+                  style={{
+                    background: isDemoMode
+                      ? "#22c55e"
+                      : "oklch(var(--status-running))",
+                    animation: "pulse 1.5s ease-in-out infinite",
+                  }}
+                />
+                <span
+                  className="text-xs font-semibold uppercase tracking-wider"
+                  style={{
+                    color: isDemoMode
+                      ? "#22c55e"
+                      : "oklch(var(--status-running))",
+                  }}
+                >
+                  {isDemoMode ? "Live (Demo)" : "Live"}
                 </span>
               </span>
               <span className="text-xs text-muted-foreground">
-                · refreshes every 30s
+                {isDemoMode
+                  ? `· updated ${secondsSinceUpdate}s ago`
+                  : "· refreshes every 30s"}
               </span>
             </div>
 
@@ -309,16 +437,24 @@ export function LiveCostDashboard() {
               </div>
             ) : (
               <>
-                <div className="flex items-end gap-2.5">
+                <div className="flex items-end gap-2.5 overflow-hidden">
                   <span className="text-4xl font-mono font-bold tabular-nums leading-none">
-                    ${totalMonthlyUSD.toFixed(2)}
+                    {isDemoMode ? (
+                      <AnimatedCost value={displayUSD} />
+                    ) : (
+                      displayUSD
+                    )}
                   </span>
                   <span className="text-sm text-muted-foreground mb-1">
                     / month
                   </span>
                 </div>
                 <div className="text-sm text-muted-foreground mt-1 font-mono">
-                  ≈ {totalMonthlyICP.toFixed(2)} ICP/month
+                  {isDemoMode ? (
+                    <AnimatedCost value={displayICP} />
+                  ) : (
+                    displayICP
+                  )}
                 </div>
               </>
             )}
@@ -351,7 +487,6 @@ export function LiveCostDashboard() {
             <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
               Monthly Cost by Engine
             </span>
-            {/* Provider legend */}
             <div className="flex items-center gap-3 ml-auto">
               {Object.entries(PROVIDER_COLORS).map(([p, c]) => (
                 <div key={p} className="flex items-center gap-1">
@@ -371,7 +506,7 @@ export function LiveCostDashboard() {
                 className="h-[220px] rounded-lg animate-pulse min-w-[320px]"
                 style={{ background: "oklch(var(--muted))" }}
               />
-            ) : displayBarData.length === 0 ? (
+            ) : animatedBarData.length === 0 ? (
               <div
                 className="h-[220px] rounded-lg flex flex-col items-center justify-center gap-2"
                 style={{ background: "oklch(var(--secondary) / 0.3)" }}
@@ -384,7 +519,7 @@ export function LiveCostDashboard() {
               <div className="min-w-[320px]">
                 <ResponsiveContainer width="100%" height={220}>
                   <BarChart
-                    data={displayBarData}
+                    data={animatedBarData}
                     margin={{ top: 4, right: 8, left: -8, bottom: 0 }}
                     barCategoryGap="30%"
                   >
@@ -422,7 +557,7 @@ export function LiveCostDashboard() {
                       }}
                     />
                     <Bar dataKey="monthly" radius={[4, 4, 0, 0]}>
-                      {displayBarData.map((entry) => (
+                      {animatedBarData.map((entry) => (
                         <Cell
                           key={`cell-${entry.name}-${entry.provider}`}
                           fill={PROVIDER_COLORS[entry.provider] ?? "#888"}
@@ -516,6 +651,7 @@ export function LiveCostDashboard() {
                   stroke: "oklch(var(--background))",
                   strokeWidth: 2,
                 }}
+                isAnimationActive={isDemoMode}
               />
             </AreaChart>
           </ResponsiveContainer>
@@ -527,6 +663,7 @@ export function LiveCostDashboard() {
         open={optimizeOpen}
         onClose={() => setOptimizeOpen(false)}
         engines={engineList}
+        isDemoMode={isDemoMode}
       />
     </>
   );

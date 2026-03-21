@@ -128,7 +128,6 @@ function AppShell() {
   useListEngines(); // keep query active for cache
   const { data: subscription = "free" } = useGetMySubscription();
   const { data: isAdmin } = useIsAdmin();
-  const effectiveTier = isAdmin ? "enterprise" : subscription;
   const { mutateAsync: populateDemo, isPending: isLoadingDemo } =
     usePopulateDemoData();
   const queryClient = useQueryClient();
@@ -139,6 +138,12 @@ function AppShell() {
   const [isDemoMode, setIsDemoMode] = useState(
     () => localStorage.getItem(DEMO_PREF_KEY) !== "false",
   );
+  const [demoTier, setDemoTier] = useState<string | null>(null);
+  const effectiveTier = isAdmin
+    ? "enterprise"
+    : isDemoMode && demoTier
+      ? demoTier
+      : subscription;
   const [demoEngines, setDemoEngines] = useState<Engine[]>([]);
   const [chatEngine, setChatEngine] = useState<Engine | undefined>(undefined);
   const [pricingOpen, setPricingOpen] = useState(false);
@@ -236,7 +241,8 @@ function AppShell() {
     setActivePage("chat");
   }
 
-  function handleUpgrade(_tier: string) {
+  function handleUpgrade(tier: string) {
+    if (isDemoMode) setDemoTier(tier);
     setPricingOpen(false);
   }
 
@@ -246,6 +252,7 @@ function AppShell() {
     setShowLanding(true);
     setIsDemoMode(false);
     setDemoEngines([]);
+    setDemoTier(null);
     queryClient.clear();
   }
 
@@ -359,6 +366,10 @@ function AppShell() {
             <BillingPage
               onPricingOpen={() => setPricingOpen(true)}
               overrideTier={effectiveTier}
+              onTierChange={(tier) => {
+                if (isDemoMode) setDemoTier(tier);
+              }}
+              isDemoMode={isDemoMode}
             />
           )}
           {activePage === "referrals" && <ReferralsAffiliatePage />}
@@ -393,6 +404,7 @@ function AppShell() {
         onClose={() => setPricingOpen(false)}
         currentTier={effectiveTier}
         onUpgrade={handleUpgrade}
+        isDemoMode={isDemoMode}
       />
     </div>
   );

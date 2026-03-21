@@ -43,6 +43,8 @@ import { SeatManagement } from "./SeatManagement";
 interface BillingPageProps {
   onPricingOpen?: () => void;
   overrideTier?: string;
+  onTierChange?: (tier: string) => void;
+  isDemoMode?: boolean;
 }
 
 const WHITE_LABEL_KEY = "lockfree_whitelabel";
@@ -415,7 +417,12 @@ function UsageMeter({ label, value, max, warn, onUpgrade }: UsageMeterProps) {
   );
 }
 
-export function BillingPage({ onPricingOpen, overrideTier }: BillingPageProps) {
+export function BillingPage({
+  onPricingOpen,
+  overrideTier,
+  onTierChange,
+  isDemoMode,
+}: BillingPageProps) {
   const { data: _subscription = "free", isLoading: subLoading } =
     useGetMySubscription();
   const subscription = overrideTier ?? _subscription;
@@ -683,7 +690,9 @@ export function BillingPage({ onPricingOpen, overrideTier }: BillingPageProps) {
         open={pricingOpen}
         onClose={() => setPricingOpen(false)}
         currentTier={subscription}
-        onUpgrade={() => {
+        isDemoMode={isDemoMode}
+        onUpgrade={(tier) => {
+          onTierChange?.(tier);
           setPricingOpen(false);
         }}
       />

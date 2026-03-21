@@ -209,6 +209,7 @@ export function EnginesPage({
               onDeployShortcut={onNavigateToChat}
               isDeleting={isDeleting}
               index={i}
+              isDemoMode={isDemoMode}
             />
           ))}
         </div>

@@ -16,6 +16,7 @@ interface PricingModalProps {
   onClose: () => void;
   currentTier: string;
   onUpgrade: (tier: string) => void;
+  isDemoMode?: boolean;
 }
 
 const TIERS = [
@@ -289,6 +290,7 @@ export function PricingModal({
   onClose,
   currentTier,
   onUpgrade,
+  isDemoMode,
 }: PricingModalProps) {
   const [paymentModalOpen, setPaymentModalOpen] = useState(false);
   const [selectedTier, setSelectedTier] = useState<UpgradableTier>("pro");
@@ -391,6 +393,7 @@ export function PricingModal({
         onClose={() => setPaymentModalOpen(false)}
         tier={selectedTier}
         onSuccess={handlePaymentSuccess}
+        isDemoMode={isDemoMode}
       />
     </>
   );

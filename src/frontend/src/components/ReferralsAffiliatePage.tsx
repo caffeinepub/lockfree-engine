@@ -168,37 +168,83 @@ function AffiliateTab() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [payoutOpen, setPayoutOpen] = useState(false);
+  const [registerState, setRegisterState] = useState<
+    "idle" | "submitting" | "success"
+  >("idle");
+  const [registerStep, setRegisterStep] = useState(0);
+  const [generatedCode, setGeneratedCode] = useState("");
+  const [payoutState, setPayoutState] = useState<
+    "confirm" | "processing" | "success"
+  >("confirm");
+
   // Hook must be called unconditionally before any early return
   const { data: referralCount } = useGetReferralCount(
     affiliate?.referralCode ?? "",
   );
 
+  const REGISTER_STEPS = [
+    "Generating your code...",
+    "Setting up account...",
+    "Almost ready...",
+  ];
+
   function handleRegister(e: React.FormEvent) {
     e.preventDefault();
     if (!name.trim() || !email.trim()) return;
-    const data: AffiliateData = {
-      name: name.trim(),
-      email: email.trim(),
-      referralCode: generateCode(),
-      clickCount: 47,
-      signupCount: 12,
-      paidConversions: 8,
-      totalEarned: 11.6,
-      joinedAt: new Date().toISOString(),
-    };
-    localStorage.setItem(AFFILIATE_KEY, JSON.stringify(data));
-    setAffiliate(data);
-    toast.success("Welcome to the LockFree Affiliate Program!");
+
+    const code = generateCode();
+    setGeneratedCode(code);
+    setRegisterState("submitting");
+    setRegisterStep(0);
+
+    // Advance through steps
+    setTimeout(() => setRegisterStep(1), 600);
+    setTimeout(() => setRegisterStep(2), 1200);
+    setTimeout(() => {
+      const data: AffiliateData = {
+        name: name.trim(),
+        email: email.trim(),
+        referralCode: code,
+        clickCount: 47,
+        signupCount: 12,
+        paidConversions: 8,
+        totalEarned: 11.6,
+        joinedAt: new Date().toISOString(),
+      };
+      localStorage.setItem(AFFILIATE_KEY, JSON.stringify(data));
+      setRegisterState("success");
+      // Auto-transition to dashboard after 3s
+      setTimeout(() => {
+        setAffiliate(data);
+      }, 3000);
+    }, 1800);
   }
 
-  function handlePayout() {
+  function handleGoToDashboard() {
+    const data = loadAffiliate();
+    if (data) setAffiliate(data);
+  }
+
+  function handlePayoutConfirm() {
     if (!affiliate) return;
-    const amount = affiliate.totalEarned.toFixed(2);
-    const updated = { ...affiliate, totalEarned: 0 };
-    localStorage.setItem(AFFILIATE_KEY, JSON.stringify(updated));
-    setAffiliate(updated);
-    setPayoutOpen(false);
-    toast.success(`Payout of $${amount} requested!`);
+    setPayoutState("processing");
+    setTimeout(() => {
+      setPayoutState("success");
+      const amount = affiliate.totalEarned.toFixed(2);
+      const updated = { ...affiliate, totalEarned: 0 };
+      localStorage.setItem(AFFILIATE_KEY, JSON.stringify(updated));
+      setAffiliate(updated);
+      setTimeout(() => {
+        setPayoutOpen(false);
+        setPayoutState("confirm");
+        toast.success(`Payout of $${amount} requested!`);
+      }, 1500);
+    }, 1500);
+  }
+
+  function handlePayoutOpenChange(open: boolean) {
+    setPayoutOpen(open);
+    if (!open) setPayoutState("confirm");
   }
 
   const shareLink = affiliate
@@ -257,7 +303,70 @@ function AffiliateTab() {
     },
   ];
 
+  // ── Registration form / success screen ──
   if (!affiliate) {
+    // Success reveal screen
+    if (registerState === "success") {
+      return (
+        <div className="space-y-6 animate-in fade-in duration-300">
+          <div className="rounded-xl border border-[oklch(0.72_0.19_145/0.4)] bg-[oklch(0.72_0.19_145/0.08)] p-8 flex flex-col items-center gap-5 text-center">
+            <div className="w-16 h-16 rounded-full flex items-center justify-center bg-[oklch(0.72_0.19_145/0.2)] border border-[oklch(0.72_0.19_145/0.4)] animate-in zoom-in-50 duration-300">
+              <Check
+                className="w-8 h-8 text-[oklch(0.82_0.19_145)]"
+                strokeWidth={2.5}
+              />
+            </div>
+            <div>
+              <h2 className="font-display text-2xl font-bold text-foreground">
+                You&apos;re in!
+              </h2>
+              <p className="text-sm text-muted-foreground mt-1">
+                Your affiliate account is ready. Share your code to start
+                earning.
+              </p>
+            </div>
+
+            {/* Generated code */}
+            <div className="w-full max-w-sm space-y-2">
+              <Label className="text-xs text-muted-foreground">
+                Your Referral Code
+              </Label>
+              <div className="flex items-center gap-2">
+                <div className="flex-1 bg-[oklch(0.12_0.01_240)] border border-[oklch(0.72_0.19_145/0.3)] rounded-lg px-4 py-3 font-mono text-xl font-bold tracking-widest text-[oklch(0.82_0.19_145)] text-center">
+                  {generatedCode}
+                </div>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="h-12 px-3 gap-1.5 flex-shrink-0"
+                  onClick={() => {
+                    navigator.clipboard.writeText(generatedCode);
+                    toast.success("Code copied!");
+                  }}
+                >
+                  <Copy className="w-4 h-4" />
+                </Button>
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-2 w-full max-w-sm">
+              <Button
+                className="gap-2"
+                onClick={handleGoToDashboard}
+                data-ocid="affiliate.go_to_dashboard.button"
+              >
+                <TrendingUp className="w-4 h-4" />
+                Go to Dashboard
+              </Button>
+              <p className="text-xs text-muted-foreground">
+                Auto-redirecting to your dashboard in a moment...
+              </p>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div className="space-y-6">
         {/* Intro */}
@@ -311,6 +420,7 @@ function AffiliateTab() {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   required
+                  disabled={false}
                 />
               </div>
               <div className="space-y-1.5">
@@ -324,13 +434,46 @@ function AffiliateTab() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
+                  disabled={false}
                 />
               </div>
             </div>
-            <Button type="submit" className="gap-2">
-              <Star className="w-4 h-4" />
-              Join Affiliate Program
-            </Button>
+
+            {/* Submitting state: progress steps */}
+            {registerState === "submitting" ? (
+              <div className="space-y-3 py-1">
+                <div className="flex items-center gap-3">
+                  <span className="w-5 h-5 rounded-full border-2 border-primary/30 border-t-primary animate-spin flex-shrink-0" />
+                  <span className="text-sm text-foreground font-medium">
+                    {REGISTER_STEPS[registerStep]}
+                  </span>
+                </div>
+                <div className="flex gap-1.5">
+                  {REGISTER_STEPS.map((step, i) => (
+                    <div
+                      key={step}
+                      className="h-1 flex-1 rounded-full transition-all duration-500"
+                      style={{
+                        background:
+                          i <= registerStep
+                            ? "oklch(0.82 0.22 195)"
+                            : "oklch(0.25 0.01 240)",
+                      }}
+                    />
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <Button
+                type="submit"
+                className="gap-2"
+                disabled={false}
+                data-ocid="affiliate.register.submit_button"
+              >
+                <Star className="w-4 h-4" />
+                Join Affiliate Program
+              </Button>
+            )}
           </form>
         </div>
       </div>
@@ -480,6 +623,7 @@ function AffiliateTab() {
             variant="outline"
             disabled={affiliate.totalEarned < 10}
             onClick={() => setPayoutOpen(true)}
+            data-ocid="affiliate.payout.button"
           >
             <DollarSign className="w-4 h-4" />
             Request Payout
@@ -583,41 +727,102 @@ function AffiliateTab() {
       </div>
 
       {/* Payout modal */}
-      <Dialog open={payoutOpen} onOpenChange={setPayoutOpen}>
+      <Dialog open={payoutOpen} onOpenChange={handlePayoutOpenChange}>
         <DialogContent className="max-w-sm max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Request Payout</DialogTitle>
-            <DialogDescription>
-              You're requesting a payout of your accrued affiliate earnings.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="py-4 space-y-4">
-            <div className="rounded-lg bg-[oklch(0.75_0.18_60/0.08)] border border-[oklch(0.75_0.18_60/0.25)] p-4 text-center">
-              <div className="text-xs text-muted-foreground mb-1">
-                Payout Amount
+          {payoutState === "processing" ? (
+            <>
+              <DialogHeader>
+                <DialogTitle>Processing Payout</DialogTitle>
+                <DialogDescription>
+                  Please wait while we process your payout request.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="py-8 flex flex-col items-center gap-4">
+                <span className="w-12 h-12 rounded-full border-4 border-primary/20 border-t-primary animate-spin" />
+                <p className="text-sm text-muted-foreground">
+                  Processing payout...
+                </p>
               </div>
-              <div className="font-mono text-3xl font-bold text-[oklch(0.85_0.18_60)] tabular-nums">
-                ${affiliate.totalEarned.toFixed(2)}
+            </>
+          ) : payoutState === "success" ? (
+            <>
+              <DialogHeader>
+                <DialogTitle>Payout Requested!</DialogTitle>
+              </DialogHeader>
+              <div className="py-6 flex flex-col items-center gap-4 text-center animate-in fade-in zoom-in-95 duration-300">
+                <div className="w-16 h-16 rounded-full flex items-center justify-center bg-[oklch(0.72_0.19_145/0.2)] border border-[oklch(0.72_0.19_145/0.4)]">
+                  <Check
+                    className="w-8 h-8 text-[oklch(0.82_0.19_145)]"
+                    strokeWidth={2.5}
+                  />
+                </div>
+                <div>
+                  <h3 className="font-display font-bold text-foreground text-lg">
+                    Payout Requested!
+                  </h3>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Your payout has been submitted for review.
+                  </p>
+                </div>
+                <div className="rounded-xl border border-[oklch(0.75_0.18_60/0.3)] bg-[oklch(0.75_0.18_60/0.08)] px-8 py-4">
+                  <div className="text-xs text-muted-foreground mb-1">
+                    Amount
+                  </div>
+                  <div className="font-mono text-3xl font-bold text-[oklch(0.85_0.18_60)] tabular-nums">
+                    $
+                    {affiliate.totalEarned === 0
+                      ? "11.60"
+                      : affiliate.totalEarned.toFixed(2)}
+                  </div>
+                </div>
               </div>
-            </div>
-            <div className="rounded-lg bg-yellow-500/10 border border-yellow-500/20 px-4 py-3 flex gap-2">
-              <Info className="w-4 h-4 text-yellow-400 mt-0.5 flex-shrink-0" />
-              <p className="text-xs text-yellow-300/80">
-                <strong>Demo Mode</strong> — No real payout is processed. In
-                production, payouts would be sent to your registered payment
-                method within 5 business days.
-              </p>
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setPayoutOpen(false)}>
-              Cancel
-            </Button>
-            <Button onClick={handlePayout} className="gap-2">
-              <DollarSign className="w-4 h-4" />
-              Confirm Payout
-            </Button>
-          </DialogFooter>
+            </>
+          ) : (
+            <>
+              <DialogHeader>
+                <DialogTitle>Request Payout</DialogTitle>
+                <DialogDescription>
+                  You&apos;re requesting a payout of your accrued affiliate
+                  earnings.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="py-4 space-y-4">
+                <div className="rounded-lg bg-[oklch(0.75_0.18_60/0.08)] border border-[oklch(0.75_0.18_60/0.25)] p-4 text-center">
+                  <div className="text-xs text-muted-foreground mb-1">
+                    Payout Amount
+                  </div>
+                  <div className="font-mono text-3xl font-bold text-[oklch(0.85_0.18_60)] tabular-nums">
+                    ${affiliate.totalEarned.toFixed(2)}
+                  </div>
+                </div>
+                <div className="rounded-lg bg-yellow-500/10 border border-yellow-500/20 px-4 py-3 flex gap-2">
+                  <Info className="w-4 h-4 text-yellow-400 mt-0.5 flex-shrink-0" />
+                  <p className="text-xs text-yellow-300/80">
+                    <strong>Demo Mode</strong> — No real payout is processed. In
+                    production, payouts would be sent to your registered payment
+                    method within 5 business days.
+                  </p>
+                </div>
+              </div>
+              <DialogFooter>
+                <Button
+                  variant="outline"
+                  onClick={() => setPayoutOpen(false)}
+                  data-ocid="affiliate.payout.cancel_button"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={handlePayoutConfirm}
+                  className="gap-2"
+                  data-ocid="affiliate.payout.confirm_button"
+                >
+                  <DollarSign className="w-4 h-4" />
+                  Confirm Payout
+                </Button>
+              </DialogFooter>
+            </>
+          )}
         </DialogContent>
       </Dialog>
     </div>
@@ -730,7 +935,8 @@ function ReferralTab() {
         <div className="p-5 space-y-4">
           <CopyRow label="Share this link" value={shareLink} />
           <p className="text-xs text-muted-foreground">
-            When a friend signs up and activates their account, you'll receive{" "}
+            When a friend signs up and activates their account, you&apos;ll
+            receive{" "}
             <strong className="text-foreground">1 free Pro month</strong> — no
             vendor lock-in, ever.
           </p>
@@ -793,9 +999,9 @@ function ReferralTab() {
                 </tr>
               </thead>
               <tbody>
-                {allCredits.map((c, i) => (
+                {allCredits.map((c) => (
                   <tr
-                    key={`${c.fromCode}-${i}`}
+                    key={`${c.fromCode}-${c.creditedAt}`}
                     className="border-b border-border/50 hover:bg-muted/20 transition-colors"
                   >
                     <td className="px-5 py-3">

@@ -241,7 +241,11 @@ export function DashboardPage({
 
       {/* Summary cards */}
       <div data-tour-id="summary-cards">
-        <SummaryCards engines={engines} isLoading={isLoading} />
+        <SummaryCards
+          engines={engines}
+          isLoading={isLoading}
+          isDemoMode={isDemoMode}
+        />
       </div>
 
       {/* Engines section */}
@@ -324,7 +328,7 @@ export function DashboardPage({
       <MigrationHistoryPanel />
 
       {/* Live Cost Dashboard */}
-      <LiveCostDashboard />
+      <LiveCostDashboard isDemoMode={isDemoMode} />
 
       {/* Quick tips */}
       <div className="console-panel p-5">

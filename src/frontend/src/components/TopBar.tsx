@@ -18,7 +18,8 @@ import {
   Settings,
   Sun,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 import { useInternetIdentity } from "../hooks/useInternetIdentity";
 import { truncatePrincipal } from "../lib/providerUtils";
 
@@ -69,6 +70,52 @@ const DEMO_NOTIFICATIONS: Notification[] = [
   },
 ];
 
+const NOTIFICATION_POOL: Array<Pick<Notification, "type" | "message">> = [
+  { type: "info", message: "Engine prod-us-east-1 scaled up to 8 vCPU" },
+  { type: "cost", message: "AWS cost alert: spend up 12% this week" },
+  {
+    type: "migration",
+    message: "Migration to GCP completed — 18% cost savings",
+  },
+  {
+    type: "resilience",
+    message: "Resilience score for Demo — CRM Platform improved to 79",
+  },
+  {
+    type: "cost",
+    message: "Monthly budget threshold reached: Azure Storage Cluster at 94%",
+  },
+  {
+    type: "info",
+    message:
+      "LockFree Engine: new AI cost optimization recommendations available",
+  },
+  {
+    type: "migration",
+    message: "Live migration initiated: AWS → Azure (estimated 4 min)",
+  },
+  {
+    type: "resilience",
+    message: "Resilience alert: Demo — Dev/Staging dropped to 38",
+  },
+  {
+    type: "cost",
+    message: "GCP engine cost down 7% after auto-scaling adjustment",
+  },
+  {
+    type: "info",
+    message: "Engine Demo — Analytics Engine (GCP) restarted successfully",
+  },
+  {
+    type: "migration",
+    message: "Cross-region snapshot completed for Demo — CRM Platform",
+  },
+  {
+    type: "info",
+    message: "ICP Cloud Engines API: new compute quota available",
+  },
+];
+
 const TYPE_COLORS: Record<Notification["type"], string> = {
   cost: "bg-yellow-500",
   migration: "bg-green-500",
@@ -100,6 +147,35 @@ export function TopBar({
   const [notifications, setNotifications] =
     useState<Notification[]>(DEMO_NOTIFICATIONS);
   const unreadCount = notifications.filter((n) => !n.read).length;
+  const intervalRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    if (!isDemoMode) return;
+
+    function scheduleNext() {
+      const delay = Math.floor(Math.random() * 30000) + 30000;
+      intervalRef.current = setTimeout(() => {
+        const pool = NOTIFICATION_POOL;
+        const item = pool[Math.floor(Math.random() * pool.length)];
+        const newNotif: Notification = {
+          id: Date.now().toString(),
+          type: item.type,
+          message: item.message,
+          time: "just now",
+          read: false,
+        };
+        setNotifications((prev) => [newNotif, ...prev]);
+        toast.info(item.message, { duration: 4000 });
+        scheduleNext();
+      }, delay);
+    }
+
+    scheduleNext();
+
+    return () => {
+      if (intervalRef.current) clearTimeout(intervalRef.current);
+    };
+  }, [isDemoMode]);
 
   function markAllRead() {
     setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));

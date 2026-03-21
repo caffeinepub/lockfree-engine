@@ -29,6 +29,7 @@ interface PaymentModalProps {
   onClose: () => void;
   tier: "pro" | "business" | "enterprise";
   onSuccess: (tier: string) => void;
+  isDemoMode?: boolean;
 }
 
 const TIER_PRICE: Record<string, string> = {
@@ -124,6 +125,7 @@ export function PaymentModal({
   onClose,
   tier,
   onSuccess,
+  isDemoMode,
 }: PaymentModalProps) {
   const [step, setStep] = useState<Step>("method");
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("card");
@@ -136,6 +138,10 @@ export function PaymentModal({
   useEffect(() => {
     if (step !== "processing") return;
     const timer = setTimeout(async () => {
+      if (isDemoMode) {
+        setStep("success");
+        return;
+      }
       try {
         await upgradeSubscription({ tier, paymentMethod });
         setStep("success");
@@ -145,7 +151,7 @@ export function PaymentModal({
       }
     }, 2500);
     return () => clearTimeout(timer);
-  }, [step, tier, paymentMethod, upgradeSubscription]);
+  }, [step, tier, paymentMethod, upgradeSubscription, isDemoMode]);
 
   const stepLabels = ["Payment", "Details", "Success"];
   const currentStepIndex =

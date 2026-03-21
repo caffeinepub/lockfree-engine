@@ -5,15 +5,53 @@ import {
 } from "@/components/ui/popover";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ArrowRightLeft, Cpu, DollarSign, Info, Shield } from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
+import { useEffect, useRef, useState } from "react";
 import type { Engine } from "../backend.d.ts";
 import { formatCostPerMonth } from "../lib/providerUtils";
 
 interface SummaryCardsProps {
   engines: Engine[] | undefined;
   isLoading: boolean;
+  isDemoMode?: boolean;
 }
 
-export function SummaryCards({ engines, isLoading }: SummaryCardsProps) {
+// Gently ticking cost in demo mode
+function useLiveCostMultiplier(isDemoMode: boolean) {
+  const [multiplier, setMultiplier] = useState(1.0);
+  const tickRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    if (!isDemoMode) {
+      setMultiplier(1.0);
+      return;
+    }
+    function scheduleTick() {
+      tickRef.current = setTimeout(
+        () => {
+          const delta = (Math.random() - 0.48) * 0.025;
+          setMultiplier((prev) => Math.max(0.92, Math.min(1.08, prev + delta)));
+          scheduleTick();
+        },
+        8000 + Math.random() * 4000,
+      );
+    }
+    scheduleTick();
+    return () => {
+      if (tickRef.current) clearTimeout(tickRef.current);
+    };
+  }, [isDemoMode]);
+
+  return multiplier;
+}
+
+export function SummaryCards({
+  engines,
+  isLoading,
+  isDemoMode = false,
+}: SummaryCardsProps) {
+  const costMultiplier = useLiveCostMultiplier(isDemoMode);
+
   if (isLoading) {
     return (
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
@@ -25,8 +63,11 @@ export function SummaryCards({ engines, isLoading }: SummaryCardsProps) {
   }
 
   const total = engines?.length ?? 0;
-  const totalCostPerHour =
+  const rawCostPerHour =
     engines?.reduce((sum, e) => sum + e.costPerHour, 0) ?? 0;
+  const totalCostPerHour = isDemoMode
+    ? rawCostPerHour * costMultiplier
+    : rawCostPerHour;
   const avgResilience =
     total > 0
       ? Math.round(
@@ -36,6 +77,9 @@ export function SummaryCards({ engines, isLoading }: SummaryCardsProps) {
       : 0;
   const activeMigrations =
     engines?.filter((e) => e.status === "migrating").length ?? 0;
+
+  const monthlyCostDisplay = formatCostPerMonth(totalCostPerHour);
+  const hourlyCostDisplay = `$${totalCostPerHour.toFixed(4)}/hr`;
 
   const cards = [
     {
@@ -47,15 +91,17 @@ export function SummaryCards({ engines, isLoading }: SummaryCardsProps) {
       sub: `${engines?.filter((e) => e.status === "running").length ?? 0} running`,
       accentColor: "oklch(var(--primary))",
       valueColor: "text-foreground",
+      animated: false,
     },
     {
       label: "Monthly Cost",
-      value: formatCostPerMonth(totalCostPerHour),
+      value: monthlyCostDisplay,
       icon: DollarSign,
       tooltip: "Total estimated monthly cost across all active engines.",
-      sub: `$${totalCostPerHour.toFixed(4)}/hr`,
+      sub: hourlyCostDisplay,
       accentColor: "oklch(var(--status-provisioning))",
       valueColor: "text-foreground",
+      animated: isDemoMode,
     },
     {
       label: "Avg Resilience",
@@ -76,6 +122,7 @@ export function SummaryCards({ engines, isLoading }: SummaryCardsProps) {
           : avgResilience >= 50
             ? "text-status-provisioning"
             : "text-destructive",
+      animated: false,
     },
     {
       label: "Migrations",
@@ -89,6 +136,7 @@ export function SummaryCards({ engines, isLoading }: SummaryCardsProps) {
           : "oklch(var(--muted-foreground))",
       valueColor:
         activeMigrations > 0 ? "text-status-migrating" : "text-foreground",
+      animated: false,
     },
   ];
 
@@ -126,19 +174,48 @@ export function SummaryCards({ engines, isLoading }: SummaryCardsProps) {
               </Popover>
             </div>
 
-            {/* Value — visually dominant */}
+            {/* Value */}
             <div
-              className={`text-3xl font-mono font-bold leading-none tabular-nums mb-1.5 ${card.valueColor}`}
+              className={`text-3xl font-mono font-bold leading-none tabular-nums mb-1.5 ${card.valueColor} overflow-hidden`}
             >
-              {card.value}
+              {card.animated ? (
+                <AnimatePresence mode="popLayout">
+                  <motion.span
+                    key={card.value}
+                    initial={{ opacity: 0, y: -6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 6 }}
+                    transition={{ duration: 0.3, ease: "easeOut" }}
+                    className="inline-block"
+                  >
+                    {card.value}
+                  </motion.span>
+                </AnimatePresence>
+              ) : (
+                card.value
+              )}
             </div>
 
-            {/* Label — clear hierarchy below value */}
             <div className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
               {card.label}
             </div>
             <div className="text-xs text-muted-foreground/70 mt-0.5">
-              {card.sub}
+              {card.animated ? (
+                <AnimatePresence mode="popLayout">
+                  <motion.span
+                    key={card.sub}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="inline-block"
+                  >
+                    {card.sub}
+                  </motion.span>
+                </AnimatePresence>
+              ) : (
+                card.sub
+              )}
             </div>
           </div>
         </div>

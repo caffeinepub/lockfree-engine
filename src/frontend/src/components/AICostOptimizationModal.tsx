@@ -6,7 +6,15 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Progress } from "@/components/ui/progress";
-import { CheckCircle2, Loader2, Sparkles, TrendingDown } from "lucide-react";
+import {
+  CheckCircle2,
+  Loader2,
+  RotateCcw,
+  Shield,
+  Sparkles,
+  TrendingDown,
+  Zap,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import type { Engine } from "../backend.d.ts";
@@ -16,9 +24,10 @@ interface AICostOptimizationModalProps {
   open: boolean;
   onClose: () => void;
   engines: Engine[];
+  isDemoMode?: boolean;
 }
 
-type Phase = "analysing" | "recommendation" | "applying" | "done";
+type Phase = "analysing" | "recommendations" | "done";
 
 const SCAN_STEPS = [
   "Analysing engine costs...",
@@ -26,89 +35,137 @@ const SCAN_STEPS = [
   "Computing optimal distribution...",
 ];
 
-function getRecommendation(engines: Engine[]): {
-  recommendation: string;
+interface Recommendation {
+  id: string;
+  title: string;
+  description: string;
   savingsPct: number;
-  targetProvider: string;
-  color: string;
-} {
-  if (engines.length === 0) {
-    return {
-      recommendation: "Distribute evenly across AWS, GCP & Azure",
-      savingsPct: 22,
-      targetProvider: "GCP",
-      color: "#4285F4",
-    };
-  }
+  impact: "High" | "Medium" | "Low";
+  impactColor: string;
+  icon: React.ReactNode;
+  actionLabel: string;
+  resultMessage: string;
+}
 
+function getRecommendations(engines: Engine[]): Recommendation[] {
   const counts: Record<string, number> = {};
   for (const e of engines) {
     counts[e.provider] = (counts[e.provider] ?? 0) + 1;
   }
-
   const awsCount = counts.AWS ?? 0;
   const gcpCount = counts.GCP ?? 0;
   const azureCount = counts.Azure ?? 0;
-  const maxCount = Math.max(awsCount, gcpCount, azureCount);
 
-  if (maxCount === 0) {
-    return {
-      recommendation: "Distribute evenly across AWS, GCP & Azure",
-      savingsPct: 22,
-      targetProvider: "All providers",
-      color: "#4285F4",
-    };
-  }
+  const recs: Recommendation[] = [];
 
-  // Which provider has most engines?
-  if (awsCount === maxCount && awsCount > gcpCount && awsCount > azureCount) {
-    return {
-      recommendation: "Move 60% of workloads to Google Cloud",
+  // Primary workload redistribution
+  if (awsCount > gcpCount && awsCount > azureCount) {
+    recs.push({
+      id: "redistribute",
+      title: "Move 60% of workloads to Google Cloud",
+      description:
+        "Your AWS concentration is driving up costs. Redistributing to GCP spot instances reduces your monthly spend significantly.",
       savingsPct: 34,
-      targetProvider: "GCP",
-      color: "#4285F4",
-    };
-  }
-  if (gcpCount === maxCount && gcpCount > awsCount && gcpCount > azureCount) {
-    return {
-      recommendation: "Move 50% of workloads to Azure",
+      impact: "High",
+      impactColor: "#22c55e",
+      icon: <TrendingDown className="w-4 h-4" style={{ color: "#4285F4" }} />,
+      actionLabel: "Apply Redistribution",
+      resultMessage:
+        "Workload redistribution applied! Projected saving: 34% per month.",
+    });
+  } else if (gcpCount > awsCount && gcpCount > azureCount) {
+    recs.push({
+      id: "redistribute",
+      title: "Rebalance 50% of workloads to Azure",
+      description:
+        "Your GCP concentration is above the optimal threshold. Azure hybrid pricing offers better rates for your workload profile.",
       savingsPct: 28,
-      targetProvider: "Azure",
-      color: "#00BCF2",
-    };
-  }
-  if (
-    azureCount === maxCount &&
-    azureCount > awsCount &&
-    azureCount > gcpCount
-  ) {
-    return {
-      recommendation: "Move 65% of workloads to AWS",
-      savingsPct: 31,
-      targetProvider: "AWS",
-      color: "#FF9900",
-    };
+      impact: "High",
+      impactColor: "#22c55e",
+      icon: <TrendingDown className="w-4 h-4" style={{ color: "#00BCF2" }} />,
+      actionLabel: "Apply Rebalance",
+      resultMessage:
+        "Workload rebalance applied! Projected saving: 28% per month.",
+    });
+  } else {
+    recs.push({
+      id: "redistribute",
+      title: "Distribute evenly across all three providers",
+      description:
+        "Even distribution across AWS, GCP, and Azure eliminates single-vendor pricing risk and maximises spot availability.",
+      savingsPct: 22,
+      impact: "High",
+      impactColor: "#22c55e",
+      icon: <TrendingDown className="w-4 h-4" style={{ color: "#4285F4" }} />,
+      actionLabel: "Apply Distribution",
+      resultMessage:
+        "Even distribution applied! Projected saving: 22% per month.",
+    });
   }
 
-  return {
-    recommendation: "Distribute evenly across AWS, GCP & Azure",
-    savingsPct: 22,
-    targetProvider: "All providers",
-    color: "#4285F4",
-  };
+  // Reserved instance recommendation
+  recs.push({
+    id: "reserved",
+    title: "Switch 3 engines to reserved instances",
+    description:
+      "Engines running > 720 hrs/month are cheaper on 1-year reserved contracts. No performance change — pure cost reduction.",
+    savingsPct: 18,
+    impact: "Medium",
+    impactColor: "#f59e0b",
+    icon: <Zap className="w-4 h-4" style={{ color: "#f59e0b" }} />,
+    actionLabel: "Convert to Reserved",
+    resultMessage:
+      "3 engines converted to reserved instances. Saving 18% on those workloads.",
+  });
+
+  // Resilience / redundancy
+  recs.push({
+    id: "resilience",
+    title: "Enable cross-region failover on primary engines",
+    description:
+      "Adding a standby replica in a second region costs ~8% more but eliminates downtime risk and qualifies for SLA-backed billing credits.",
+    savingsPct: 0,
+    impact: "Medium",
+    impactColor: "#3b82f6",
+    icon: <Shield className="w-4 h-4" style={{ color: "#3b82f6" }} />,
+    actionLabel: "Enable Failover",
+    resultMessage: "Cross-region failover enabled. Resilience score updated.",
+  });
+
+  // Auto-scaling
+  recs.push({
+    id: "autoscale",
+    title: "Enable auto-scale on 2 idle engines",
+    description:
+      "Two engines are consistently below 20% CPU utilisation. Auto-scaling down during off-peak hours reduces their footprint by 40%.",
+    savingsPct: 12,
+    impact: "Low",
+    impactColor: "#8b5cf6",
+    icon: <RotateCcw className="w-4 h-4" style={{ color: "#8b5cf6" }} />,
+    actionLabel: "Enable Auto-Scale",
+    resultMessage:
+      "Auto-scaling enabled on 2 engines. Expect 12% reduction in idle costs.",
+  });
+
+  return recs;
 }
 
 export function AICostOptimizationModal({
   open,
   onClose,
   engines,
+  isDemoMode = false,
 }: AICostOptimizationModalProps) {
   const [phase, setPhase] = useState<Phase>("analysing");
   const [scanStep, setScanStep] = useState(0);
   const [progress, setProgress] = useState(0);
+  // Per-recommendation applying states: "idle" | "applying" | "done"
+  const [recStates, setRecStates] = useState<
+    Record<string, "idle" | "applying" | "done">
+  >({});
   const { mutateAsync: distribute } = useDistributeAndGetScore();
 
-  const rec = getRecommendation(engines);
+  const recommendations = getRecommendations(engines);
 
   // Reset state on open
   useEffect(() => {
@@ -117,61 +174,73 @@ export function AICostOptimizationModal({
         setPhase("analysing");
         setScanStep(0);
         setProgress(0);
+        setRecStates({});
       }, 300);
       return () => clearTimeout(t);
     }
 
-    // Kick off the analysis animation
     setPhase("analysing");
     setScanStep(0);
     setProgress(0);
+    setRecStates({});
 
     let p = 0;
     const interval = setInterval(() => {
       p += 2.5;
       setProgress(Math.min(p, 100));
-      // Advance scan steps at ~33% increments
       if (p >= 33 && p < 34) setScanStep(1);
       if (p >= 66 && p < 67) setScanStep(2);
       if (p >= 100) {
         clearInterval(interval);
-        setTimeout(() => setPhase("recommendation"), 200);
+        setTimeout(() => setPhase("recommendations"), 200);
       }
-    }, 37); // ~1.5s total
+    }, 37);
 
     return () => clearInterval(interval);
   }, [open]);
 
-  async function handleApply() {
-    setPhase("applying");
-    try {
-      await distribute();
-      setPhase("done");
-      setTimeout(() => {
-        onClose();
-        toast.success("Cost optimization applied! Resilience score updated.");
-      }, 2000);
-    } catch {
-      setPhase("recommendation");
-      toast.error("Failed to apply optimization. Please try again.");
+  async function handleApplyRec(rec: Recommendation) {
+    setRecStates((s) => ({ ...s, [rec.id]: "applying" }));
+
+    if (isDemoMode) {
+      // Simulate a 1.5s processing delay
+      await new Promise((r) => setTimeout(r, 1500));
+      setRecStates((s) => ({ ...s, [rec.id]: "done" }));
+      toast.success(rec.resultMessage);
+    } else {
+      try {
+        if (rec.id === "redistribute") {
+          await distribute();
+        } else {
+          await new Promise((r) => setTimeout(r, 1500));
+        }
+        setRecStates((s) => ({ ...s, [rec.id]: "done" }));
+        toast.success(rec.resultMessage);
+      } catch {
+        setRecStates((s) => ({ ...s, [rec.id]: "idle" }));
+        toast.error("Failed to apply recommendation. Please try again.");
+      }
     }
   }
 
+  const allApplied =
+    phase === "recommendations" &&
+    recommendations.every((r) => recStates[r.id] === "done");
+
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
-      <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
         {/* ── Phase: Analysing ── */}
         {phase === "analysing" && (
           <>
             <DialogHeader>
               <DialogTitle className="font-display flex items-center gap-2">
                 <Sparkles className="w-5 h-5 text-primary" />
-                Optimizing Costs
+                Analysing Your Engines
               </DialogTitle>
             </DialogHeader>
 
             <div className="py-6 space-y-6">
-              {/* Scan rows */}
               <div className="space-y-3">
                 {SCAN_STEPS.map((step, i) => (
                   <div key={step} className="flex items-center gap-3">
@@ -195,12 +264,7 @@ export function AICostOptimizationModal({
                         {step}
                       </div>
                       {i <= scanStep && (
-                        <div
-                          className="mt-1.5 h-1.5 rounded-full overflow-hidden"
-                          style={{
-                            background: "oklch(var(--muted))",
-                          }}
-                        >
+                        <div className="mt-1.5 h-1.5 rounded-full overflow-hidden bg-muted">
                           <div
                             className="h-full rounded-full transition-all duration-500"
                             style={{
@@ -221,10 +285,9 @@ export function AICostOptimizationModal({
                 ))}
               </div>
 
-              {/* Main progress bar */}
               <div className="space-y-1.5">
                 <div className="flex justify-between text-xs text-muted-foreground">
-                  <span>Analysing {engines.length} engine(s)...</span>
+                  <span>Scanning {engines.length} engine(s)...</span>
                   <span className="font-mono tabular-nums">
                     {Math.round(progress)}%
                   </span>
@@ -235,151 +298,146 @@ export function AICostOptimizationModal({
           </>
         )}
 
-        {/* ── Phase: Recommendation ── */}
-        {(phase === "recommendation" || phase === "applying") && (
+        {/* ── Phase: Recommendations ── */}
+        {phase === "recommendations" && (
           <>
             <DialogHeader>
               <DialogTitle className="font-display flex items-center gap-2">
                 <Sparkles className="w-5 h-5 text-primary" />
-                AI Recommendation
+                AI Recommendations
+                <span className="ml-auto text-xs font-normal text-muted-foreground">
+                  {
+                    recommendations.filter((r) => recStates[r.id] === "done")
+                      .length
+                  }{" "}
+                  / {recommendations.length} applied
+                </span>
               </DialogTitle>
             </DialogHeader>
 
-            <div className="py-2 space-y-4">
-              {/* Savings highlight */}
-              <div
-                className="rounded-xl p-5 text-center space-y-1"
-                style={{
-                  background:
-                    "linear-gradient(135deg, oklch(var(--status-running) / 0.08), oklch(var(--primary) / 0.06))",
-                  border: "1px solid oklch(var(--status-running) / 0.2)",
-                }}
-              >
-                <div
-                  className="text-5xl font-display font-bold tabular-nums"
-                  style={{ color: "oklch(var(--status-running))" }}
-                >
-                  {rec.savingsPct}%
-                </div>
-                <div className="text-sm text-muted-foreground font-medium">
-                  estimated monthly savings
-                </div>
-              </div>
+            <div className="py-2 space-y-3">
+              {recommendations.map((rec) => {
+                const state = recStates[rec.id] ?? "idle";
+                const isDone = state === "done";
+                const isApplying = state === "applying";
 
-              {/* Recommendation card */}
-              <div className="rounded-lg border border-border p-4 space-y-3">
-                <div className="flex items-start gap-3">
+                return (
                   <div
-                    className="w-8 h-8 rounded-md flex items-center justify-center flex-shrink-0 mt-0.5"
-                    style={{
-                      background: `${rec.color}18`,
-                      border: `1px solid ${rec.color}40`,
-                    }}
+                    key={rec.id}
+                    className={`rounded-lg border p-4 space-y-3 transition-all duration-300 ${
+                      isDone
+                        ? "border-emerald-500/30 bg-emerald-500/5"
+                        : "border-border"
+                    }`}
                   >
-                    <TrendingDown
-                      className="w-4 h-4"
-                      style={{ color: rec.color }}
-                    />
-                  </div>
-                  <div>
-                    <div className="text-sm font-semibold text-foreground">
-                      {rec.recommendation}
-                    </div>
-                    <div className="text-xs text-muted-foreground mt-0.5">
-                      Redistributing to{" "}
-                      <span
-                        className="font-semibold font-mono"
-                        style={{ color: rec.color }}
+                    <div className="flex items-start gap-3">
+                      <div
+                        className="w-8 h-8 rounded-md flex items-center justify-center flex-shrink-0 mt-0.5"
+                        style={{
+                          background: isDone
+                            ? "oklch(var(--status-running) / 0.1)"
+                            : "oklch(var(--secondary) / 0.6)",
+                          border: isDone
+                            ? "1px solid oklch(var(--status-running) / 0.3)"
+                            : "1px solid oklch(var(--border))",
+                        }}
                       >
-                        {rec.targetProvider}
-                      </span>{" "}
-                      optimizes cost and resilience simultaneously.
+                        {isDone ? (
+                          <CheckCircle2
+                            className="w-4 h-4"
+                            style={{ color: "oklch(var(--status-running))" }}
+                          />
+                        ) : (
+                          rec.icon
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="text-sm font-semibold text-foreground">
+                            {rec.title}
+                          </span>
+                          <span
+                            className="text-[10px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wide"
+                            style={{
+                              color: rec.impactColor,
+                              background: `${rec.impactColor}18`,
+                              border: `1px solid ${rec.impactColor}40`,
+                            }}
+                          >
+                            {rec.impact}
+                          </span>
+                          {rec.savingsPct > 0 && (
+                            <span className="text-[10px] font-mono font-bold text-emerald-400">
+                              -{rec.savingsPct}% cost
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
+                          {rec.description}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex justify-end">
+                      {isDone ? (
+                        <div
+                          className="flex items-center gap-1.5 text-xs font-medium"
+                          style={{ color: "oklch(var(--status-running))" }}
+                        >
+                          <CheckCircle2 className="w-3.5 h-3.5" />
+                          Applied
+                        </div>
+                      ) : (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="gap-1.5 text-xs h-7 px-3"
+                          onClick={() => handleApplyRec(rec)}
+                          disabled={isApplying}
+                        >
+                          {isApplying ? (
+                            <>
+                              <Loader2 className="w-3 h-3 animate-spin" />
+                              Applying...
+                            </>
+                          ) : (
+                            <>
+                              <Sparkles className="w-3 h-3" />
+                              {rec.actionLabel}
+                            </>
+                          )}
+                        </Button>
+                      )}
                     </div>
                   </div>
-                </div>
+                );
+              })}
 
-                {/* Stats row */}
-                <div className="grid grid-cols-3 gap-2 pt-1">
-                  {[
-                    { label: "Engines", value: engines.length.toString() },
-                    {
-                      label: "Target",
-                      value: rec.targetProvider.split(" ")[0],
-                    },
-                    { label: "Save", value: `${rec.savingsPct}%` },
-                  ].map((stat) => (
-                    <div
-                      key={stat.label}
-                      className="text-center rounded-md p-2"
-                      style={{ background: "oklch(var(--secondary) / 0.5)" }}
-                    >
-                      <div className="text-sm font-mono font-bold text-foreground">
-                        {stat.value}
-                      </div>
-                      <div className="text-xs text-muted-foreground">
-                        {stat.label}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Actions */}
-              <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  className="flex-1"
-                  onClick={onClose}
-                  disabled={phase === "applying"}
-                >
-                  Dismiss
+              <div className="flex gap-2 pt-1">
+                <Button variant="outline" className="flex-1" onClick={onClose}>
+                  {allApplied ? "Done" : "Close"}
                 </Button>
-                <Button
-                  className="flex-1 gap-2"
-                  onClick={handleApply}
-                  disabled={phase === "applying"}
-                >
-                  {phase === "applying" ? (
-                    <>
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                      Applying...
-                    </>
-                  ) : (
-                    <>
-                      <Sparkles className="w-4 h-4" />
-                      Apply Recommendation
-                    </>
-                  )}
-                </Button>
+                {!allApplied && (
+                  <Button
+                    className="flex-1 gap-2"
+                    onClick={async () => {
+                      for (const rec of recommendations) {
+                        if ((recStates[rec.id] ?? "idle") === "idle") {
+                          await handleApplyRec(rec);
+                        }
+                      }
+                    }}
+                    disabled={recommendations.some(
+                      (r) => recStates[r.id] === "applying",
+                    )}
+                  >
+                    <Sparkles className="w-4 h-4" />
+                    Apply All
+                  </Button>
+                )}
               </div>
             </div>
           </>
-        )}
-
-        {/* ── Phase: Done ── */}
-        {phase === "done" && (
-          <div className="flex flex-col items-center gap-4 py-8">
-            <div
-              className="w-16 h-16 rounded-full flex items-center justify-center"
-              style={{
-                background: "oklch(var(--status-running) / 0.1)",
-                border: "1px solid oklch(var(--status-running) / 0.3)",
-              }}
-            >
-              <CheckCircle2
-                className="w-8 h-8 animate-check-pop"
-                style={{ color: "oklch(var(--status-running))" }}
-              />
-            </div>
-            <div className="text-center space-y-1">
-              <div className="font-display font-semibold text-lg">
-                Optimization Applied!
-              </div>
-              <div className="text-sm text-muted-foreground">
-                Resilience score updated. Closing automatically...
-              </div>
-            </div>
-          </div>
         )}
       </DialogContent>
     </Dialog>
