@@ -29,12 +29,21 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
   AlertTriangle,
   CheckCircle2,
+  ClipboardCheck,
+  ClipboardCopy,
   Download,
   Trash2,
   Users,
 } from "lucide-react";
+import { useState } from "react";
 import { toast } from "sonner";
 import {
   useDeleteUserData,
@@ -55,7 +64,43 @@ const TIER_COLORS: Record<string, string> = {
 
 function truncatePrincipal(p: string): string {
   if (p.length <= 20) return p;
-  return `${p.slice(0, 8)}...${p.slice(-6)}`;
+  return `${p.slice(0, 12)}...${p.slice(-6)}`;
+}
+
+function CopyPrincipalButton({ principalId }: { principalId: string }) {
+  const [copied, setCopied] = useState(false);
+
+  function handleCopy() {
+    navigator.clipboard.writeText(principalId).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  }
+
+  return (
+    <TooltipProvider delayDuration={100}>
+      <Tooltip open={copied ? true : undefined}>
+        <TooltipTrigger asChild>
+          <button
+            type="button"
+            onClick={handleCopy}
+            className="ml-1.5 inline-flex items-center justify-center rounded p-0.5 text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors focus:outline-none focus-visible:ring-1 focus-visible:ring-primary"
+            aria-label="Copy principal ID"
+            data-ocid="admin.users.copy_button"
+          >
+            {copied ? (
+              <ClipboardCheck className="w-3.5 h-3.5 text-emerald-400" />
+            ) : (
+              <ClipboardCopy className="w-3.5 h-3.5" />
+            )}
+          </button>
+        </TooltipTrigger>
+        <TooltipContent side="top" className="text-xs px-2 py-1">
+          {copied ? "Copied!" : "Copy full ID"}
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  );
 }
 
 export function AdminUsersTab() {
@@ -155,8 +200,18 @@ export function AdminUsersTab() {
                       <TableCell className="text-xs text-muted-foreground font-mono">
                         {idx + 1}
                       </TableCell>
-                      <TableCell className="font-mono text-xs text-foreground">
-                        {truncatePrincipal(pid)}
+                      <TableCell>
+                        <div className="flex flex-col gap-0.5">
+                          <span className="text-[10px] text-muted-foreground/60 uppercase tracking-wide leading-none">
+                            Principal ID
+                          </span>
+                          <div className="flex items-center">
+                            <span className="font-mono text-xs text-foreground">
+                              {truncatePrincipal(pid)}
+                            </span>
+                            <CopyPrincipalButton principalId={pid} />
+                          </div>
+                        </div>
                       </TableCell>
                       <TableCell>
                         <Badge
@@ -373,8 +428,13 @@ function FlaggedAffiliatesSection() {
                     <TableCell className="font-mono text-xs text-amber-400 font-semibold">
                       {f.code}
                     </TableCell>
-                    <TableCell className="font-mono text-xs text-muted-foreground">
-                      {truncatePrincipal(f.principal)}
+                    <TableCell>
+                      <div className="flex items-center">
+                        <span className="font-mono text-xs text-muted-foreground">
+                          {truncatePrincipal(f.principal)}
+                        </span>
+                        <CopyPrincipalButton principalId={f.principal} />
+                      </div>
                     </TableCell>
                     <TableCell className="text-xs text-muted-foreground max-w-xs truncate">
                       {f.reason}
