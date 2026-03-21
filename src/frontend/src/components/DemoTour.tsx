@@ -1,5 +1,4 @@
 import { Button } from "@/components/ui/button";
-import { X } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
@@ -256,24 +255,13 @@ export function DemoTour({ open, onClose }: DemoTourProps) {
               }}
             >
               {/* Header row */}
-              <div className="flex items-start justify-between gap-2 mb-3">
-                <div>
-                  <div className="text-[10px] font-mono font-semibold text-primary/70 uppercase tracking-widest mb-1">
-                    Step {step + 1} of {TOUR_STEPS.length}
-                  </div>
-                  <h3 className="font-display font-semibold text-base text-foreground leading-tight">
-                    {currentStep.title}
-                  </h3>
+              <div className="mb-3">
+                <div className="text-[10px] font-mono font-semibold text-primary/70 uppercase tracking-widest mb-1">
+                  Step {step + 1} of {TOUR_STEPS.length}
                 </div>
-                <button
-                  type="button"
-                  onClick={handleNext}
-                  className="text-muted-foreground hover:text-foreground transition-colors flex-shrink-0 mt-0.5"
-                  aria-label="Close tour"
-                  data-ocid="demo_tour.close_button"
-                >
-                  <X className="w-4 h-4" />
-                </button>
+                <h3 className="font-display font-semibold text-base text-foreground leading-tight">
+                  {currentStep.title}
+                </h3>
               </div>
 
               {/* Progress dots — use targetId as stable key */}

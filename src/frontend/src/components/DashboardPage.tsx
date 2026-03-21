@@ -387,6 +387,7 @@ export function DashboardPage({
         open={distributeOpen}
         onClose={() => setDistributeOpen(false)}
         engines={engines ?? []}
+        isDemoMode={isDemoMode}
       />
 
       <DemoTour open={demoTourOpen} onClose={() => setDemoTourOpen(false)} />

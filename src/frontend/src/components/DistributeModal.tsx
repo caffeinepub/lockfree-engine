@@ -17,6 +17,7 @@ interface DistributeModalProps {
   open: boolean;
   onClose: () => void;
   engines: Engine[];
+  isDemoMode?: boolean;
 }
 
 const ALL_PROVIDERS = ["AWS", "GCP", "Azure"];
@@ -57,6 +58,7 @@ export function DistributeModal({
   open,
   onClose,
   engines,
+  isDemoMode,
 }: DistributeModalProps) {
   const [step, setStep] = useState<Step>("preview");
   const [finalScore, setFinalScore] = useState<number | null>(null);
@@ -82,11 +84,21 @@ export function DistributeModal({
   async function handleDistribute() {
     setStep("distributing");
     try {
-      const result = await distributeAndGetScore();
-      const score = Number(result.overallResilienceScore);
-      setFinalScore(score);
-      setStep("complete");
-      toast.success(`Engines distributed! Resilience score: ${score}%`);
+      if (isDemoMode) {
+        // Demo mode: simulate distribution without hitting the backend
+        await new Promise((resolve) => setTimeout(resolve, 2500));
+        setFinalScore(projectedScore);
+        setStep("complete");
+        toast.success(
+          `Engines distributed! Resilience score: ${projectedScore}%`,
+        );
+      } else {
+        const result = await distributeAndGetScore();
+        const score = Number(result.overallResilienceScore);
+        setFinalScore(score);
+        setStep("complete");
+        toast.success(`Engines distributed! Resilience score: ${score}%`);
+      }
     } catch {
       setStep("preview");
       toast.error("Distribution failed. Please try again.");

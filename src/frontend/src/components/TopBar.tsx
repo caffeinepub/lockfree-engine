@@ -19,7 +19,6 @@ import {
   Sun,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { toast } from "sonner";
 import { useInternetIdentity } from "../hooks/useInternetIdentity";
 import { truncatePrincipal } from "../lib/providerUtils";
 
@@ -153,7 +152,8 @@ export function TopBar({
     if (!isDemoMode) return;
 
     function scheduleNext() {
-      const delay = Math.floor(Math.random() * 30000) + 30000;
+      // 3–5 minutes between notifications (silent — bell only, no toast)
+      const delay = Math.floor(Math.random() * 120000) + 180000;
       intervalRef.current = setTimeout(() => {
         const pool = NOTIFICATION_POOL;
         const item = pool[Math.floor(Math.random() * pool.length)];
@@ -165,7 +165,6 @@ export function TopBar({
           read: false,
         };
         setNotifications((prev) => [newNotif, ...prev]);
-        toast.info(item.message, { duration: 4000 });
         scheduleNext();
       }, delay);
     }

@@ -226,6 +226,7 @@ export function EnginesPage({
         open={distributeOpen}
         onClose={() => setDistributeOpen(false)}
         engines={engines ?? []}
+        isDemoMode={isDemoMode}
       />
     </div>
   );
