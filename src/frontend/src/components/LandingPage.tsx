@@ -595,7 +595,7 @@ export function LandingPage({
                   >
                     &ldquo;A visualization of what cloud engines can do.&rdquo;
                     <span
-                      className="not-italic ml-1.5 font-medium"
+                      className="not-italic ml-1.5 font-medium md:block md:mt-1 md:ml-0"
                       style={{ color: "oklch(0.60 0.08 195)" }}
                     >
                       — Dominic Williams, DFINITY

@@ -379,7 +379,10 @@ function AppShell() {
             />
           )}
           {activePage === "settings" && (
-            <SettingsPage isAdmin={effectiveIsAdmin} />
+            <SettingsPage
+              isAdmin={effectiveIsAdmin}
+              onTerms={() => setShowTerms(true)}
+            />
           )}
           {activePage === "billing" && (
             <BillingPage

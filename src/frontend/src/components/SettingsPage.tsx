@@ -52,7 +52,13 @@ const DATA_RIGHTS = [
   },
 ];
 
-export function SettingsPage({ isAdmin = false }: { isAdmin?: boolean }) {
+export function SettingsPage({
+  isAdmin = false,
+  onTerms,
+}: {
+  isAdmin?: boolean;
+  onTerms?: () => void;
+}) {
   const { identity, clear } = useInternetIdentity();
   const { data: engines } = useListEngines();
   const { data: migrations } = useGetMigrationHistory();
@@ -269,9 +275,13 @@ export function SettingsPage({ isAdmin = false }: { isAdmin?: boolean }) {
         <p className="text-xs text-muted-foreground mt-4">
           To exercise your right to erasure, contact an admin directly. For full
           details see our{" "}
-          <a href="/terms" className="text-primary hover:underline">
+          <button
+            type="button"
+            onClick={onTerms}
+            className="text-primary hover:underline"
+          >
             Terms of Service
-          </a>
+          </button>
           , section 4.
         </p>
       </div>
@@ -370,14 +380,15 @@ export function SettingsPage({ isAdmin = false }: { isAdmin?: boolean }) {
             <ExternalLink className="w-3 h-3" />
           </a>
           <span className="text-muted-foreground">·</span>
-          <a
-            href="/terms"
+          <button
+            type="button"
+            onClick={onTerms}
             className="flex items-center gap-1.5 text-xs text-primary hover:underline"
             data-ocid="settings.terms.link"
           >
             Terms of Service
             <ExternalLink className="w-3 h-3" />
-          </a>
+          </button>
         </div>
       </div>
 
