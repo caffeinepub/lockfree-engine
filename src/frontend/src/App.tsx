@@ -34,6 +34,10 @@ import {
 } from "./hooks/useQueries";
 import { useTheme } from "./hooks/useTheme";
 
+// ─── Hardcoded admin principal (guaranteed fallback) ──────────────────────────
+const HARDCODED_ADMIN_PRINCIPAL =
+  "7xb3p-r7kxo-tjbki-fkmcf-buzj5-i5ux2-tcaye-tkujv-zmd6t-whrx7-lqe";
+
 // ─── Client-side demo engines (used when not authenticated or as fallback) ────
 
 const ANON_PRINCIPAL = Principal.fromText("2vxsx-fae");
@@ -139,7 +143,13 @@ function AppShell() {
     () => localStorage.getItem(DEMO_PREF_KEY) !== "false",
   );
   const [demoTier, setDemoTier] = useState<string | null>(null);
-  const effectiveTier = isAdmin
+
+  // Hardcoded admin check — instant, no backend dependency
+  const callerIsHardcodedAdmin =
+    identity?.getPrincipal().toText() === HARDCODED_ADMIN_PRINCIPAL;
+  const effectiveIsAdmin = !!(isAdmin || callerIsHardcodedAdmin);
+
+  const effectiveTier = effectiveIsAdmin
     ? "enterprise"
     : isDemoMode && demoTier
       ? demoTier
@@ -183,11 +193,18 @@ function AppShell() {
     }
   }, [identity]);
 
-  // Claim admin on login — seed the query cache immediately from the return value
-  // so the sidebar admin link appears without a second round-trip.
+  // Claim admin on login — seed the query cache immediately.
+  // If the caller is the hardcoded admin, seed the cache instantly before
+  // the async call so the sidebar shield appears with zero delay.
   useEffect(() => {
     try {
       if (!identity || !actor) return;
+
+      // Instant seed for hardcoded admin — no round-trip required
+      if (identity.getPrincipal().toText() === HARDCODED_ADMIN_PRINCIPAL) {
+        queryClient.setQueryData(adminQueryKeys.isAdmin, true);
+      }
+
       actor
         .claimInitialAdmin()
         .then((result) => {
@@ -365,7 +382,7 @@ function AppShell() {
             />
           )}
           {activePage === "settings" && (
-            <SettingsPage isAdmin={isAdmin ?? false} />
+            <SettingsPage isAdmin={effectiveIsAdmin} />
           )}
           {activePage === "billing" && (
             <BillingPage

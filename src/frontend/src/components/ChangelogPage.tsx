@@ -6,17 +6,10 @@ import {
   Shield,
   Sparkles,
   Star,
-  Wrench,
   Zap,
 } from "lucide-react";
 
-type Category =
-  | "Feature"
-  | "Polish"
-  | "Security"
-  | "Launch"
-  | "Documentation"
-  | "Fix";
+type Category = "Feature" | "Polish" | "Security" | "Launch" | "Documentation";
 
 interface ChangelogEntry {
   version: string;
@@ -50,13 +43,148 @@ const CATEGORY_CONFIG: Record<
     color: "bg-blue-500/15 text-blue-400 border-blue-500/30",
     icon: <ArrowUpRight className="w-3 h-3" />,
   },
-  Fix: {
-    color: "bg-rose-500/15 text-rose-400 border-rose-500/30",
-    icon: <Wrench className="w-3 h-3" />,
-  },
 };
 
 const entries: ChangelogEntry[] = [
+  {
+    version: "v96",
+    date: "Mar 21, 2026",
+    title: "Quote Layout Fix",
+    category: "Polish",
+    items: [
+      "Dom's quote now stays on one line on laptop screens",
+      "Mobile two-line layout unchanged",
+    ],
+  },
+  {
+    version: "v95",
+    date: "Mar 21, 2026",
+    title: "Quote Punctuation",
+    category: "Polish",
+    items: [
+      "Replaced question mark with two full stops in Dom's testimonial",
+      'Quote now reads: "Ha that\'s cool.. kind of a visualization of what cloud engines can do.. I like"',
+    ],
+  },
+  {
+    version: "v94",
+    date: "Mar 20, 2026",
+    title: "Demo Tour & Guide Updates",
+    category: "Documentation",
+    items: [
+      "Demo tour expanded to 8 steps covering all simulation features",
+      "User Guide (Business + Developer tabs) updated to document engine actions, live cost dashboard, notifications, billing flow",
+      "White-label simulation documented in Enterprise section",
+    ],
+  },
+  {
+    version: "v87",
+    date: "Mar 20, 2026",
+    title: "All 7 Simulation Builds Complete",
+    category: "Feature",
+    items: [
+      "Sim Build 7: White-label settings save with spinner, success toast, live preview",
+      "All simulations now complete: engine actions, billing, live costs, notifications, AI optimization, referrals, white-label",
+    ],
+  },
+  {
+    version: "v86",
+    date: "Mar 20, 2026",
+    title: "Referrals & Partners Simulation",
+    category: "Feature",
+    items: [
+      "Register as Affiliate: 3-step progress sequence with referral code reveal",
+      "Payout modal: processing → success flow with auto-close",
+      "Earnings calculator: inline confirmation on Start Earning button",
+    ],
+  },
+  {
+    version: "v85",
+    date: "Mar 20, 2026",
+    title: "AI Cost Optimization Simulation",
+    category: "Feature",
+    items: [
+      "4 individual recommendations each with Apply button and processing animation",
+      "Apply All button to action all recommendations at once",
+      "Projected cost reduction displayed on confirm",
+    ],
+  },
+  {
+    version: "v84",
+    date: "Mar 20, 2026",
+    title: "Simulated Notifications",
+    category: "Feature",
+    items: [
+      "New demo notification arrives every 30–60 seconds",
+      "Shows as toast pop-up and in notification bell dropdown",
+      "Badge count increments automatically",
+    ],
+  },
+  {
+    version: "v83",
+    date: "Mar 20, 2026",
+    title: "Live Cost Dashboard Animation",
+    category: "Feature",
+    items: [
+      "Cost figures tick gently every 8–12 seconds in demo mode",
+      "7-day trend chart refreshes periodically",
+      "Live indicator shows seconds since last update",
+    ],
+  },
+  {
+    version: "v82",
+    date: "Mar 20, 2026",
+    title: "Plan Upgrade Simulation",
+    category: "Feature",
+    items: [
+      "Mock payment flow: card entry → processing animation → success",
+      "Plan visibly updates on Billing page after mock payment",
+      "Both Stripe and ICP payment flows simulated",
+    ],
+  },
+  {
+    version: "v81",
+    date: "Mar 20, 2026",
+    title: "Engine Card Action Simulation",
+    category: "Feature",
+    items: [
+      "Stop/Start, Restart, and Scale buttons have multi-step progress animations",
+      "Status badge updates in real time (Stopping → Stopped → Starting → Running)",
+      "All actions simulated client-side in demo mode",
+    ],
+  },
+  {
+    version: "v80",
+    date: "Mar 19, 2026",
+    title: "Landing Page Layout Tidy",
+    category: "Polish",
+    items: [
+      "Consistent section padding across all landing page sections",
+      "Body text sizing unified across How it works and Security & Trust",
+      "Vision heading scaled down for better hierarchy",
+    ],
+  },
+  {
+    version: "v79",
+    date: "Mar 19, 2026",
+    title: "Date-Free Roadmap",
+    category: "Polish",
+    items: [
+      "Removed all dates from roadmap phases (Q1/Q4 2026, Q2 2027)",
+      "Phases now show label only: Present / Upcoming / Future",
+    ],
+  },
+  {
+    version: "v78",
+    date: "Mar 19, 2026",
+    title: "Demo Tour Simulation Update",
+    category: "Feature",
+    items: [
+      "Tour updated to include engine card action steps",
+      "Live cost dashboard and notifications highlighted in tour",
+      "Billing plan upgrade flow added as tour step",
+    ],
+  },
   {
     version: "v77",
     date: "Mar 19, 2026",
@@ -91,16 +219,6 @@ const entries: ChangelogEntry[] = [
     ],
   },
   {
-    version: "v74",
-    date: "Mar 17, 2026",
-    title: "Dashboard Info Popovers",
-    category: "Fix",
-    items: [
-      "Info buttons on summary cards now open click-to-dismiss popovers",
-      "Replaced hover tooltips that flashed and disappeared",
-    ],
-  },
-  {
     version: "v73",
     date: "Mar 16, 2026",
     title: "Full Spec Documentation",
@@ -120,17 +238,6 @@ const entries: ChangelogEntry[] = [
       "App published to production",
       "OG/Twitter meta tags verified",
       "Final QA sweep complete",
-    ],
-  },
-  {
-    version: "v70",
-    date: "Mar 14, 2026",
-    title: "Admin Recognition Fix",
-    category: "Fix",
-    items: [
-      "Admin status seeded directly from claimInitialAdmin return value",
-      "No more second round-trip or 5–10s delay",
-      "Admin shield appears instantly after sign-in",
     ],
   },
   {
@@ -232,17 +339,6 @@ const entries: ChangelogEntry[] = [
       "Terms of Service / AUP page at /terms",
       "Affiliate referral cap (50/account), burst detection, rate limiting",
       "Flagged affiliates panel in Admin",
-    ],
-  },
-  {
-    version: "v50",
-    date: "Mar 4, 2026",
-    title: "Stable Admin Assignment",
-    category: "Fix",
-    items: [
-      "Admin principal stored in stable var (survives upgrades)",
-      "postupgrade hook restores assignment automatically",
-      "isAdmin check returns false gracefully for unregistered users",
     ],
   },
   {

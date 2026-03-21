@@ -23,6 +23,9 @@ import { useInternetIdentity } from "../hooks/useInternetIdentity";
 import { truncatePrincipal } from "../lib/providerUtils";
 import { NavLink } from "./NavLink";
 
+const HARDCODED_ADMIN_PRINCIPAL =
+  "7xb3p-r7kxo-tjbki-fkmcf-buzj5-i5ux2-tcaye-tkujv-zmd6t-whrx7-lqe";
+
 interface AppSidebarProps {
   activePage: string;
   onNavigate: (page: string) => void;
@@ -53,6 +56,10 @@ export function AppSidebar({
   const { identity } = useInternetIdentity();
   const principal = identity?.getPrincipal().toString() ?? "demo";
   const { data: isAdmin } = useIsAdmin();
+
+  const callerIsHardcodedAdmin =
+    identity?.getPrincipal().toText() === HARDCODED_ADMIN_PRINCIPAL;
+  const effectiveIsAdmin = !!(isAdmin || callerIsHardcodedAdmin);
 
   return (
     <>
@@ -116,7 +123,7 @@ export function AppSidebar({
               }}
             />
           ))}
-          {isAdmin && (
+          {effectiveIsAdmin && (
             <NavLink
               icon={ShieldCheck}
               label="Admin"
