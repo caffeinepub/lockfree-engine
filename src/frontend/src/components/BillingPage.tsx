@@ -39,7 +39,7 @@ import {
   useGetMySubscription,
   useGetUsageSummary,
 } from "../hooks/useQueries";
-import { PricingModal } from "./PricingModal";
+import { PricingPage } from "./PricingPage";
 import { SeatManagement } from "./SeatManagement";
 
 interface BillingPageProps {
@@ -117,7 +117,6 @@ function WhiteLabelSection({
     if (isSaving) return;
 
     if (!isDemoMode) {
-      // Non-demo: just save locally
       localStorage.setItem(WHITE_LABEL_KEY, JSON.stringify(config));
       document.documentElement.style.setProperty(
         "--white-label-primary",
@@ -128,7 +127,6 @@ function WhiteLabelSection({
       return;
     }
 
-    // Demo mode: animated save flow
     setIsSaving(true);
     setTimeout(() => {
       localStorage.setItem(WHITE_LABEL_KEY, JSON.stringify(config));
@@ -192,7 +190,6 @@ function WhiteLabelSection({
     );
   }
 
-  // Enterprise but not demo mode — show contact sales notice inside the form
   if (!isDemoMode) {
     return (
       <div className="space-y-5">
@@ -404,7 +401,6 @@ function WhiteLabelSection({
         </Button>
       </div>
 
-      {/* Saved branding preview card */}
       {savedPreview?.companyName && (
         <div
           className="rounded-xl border border-border bg-card overflow-hidden"
@@ -625,7 +621,7 @@ export function BillingPage({
     day: "numeric",
     year: "numeric",
   });
-  const [pricingOpen, setPricingOpen] = useState(false);
+  const [showPricing, setShowPricing] = useState(false);
 
   const limits =
     TIER_LIMITS[subscription as keyof typeof TIER_LIMITS] ?? TIER_LIMITS.free;
@@ -636,15 +632,30 @@ export function BillingPage({
   const TierIcon = TIER_ICON[subscription] ?? Shield;
 
   function openPricing() {
-    setPricingOpen(true);
+    setShowPricing(true);
     onPricingOpen?.();
+  }
+
+  // Show full-page pricing view when "Change Plan" is clicked
+  if (showPricing) {
+    return (
+      <PricingPage
+        currentTier={subscription}
+        onBack={() => setShowPricing(false)}
+        isDemoMode={isDemoMode}
+        onUpgrade={(tier) => {
+          onTierChange?.(tier);
+          setShowPricing(false);
+        }}
+      />
+    );
   }
 
   return (
     <div className="max-w-4xl mx-auto space-y-6 pb-8">
       <div>
         <h1 className="font-display text-xl font-bold text-foreground">
-          Billing & Subscription
+          Billing &amp; Subscription
         </h1>
         <p className="text-sm text-muted-foreground mt-0.5">
           Manage your plan, usage, and payment history — all recorded on-chain.
@@ -875,17 +886,6 @@ export function BillingPage({
           />
         </div>
       </div>
-
-      <PricingModal
-        open={pricingOpen}
-        onClose={() => setPricingOpen(false)}
-        currentTier={subscription}
-        isDemoMode={isDemoMode}
-        onUpgrade={(tier) => {
-          onTierChange?.(tier);
-          setPricingOpen(false);
-        }}
-      />
     </div>
   );
 }
