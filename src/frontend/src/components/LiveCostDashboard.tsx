@@ -6,7 +6,7 @@ import {
 } from "@/components/ui/tooltip";
 import { Sparkles } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Area,
   AreaChart,
@@ -359,18 +359,24 @@ export function LiveCostDashboard({
     : rawTotalMonthlyUSD;
   const totalMonthlyICP = totalMonthlyUSD / ICP_RATE;
 
-  // 7-day trend
-  const dayLabels = last7DayLabels();
-  const baseTrendData = dayLabels.map((day, d) => ({
-    day,
-    cost:
-      rawTotalMonthlyUSD > 0
-        ? +(
-            rawTotalMonthlyUSD *
-            (0.92 + d * 0.018 + Math.sin(d) * 0.02)
-          ).toFixed(2)
-        : +(80 + d * 4 + Math.sin(d) * 3).toFixed(2),
-  }));
+  // 7-day trend — both memoized to prevent infinite re-render loop (React error #185)
+  // dayLabels is stable (only changes once per day), baseTrendData only recalculates
+  // when the cost figure changes, preventing a new array reference on every render.
+  const dayLabels = useMemo(() => last7DayLabels(), []);
+  const baseTrendData = useMemo(
+    () =>
+      dayLabels.map((day, d) => ({
+        day,
+        cost:
+          rawTotalMonthlyUSD > 0
+            ? +(
+                rawTotalMonthlyUSD *
+                (0.92 + d * 0.018 + Math.sin(d) * 0.02)
+              ).toFixed(2)
+            : +(80 + d * 4 + Math.sin(d) * 3).toFixed(2),
+      })),
+    [dayLabels, rawTotalMonthlyUSD],
+  );
   const trendData = useLiveTrendData(baseTrendData, isDemoMode);
 
   const avgResilience =

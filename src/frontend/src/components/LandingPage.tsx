@@ -1208,7 +1208,7 @@ export function LandingPage({
           }}
         />
 
-        <div className="max-w-3xl mx-auto text-center relative">
+        <div className="max-w-3xl md:max-w-5xl mx-auto text-center relative">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -1247,11 +1247,11 @@ export function LandingPage({
             {/* Quote text */}
             <blockquote>
               <p
-                className="font-display italic font-medium leading-relaxed mb-8 text-foreground"
+                className="font-display italic font-medium leading-relaxed mb-8 text-foreground md:whitespace-nowrap"
                 style={{ fontSize: "clamp(1.1rem, 2.5vw, 1.45rem)" }}
               >
                 Ha that&apos;s cool.. kind of a visualization of what cloud
-                engines can do? I like
+                engines can do.. I like
               </p>
 
               {/* Attribution */}

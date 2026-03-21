@@ -186,17 +186,22 @@ function AppShell() {
   // Claim admin on login — seed the query cache immediately from the return value
   // so the sidebar admin link appears without a second round-trip.
   useEffect(() => {
-    if (!identity || !actor) return;
-    actor
-      .claimInitialAdmin()
-      .then((result) => {
-        // Immediately write the definitive answer into the cache — no extra round-trip
-        queryClient.setQueryData(adminQueryKeys.isAdmin, result);
-      })
-      .catch(() => {
-        // On failure, fall back to a fresh query
-        void queryClient.refetchQueries({ queryKey: adminQueryKeys.isAdmin });
-      });
+    try {
+      if (!identity || !actor) return;
+      actor
+        .claimInitialAdmin()
+        .then((result) => {
+          // Immediately write the definitive answer into the cache — no extra round-trip
+          queryClient.setQueryData(adminQueryKeys.isAdmin, result);
+        })
+        .catch((err) => {
+          console.warn("claimInitialAdmin failed:", err);
+          // On failure, fall back to a fresh query
+          void queryClient.refetchQueries({ queryKey: adminQueryKeys.isAdmin });
+        });
+    } catch (err) {
+      console.warn("claimInitialAdmin effect threw synchronously:", err);
+    }
   }, [identity, actor, queryClient]);
 
   async function handleLoadDemo() {

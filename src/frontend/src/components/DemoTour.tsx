@@ -16,25 +16,43 @@ const TOUR_STEPS: TourStep[] = [
     targetId: "summary-cards",
     title: "Your Live Metrics",
     description:
-      "These cards show your total engines, monthly cost, average resilience score, and migrations completed. Click the info icon on any card for more detail.",
+      "These cards show your total engines, monthly cost, average resilience score, and migrations completed. In demo mode the figures update live every few seconds — click the info icon on any card for more detail.",
   },
   {
     targetId: "new-engine-btn",
     title: "Provision a New Engine",
     description:
-      "Click here to provision a new cloud engine in seconds. Choose your provider, CPU, RAM, and storage \u2014 then watch the multi-stage deployment animation.",
+      "Click here to provision a new cloud engine in seconds. Choose your provider, CPU, RAM, and storage — then watch the multi-stage deployment animation.",
   },
   {
     targetId: "engine-card-0",
     title: "Your Cloud Engines",
     description:
-      "Each engine runs on ICP and can migrate to any cloud provider instantly. Click 'Migrate Now' on a card to simulate a zero-downtime migration.",
+      "Each engine runs on ICP and can migrate to any cloud provider instantly. Try the Stop/Start, Restart, and Scale buttons on a card — each runs a live progress animation and updates the engine status.",
   },
   {
     targetId: "ai-deploy-btn-0",
     title: "AI-Powered Deployment",
     description:
-      "Describe any application in plain English. The AI builds and deploys it as an ICP canister directly to this engine \u2014 live in seconds.",
+      "Describe any application in plain English. The AI builds and deploys it as an ICP canister directly to this engine — live in seconds.",
+  },
+  {
+    targetId: "live-cost-dashboard",
+    title: "Live Cost Dashboard",
+    description:
+      "Your spending updates automatically every few seconds in demo mode. Hit the sparkles button to get AI-powered cost optimisation recommendations — apply them individually or all at once.",
+  },
+  {
+    targetId: "notification-bell",
+    title: "Live Notifications",
+    description:
+      "In demo mode, realistic alerts arrive automatically every 30–60 seconds — cost spikes, scaling events, migration completions. The badge updates in real time as new notifications land.",
+  },
+  {
+    targetId: "billing-upgrade",
+    title: "Plan Upgrade & Billing",
+    description:
+      "Go to Billing in the sidebar to simulate upgrading your plan. Choose a tier, go through the mock payment flow, and watch your plan update instantly — no real card needed.",
   },
   {
     targetId: "exit-demo-btn",

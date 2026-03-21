@@ -14,6 +14,7 @@ import {
 import {
   AlertTriangle,
   CalendarDays,
+  CheckCircle2,
   ChevronRight,
   CreditCard,
   Crown,
@@ -21,6 +22,7 @@ import {
   Image,
   Loader2,
   Lock,
+  Mail,
   Paintbrush,
   RotateCcw,
   Save,
@@ -53,6 +55,7 @@ interface WhiteLabelConfig {
   companyName: string;
   primaryColor: string;
   logoUrl: string;
+  customDomain: string;
 }
 
 function loadWhiteLabel(): WhiteLabelConfig {
@@ -60,21 +63,45 @@ function loadWhiteLabel(): WhiteLabelConfig {
     const raw = localStorage.getItem(WHITE_LABEL_KEY);
     return raw
       ? JSON.parse(raw)
-      : { companyName: "", primaryColor: "#00b4d8", logoUrl: "" };
+      : {
+          companyName: "",
+          primaryColor: "#00b4d8",
+          logoUrl: "",
+          customDomain: "",
+        };
   } catch {
-    return { companyName: "", primaryColor: "#00b4d8", logoUrl: "" };
+    return {
+      companyName: "",
+      primaryColor: "#00b4d8",
+      logoUrl: "",
+      customDomain: "",
+    };
   }
+}
+
+interface SavedPreview {
+  companyName: string;
+  primaryColor: string;
+  logoUrl: string;
+  customDomain: string;
 }
 
 function WhiteLabelSection({
   subscription,
   onUpgrade,
+  isDemoMode,
 }: {
   subscription: string;
   onUpgrade: () => void;
+  isDemoMode?: boolean;
 }) {
   const isEnterprise = subscription === "enterprise";
   const [config, setConfig] = useState<WhiteLabelConfig>(loadWhiteLabel);
+  const [isSaving, setIsSaving] = useState(false);
+  const [savedPreview, setSavedPreview] = useState<SavedPreview | null>(() => {
+    const stored = loadWhiteLabel();
+    return stored.companyName ? stored : null;
+  });
 
   useEffect(() => {
     const stored = loadWhiteLabel();
@@ -87,14 +114,35 @@ function WhiteLabelSection({
   }, []);
 
   function handleSave() {
-    localStorage.setItem(WHITE_LABEL_KEY, JSON.stringify(config));
-    document.documentElement.style.setProperty(
-      "--white-label-primary",
-      config.primaryColor,
-    );
-    toast.success(
-      "White-label branding saved! All team members will see your branding.",
-    );
+    if (isSaving) return;
+
+    if (!isDemoMode) {
+      // Non-demo: just save locally
+      localStorage.setItem(WHITE_LABEL_KEY, JSON.stringify(config));
+      document.documentElement.style.setProperty(
+        "--white-label-primary",
+        config.primaryColor,
+      );
+      toast.success("White-label branding saved!");
+      setSavedPreview({ ...config });
+      return;
+    }
+
+    // Demo mode: animated save flow
+    setIsSaving(true);
+    setTimeout(() => {
+      localStorage.setItem(WHITE_LABEL_KEY, JSON.stringify(config));
+      document.documentElement.style.setProperty(
+        "--white-label-primary",
+        config.primaryColor,
+      );
+      setSavedPreview({ ...config });
+      setIsSaving(false);
+      toast.success("White-label settings saved successfully", {
+        description: "Your branding is now active across the console.",
+        duration: 4000,
+      });
+    }, 1500);
   }
 
   function handleReset() {
@@ -102,10 +150,12 @@ function WhiteLabelSection({
       companyName: "",
       primaryColor: "#00b4d8",
       logoUrl: "",
+      customDomain: "",
     };
     localStorage.removeItem(WHITE_LABEL_KEY);
     document.documentElement.style.removeProperty("--white-label-primary");
     setConfig(defaults);
+    setSavedPreview(null);
     toast.success("Branding reset to default.");
   }
 
@@ -122,15 +172,65 @@ function WhiteLabelSection({
           White-label branding is available on the Enterprise plan. Rebrand the
           console with your company identity.
         </p>
-        <Button
-          size="sm"
-          className="gap-2 bg-[oklch(0.75_0.18_60)] hover:bg-[oklch(0.68_0.18_60)] text-background"
-          onClick={onUpgrade}
-          data-ocid="billing.whitelabel.open_modal_button"
-        >
-          <Crown className="w-3.5 h-3.5" />
-          Upgrade to Enterprise
-        </Button>
+        {isDemoMode ? (
+          <Button
+            size="sm"
+            className="gap-2 bg-[oklch(0.75_0.18_60)] hover:bg-[oklch(0.68_0.18_60)] text-background"
+            onClick={onUpgrade}
+            data-ocid="billing.whitelabel.open_modal_button"
+          >
+            <Crown className="w-3.5 h-3.5" />
+            Upgrade to Enterprise
+          </Button>
+        ) : (
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-border bg-muted/30 text-sm text-muted-foreground">
+            <Mail className="w-4 h-4" />
+            Contact sales to activate white-labeling
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // Enterprise but not demo mode — show contact sales notice inside the form
+  if (!isDemoMode) {
+    return (
+      <div className="space-y-5">
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-lg bg-[oklch(0.75_0.18_60/0.15)] border border-[oklch(0.75_0.18_60/0.3)] flex items-center justify-center flex-shrink-0">
+            <Paintbrush className="w-4 h-4 text-[oklch(0.75_0.18_60)]" />
+          </div>
+          <div>
+            <h3 className="font-display font-bold text-sm text-foreground">
+              White-Label Branding
+            </h3>
+            <p className="text-xs text-muted-foreground">
+              All team members will see your custom branding across the console
+            </p>
+          </div>
+          <div className="ml-auto">
+            <Badge className="bg-[oklch(0.75_0.18_60/0.12)] text-[oklch(0.85_0.18_60)] border border-[oklch(0.75_0.18_60/0.3)] text-xs">
+              Enterprise
+            </Badge>
+          </div>
+        </div>
+        <div className="rounded-xl border border-border bg-muted/20 p-5 flex items-center gap-4">
+          <div className="w-10 h-10 rounded-xl bg-[oklch(0.75_0.18_60/0.15)] border border-[oklch(0.75_0.18_60/0.3)] flex items-center justify-center flex-shrink-0">
+            <Mail className="w-5 h-5 text-[oklch(0.75_0.18_60)]" />
+          </div>
+          <div>
+            <p className="text-sm font-semibold text-foreground">
+              Contact sales to activate white-labeling
+            </p>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              Reach out to your account manager or email{" "}
+              <span className="text-primary font-mono">
+                enterprise@lockfreeengine.io
+              </span>{" "}
+              to enable custom branding for your organisation.
+            </p>
+          </div>
+        </div>
       </div>
     );
   }
@@ -218,67 +318,156 @@ function WhiteLabelSection({
         </div>
       </div>
 
-      <div className="space-y-1.5">
-        <Label htmlFor="wl-logo" className="text-xs">
-          Logo URL
-        </Label>
-        <Input
-          id="wl-logo"
-          placeholder="https://example.com/logo.png or paste base64"
-          value={config.logoUrl}
-          onChange={(e) =>
-            setConfig((prev) => ({ ...prev, logoUrl: e.target.value }))
-          }
-        />
-        {config.logoUrl && (
-          <div className="mt-2 p-3 rounded-lg border border-border bg-muted/30 flex items-center gap-3">
-            <img
-              src={config.logoUrl}
-              alt="Logo preview"
-              className="h-8 max-w-[120px] object-contain"
-              onError={(e) => {
-                (e.currentTarget as HTMLImageElement).style.display = "none";
-              }}
-            />
-            <span className="text-xs text-muted-foreground">Logo preview</span>
-          </div>
-        )}
-        {!config.logoUrl && (
-          <div className="mt-2 p-3 rounded-lg border border-dashed border-border bg-muted/20 flex items-center gap-2 text-muted-foreground">
-            <Image className="w-4 h-4" />
-            <span className="text-xs">Enter a URL to preview your logo</span>
-          </div>
-        )}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="space-y-1.5">
+          <Label htmlFor="wl-logo" className="text-xs">
+            Logo URL
+          </Label>
+          <Input
+            id="wl-logo"
+            placeholder="https://example.com/logo.png"
+            value={config.logoUrl}
+            onChange={(e) =>
+              setConfig((prev) => ({ ...prev, logoUrl: e.target.value }))
+            }
+          />
+          {config.logoUrl && (
+            <div className="mt-1.5 p-2 rounded-lg border border-border bg-muted/30 flex items-center gap-2">
+              <img
+                src={config.logoUrl}
+                alt="Logo preview"
+                className="h-6 max-w-[80px] object-contain"
+                onError={(e) => {
+                  (e.currentTarget as HTMLImageElement).style.display = "none";
+                }}
+              />
+              <span className="text-xs text-muted-foreground">
+                Live preview
+              </span>
+            </div>
+          )}
+          {!config.logoUrl && (
+            <div className="mt-1.5 p-2 rounded-lg border border-dashed border-border bg-muted/20 flex items-center gap-2 text-muted-foreground">
+              <Image className="w-3.5 h-3.5" />
+              <span className="text-xs">Enter a URL to preview your logo</span>
+            </div>
+          )}
+        </div>
+        <div className="space-y-1.5">
+          <Label htmlFor="wl-domain" className="text-xs">
+            Custom Domain
+          </Label>
+          <Input
+            id="wl-domain"
+            placeholder="console.yourcompany.com"
+            value={config.customDomain}
+            onChange={(e) =>
+              setConfig((prev) => ({ ...prev, customDomain: e.target.value }))
+            }
+          />
+          <p className="text-xs text-muted-foreground">
+            Point your CNAME to{" "}
+            <span className="font-mono text-primary">
+              app.lockfreeengine.io
+            </span>
+          </p>
+        </div>
       </div>
 
       <div className="flex items-center gap-2 pt-1">
         <Button
           className="gap-2"
           onClick={handleSave}
+          disabled={isSaving}
           data-ocid="billing.whitelabel.save_button"
         >
-          <Save className="w-3.5 h-3.5" />
-          Save Branding
+          {isSaving ? (
+            <>
+              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              Saving...
+            </>
+          ) : (
+            <>
+              <Save className="w-3.5 h-3.5" />
+              Save Settings
+            </>
+          )}
         </Button>
-        <Button variant="outline" className="gap-2" onClick={handleReset}>
+        <Button
+          variant="outline"
+          className="gap-2"
+          onClick={handleReset}
+          disabled={isSaving}
+        >
           <RotateCcw className="w-3.5 h-3.5" />
           Reset to Default
         </Button>
       </div>
 
-      {config.companyName && (
-        <div className="rounded-lg border border-primary/20 bg-primary/5 px-4 py-3 flex items-center gap-2">
-          <div
-            className="w-2.5 h-2.5 rounded-full animate-pulse"
-            style={{ background: config.primaryColor }}
-          />
-          <p className="text-xs text-muted-foreground">
-            Currently showing as:{" "}
-            <span className="font-semibold text-foreground">
-              {config.companyName}
-            </span>{" "}
-            to all team members
-          </p>
+      {/* Saved branding preview card */}
+      {savedPreview?.companyName && (
+        <div
+          className="rounded-xl border border-border bg-card overflow-hidden"
+          data-ocid="billing.whitelabel.success_state"
+        >
+          <div className="px-4 py-2.5 border-b border-border bg-muted/30 flex items-center gap-2">
+            <CheckCircle2 className="w-3.5 h-3.5 text-[oklch(0.72_0.19_145)]" />
+            <span className="text-xs font-semibold text-[oklch(0.82_0.19_145)]">
+              Active Branding Preview
+            </span>
+            <span className="ml-auto text-xs text-muted-foreground">
+              Live across the console
+            </span>
+          </div>
+          <div className="p-4">
+            <div
+              className="rounded-lg p-4 flex items-center gap-4"
+              style={{
+                background: `linear-gradient(135deg, ${savedPreview.primaryColor}18 0%, ${savedPreview.primaryColor}08 100%)`,
+                borderLeft: `3px solid ${savedPreview.primaryColor}`,
+              }}
+            >
+              {savedPreview.logoUrl && (
+                <img
+                  src={savedPreview.logoUrl}
+                  alt="Company logo"
+                  className="h-10 max-w-[100px] object-contain flex-shrink-0"
+                  onError={(e) => {
+                    (e.currentTarget as HTMLImageElement).style.display =
+                      "none";
+                  }}
+                />
+              )}
+              {!savedPreview.logoUrl && (
+                <div
+                  className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 text-white font-bold text-sm"
+                  style={{ background: savedPreview.primaryColor }}
+                >
+                  {savedPreview.companyName.charAt(0).toUpperCase()}
+                </div>
+              )}
+              <div className="flex-1 min-w-0">
+                <p
+                  className="font-display font-bold text-base truncate"
+                  style={{ color: savedPreview.primaryColor }}
+                >
+                  {savedPreview.companyName}
+                </p>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  Powered by LockFree Engine
+                  {savedPreview.customDomain && (
+                    <span className="ml-1.5 font-mono">
+                      · {savedPreview.customDomain}
+                    </span>
+                  )}
+                </p>
+              </div>
+              <div
+                className="w-3 h-3 rounded-full flex-shrink-0 animate-pulse"
+                style={{ background: savedPreview.primaryColor }}
+              />
+            </div>
+          </div>
         </div>
       )}
     </div>
@@ -682,6 +871,7 @@ export function BillingPage({
           <WhiteLabelSection
             subscription={subscription}
             onUpgrade={openPricing}
+            isDemoMode={isDemoMode}
           />
         </div>
       </div>

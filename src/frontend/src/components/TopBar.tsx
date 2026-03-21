@@ -251,6 +251,7 @@ export function TopBar({
             size="icon"
             className="w-8 h-8 relative"
             data-ocid="topbar.notifications.button"
+            data-tour-id="notification-bell"
           >
             <Bell className="w-4 h-4" />
             {unreadCount > 0 && (

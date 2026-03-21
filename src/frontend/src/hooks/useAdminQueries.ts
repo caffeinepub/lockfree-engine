@@ -15,15 +15,19 @@ export const adminQueryKeys = {
 };
 
 export function useIsAdmin() {
-  const { actor, isFetching } = useActor();
+  const { actor } = useActor();
   return useQuery<boolean>({
     queryKey: adminQueryKeys.isAdmin,
     queryFn: async () => {
       if (!actor) return false;
       return actor.isCallerAdmin();
     },
-    enabled: !!actor && !isFetching,
-    staleTime: 0,
+    // Never auto-fetch — admin status is seeded exclusively by claimInitialAdmin
+    // in App.tsx. This prevents a competing network call from overwriting the
+    // correct cached value with false.
+    enabled: false,
+    staleTime: Number.POSITIVE_INFINITY,
+    initialData: false,
   });
 }
 
@@ -135,8 +139,6 @@ export function useSetUserTier() {
   });
 }
 
-// Extended actor type to include deleteUserData which may be present in newer
-// backend versions but is not yet reflected in the generated backendInterface.
 type ActorWithDeleteUserData = {
   deleteUserData: (principal: unknown) => Promise<boolean>;
 };

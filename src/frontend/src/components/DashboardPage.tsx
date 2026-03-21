@@ -152,16 +152,21 @@ export function DashboardPage({
 
   const announcementBanner = publicSettings?.announcementBanner ?? "";
 
-  // Auto-trigger demo tour when demo mode activates (only if not seen before)
+  // Auto-trigger demo tour only when demo engines are actually loaded
   useEffect(() => {
     if (!isDemoMode) return;
     const seen = localStorage.getItem(DEMO_TOUR_SEEN_KEY);
     if (seen) return;
+    // Only auto-start when there is actual demo data loaded (engines with "demo" in their name)
+    const hasDemoEngines = (engines ?? []).some((e) =>
+      e.name.toLowerCase().includes("demo"),
+    );
+    if (!hasDemoEngines) return;
     const t = setTimeout(() => {
       setDemoTourOpen(true);
-    }, 800);
+    }, 1200);
     return () => clearTimeout(t);
-  }, [isDemoMode]);
+  }, [isDemoMode, engines]);
 
   function handleDelete(id: bigint) {
     deleteEngine(id, {
@@ -328,7 +333,9 @@ export function DashboardPage({
       <MigrationHistoryPanel />
 
       {/* Live Cost Dashboard */}
-      <LiveCostDashboard isDemoMode={isDemoMode} />
+      <div data-tour-id="live-cost-dashboard">
+        <LiveCostDashboard isDemoMode={isDemoMode} />
+      </div>
 
       {/* Quick tips */}
       <div className="console-panel p-5">

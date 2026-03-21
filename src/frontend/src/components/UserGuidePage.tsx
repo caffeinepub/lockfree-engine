@@ -527,6 +527,24 @@ const businessSections: GuideSection[] = [
           Every migration is logged in your Migration History, showing the
           origin, destination, date, and estimated monthly savings.
         </p>
+        <p className="font-semibold text-sm mt-2">
+          Engine card actions (try these in demo mode):
+        </p>
+        <ul className="list-disc list-inside space-y-1 text-muted-foreground ml-2">
+          <li>
+            <strong>Stop / Start</strong> — gracefully stops a running engine or
+            starts a stopped one, with a progress animation and live status
+            badge update
+          </li>
+          <li>
+            <strong>Restart</strong> — cycles the engine through Stopping →
+            Stopped → Starting → Running with animated steps
+          </li>
+          <li>
+            <strong>Scale</strong> — simulates resizing the engine's compute
+            resources; the card reflects the updated configuration on completion
+          </li>
+        </ul>
       </div>
     ),
   },
@@ -644,6 +662,23 @@ const businessSections: GuideSection[] = [
           </li>
           <li>Shut down Dev/Staging engines when not actively developing</li>
         </ul>
+        <p className="font-semibold text-sm mt-2">
+          AI Cost Optimisation (demo mode):
+        </p>
+        <p className="text-sm text-muted-foreground">
+          Click the sparkles button on the Live Cost Dashboard to see
+          AI-generated recommendations. Each recommendation shows projected
+          savings and can be applied individually — or use{" "}
+          <strong>&quot;Apply All&quot;</strong> to action everything at once. A
+          processing animation confirms each change and the projected cost
+          updates on screen.
+        </p>
+        <p className="font-semibold text-sm mt-2">Live cost animation:</p>
+        <p className="text-sm text-muted-foreground">
+          In demo mode, cost figures and the 7-day trend chart refresh
+          automatically every 8–12 seconds to simulate a live production
+          environment.
+        </p>
       </div>
     ),
   },
@@ -819,6 +854,13 @@ const businessSections: GuideSection[] = [
         <p className="text-sm text-muted-foreground">
           Click <strong>"Mark all as read"</strong> to clear the unread badge.
           Notifications are stored locally in your session.
+        </p>
+        <p className="font-semibold text-sm mt-2">Demo mode notifications:</p>
+        <p className="text-sm text-muted-foreground">
+          In demo mode, realistic notifications arrive automatically every 30–60
+          seconds — including cost alerts, engine scaling events, and migration
+          completions. Watch the bell badge increment in real time as alerts
+          land.
         </p>
       </div>
     ),
@@ -1488,6 +1530,20 @@ if (monthly > THRESHOLDS[subscription]) {
           component reads from the React Query engines cache and computes all
           charts client-side using Recharts. No additional backend calls are
           made.
+        </p>
+        <p className="font-semibold text-sm mt-2">Demo mode simulation:</p>
+        <p className="text-sm text-muted-foreground">
+          In demo mode, cost figures and the 7-day trend chart refresh every
+          8–12 seconds via a{" "}
+          <code className="text-xs bg-muted px-1 rounded">setInterval</code> in
+          the{" "}
+          <code className="text-xs bg-muted px-1 rounded">
+            LiveCostDashboard
+          </code>{" "}
+          component. The AI Cost Optimisation modal generates 4 mock
+          recommendations with apply/confirm flows — each updates projected
+          spend on screen. Use &quot;Apply All&quot; to action all
+          recommendations at once.
         </p>
       </div>
     ),

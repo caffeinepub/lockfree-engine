@@ -780,6 +780,7 @@ actor {
     };
   };
 
+
   public query ({ caller }) func listAllUsers() : async [AdminUserRecord] {
     if (not AccessControl.isAdmin(accessControlState, caller)) {
       Runtime.trap("Unauthorized: Admin only");
