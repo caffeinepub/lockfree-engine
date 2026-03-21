@@ -267,7 +267,7 @@ export function DemoTour({ open, onClose }: DemoTourProps) {
                 </div>
                 <button
                   type="button"
-                  onClick={handleFinish}
+                  onClick={handleNext}
                   className="text-muted-foreground hover:text-foreground transition-colors flex-shrink-0 mt-0.5"
                   aria-label="Close tour"
                   data-ocid="demo_tour.close_button"
