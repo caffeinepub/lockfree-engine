@@ -762,7 +762,7 @@ export function LandingPage({
           </p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
             <div
-              className="flex flex-col gap-3 p-6 rounded-xl border backdrop-blur-sm"
+              className="flex flex-col gap-4 p-8 rounded-xl border backdrop-blur-sm"
               style={{
                 background: "oklch(0.45 0.18 264 / 0.12)",
                 borderColor: "oklch(0.55 0.18 264 / 0.25)",
@@ -770,18 +770,18 @@ export function LandingPage({
               }}
             >
               <div
-                className="font-display font-semibold text-sm"
+                className="font-display font-semibold text-base"
                 style={{ color: "oklch(0.7 0.18 264)" }}
               >
                 Data Sovereignty
               </div>
-              <p className="text-muted-foreground text-xs leading-relaxed">
+              <p className="text-muted-foreground text-sm leading-relaxed">
                 Your business data stays in infrastructure you control — not on
                 servers owned by a competitor.
               </p>
             </div>
             <div
-              className="flex flex-col gap-3 p-6 rounded-xl border backdrop-blur-sm"
+              className="flex flex-col gap-4 p-8 rounded-xl border backdrop-blur-sm"
               style={{
                 background: "oklch(0.82 0.22 195 / 0.08)",
                 borderColor: "oklch(0.82 0.22 195 / 0.22)",
@@ -789,19 +789,19 @@ export function LandingPage({
               }}
             >
               <div
-                className="font-display font-semibold text-sm"
+                className="font-display font-semibold text-base"
                 style={{ color: "oklch(0.82 0.22 195)" }}
               >
                 AI Agent Security
               </div>
-              <p className="text-muted-foreground text-xs leading-relaxed">
+              <p className="text-muted-foreground text-sm leading-relaxed">
                 The next wave of enterprise AI runs agents directly on your
                 data. That compute needs to be isolated, auditable, and
                 sovereign.
               </p>
             </div>
             <div
-              className="flex flex-col gap-3 p-6 rounded-xl border backdrop-blur-sm"
+              className="flex flex-col gap-4 p-8 rounded-xl border backdrop-blur-sm"
               style={{
                 background: "oklch(0.65 0.18 158 / 0.1)",
                 borderColor: "oklch(0.65 0.18 158 / 0.25)",
@@ -809,12 +809,12 @@ export function LandingPage({
               }}
             >
               <div
-                className="font-display font-semibold text-sm"
+                className="font-display font-semibold text-base"
                 style={{ color: "oklch(0.72 0.18 158)" }}
               >
                 No Hyperscaler Dependency
               </div>
-              <p className="text-muted-foreground text-xs leading-relaxed">
+              <p className="text-muted-foreground text-sm leading-relaxed">
                 AWS, Google, and Microsoft all have commercial interests in the
                 data they process. ICP doesn't.
               </p>
