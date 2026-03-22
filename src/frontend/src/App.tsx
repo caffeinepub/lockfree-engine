@@ -18,6 +18,7 @@ import { PartnersPage } from "./components/PartnersPage";
 import { PricingModal } from "./components/PricingModal";
 import { ReferralsAffiliatePage } from "./components/ReferralsAffiliatePage";
 import { SettingsPage } from "./components/SettingsPage";
+import { TechnicalNotesPage } from "./components/TechnicalNotesPage";
 import { TermsPage } from "./components/TermsPage";
 import { TopBar } from "./components/TopBar";
 import { UserGuidePage } from "./components/UserGuidePage";
@@ -106,6 +107,7 @@ type Page =
   | "referrals"
   | "partners"
   | "userguide"
+  | "technotes"
   | "admin";
 
 const PAGE_TITLES: Record<Page, string> = {
@@ -117,6 +119,7 @@ const PAGE_TITLES: Record<Page, string> = {
   referrals: "Referrals & Affiliates",
   partners: "Partners",
   userguide: "User Guide",
+  technotes: "Technical Notes",
   admin: "Admin",
 };
 
@@ -399,6 +402,7 @@ function AppShell() {
             <PartnersPage onNavigate={(p) => setActivePage(p as Page)} />
           )}
           {activePage === "userguide" && <UserGuidePage />}
+          {activePage === "technotes" && <TechnicalNotesPage />}
           {activePage === "admin" && <AdminPage />}
         </main>
 

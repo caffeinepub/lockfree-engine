@@ -14,6 +14,7 @@ import {
   MessageSquare,
   Settings,
   ShieldCheck,
+  Terminal,
   Users,
   X,
 } from "lucide-react";
@@ -42,6 +43,7 @@ const navItems = [
   { id: "partners", label: "Partners", icon: Building2 },
   { id: "settings", label: "Account Settings", icon: Settings },
   { id: "userguide", label: "User Guide", icon: BookOpen },
+  { id: "technotes", label: "Tech Notes", icon: Terminal },
 ];
 
 export function AppSidebar({
