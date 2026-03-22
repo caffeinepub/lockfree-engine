@@ -1413,16 +1413,32 @@ setIsDemoMode(true);`}</pre>
         <p>
           Engine provisioning calls the{" "}
           <code className="text-xs bg-muted px-1 rounded">createEngine</code>{" "}
-          update method on the backend canister.
+          update method on the backend canister. The new Engine is stored in a{" "}
+          <code className="text-xs bg-muted px-1 rounded">stable var</code>{" "}
+          HashMap, ensuring state survives canister upgrades without a database.
         </p>
-        <pre className="text-xs bg-muted rounded-lg p-3 overflow-x-auto">{`// Motoko backend signature
+        <pre className="text-xs bg-muted rounded-lg p-3 overflow-x-auto">{`// Motoko — stable storage (survives upgrades)
+stable var engines : HashMap<Text, Engine> = HashMap.new();
+
+// Actor update call
 public shared(msg) func createEngine(
   name     : Text,
   provider : Text,
   cpu      : Nat,
   ram      : Nat,
   storage  : Nat
-) : async Engine;
+) : async Engine {
+  assert(msg.caller != Principal.anonymous());
+  let engine : Engine = {
+    id       = generateId();
+    owner    = msg.caller;
+    name;  provider;  cpu;  ram;  storage;
+    status   = "provisioning";
+    created  = Time.now();
+  };
+  HashMap.put(engines, engine.id, engine);
+  engine
+};
 
 // Frontend mutation (useQueries.ts)
 export function useCreateEngine() {
@@ -1435,10 +1451,9 @@ export function useCreateEngine() {
   });
 }`}</pre>
         <p className="text-sm text-muted-foreground">
-          The backend validates{" "}
-          <code className="text-xs bg-muted px-1 rounded">msg.caller</code> is
-          not anonymous before accepting the call. The new Engine is returned
-          and the frontend cache is invalidated.
+          Stable variables use Motoko&#39;s orthogonal persistence — the runtime
+          serialises heap state to stable memory at upgrade time automatically.
+          No migration scripts, no schema versioning.
         </p>
       </div>
     ),
@@ -1451,9 +1466,13 @@ export function useCreateEngine() {
       <div className="space-y-3">
         <p>
           The migration flow is currently simulated — the ICP Cloud Engines API
-          (from DFINITY's Mission 70) is not yet publicly available.
+          (from DFINITY&#39;s Mission 70) is not yet publicly available. The
+          simulation layer is architected so that replacing it with the live
+          endpoint requires no UI changes.
         </p>
-        <p className="text-sm font-semibold">Current implementation:</p>
+        <p className="text-sm font-semibold">
+          Current simulation implementation:
+        </p>
         <ul className="list-disc list-inside text-sm text-muted-foreground ml-2 space-y-1">
           <li>UI shows cost estimate modal with zero-downtime badge</li>
           <li>On confirm: animated progress through migration phases</li>
@@ -1465,16 +1484,39 @@ export function useCreateEngine() {
             stable array
           </li>
           <li>
-            Frontend updates engine's{" "}
+            Frontend updates engine&#39;s{" "}
             <code className="text-xs bg-muted px-1 rounded">provider</code>{" "}
             field optimistically
           </li>
-          <li>Cache is invalidated after mutation resolves</li>
         </ul>
+        <p className="text-sm font-semibold mt-2">
+          Production swap-in (when Cloud Engines API goes live):
+        </p>
+        <pre className="text-xs bg-muted rounded-lg p-3 overflow-x-auto">{`// Motoko — current simulation
+public shared(msg) func migrateEngine(
+  engineId       : Text,
+  targetProvider : Text
+) : async MigrationResult {
+  // TODO: replace simulation with live API call below
+  logMigration(msg.caller, engineId, targetProvider);
+  { success = true; newSubnetId = null }
+};
+
+// Production: DFINITY Cloud Engines API (Mission 70)
+// The Motoko actor interface stays identical — no UI changes needed
+public shared(msg) func migrateEngine(
+  engineId       : Text,
+  targetProvider : Text
+) : async MigrationResult {
+  let subnetId = await CloudEngines.resolveSubnet(targetProvider);
+  let result = await CloudEngines.migrate(engineId, subnetId);
+  logMigration(msg.caller, engineId, targetProvider);
+  { success = result.ok; newSubnetId = ?subnetId }
+};`}</pre>
         <p className="text-sm text-muted-foreground">
-          When DFINITY releases the Cloud Engines API, the Motoko backend will
-          be updated to call the subnet migration endpoint directly. The UI
-          layer requires no changes.
+          The UI layer and Candid interface are identical in both cases. Only
+          the Motoko function body changes — the React frontend requires zero
+          modifications when the live API ships.
         </p>
       </div>
     ),
