@@ -283,7 +283,8 @@ const ROADMAP_PHASES = [
       "ICP Cloud Engines API integration (Mission 70)",
       "Real engine provisioning on ICP",
       "Live cost metering in ICP cycles",
-      "Dedicated subnet allocation via NNS",
+      "Private sector enterprise onboarding",
+      "AI agent workload deployment support",
       "Beta partner onboarding",
     ],
   },
@@ -296,7 +297,8 @@ const ROADMAP_PHASES = [
     accentBorder: "oklch(0.72 0.2 310 / 0.22)",
     items: [
       "Multi-region engine orchestration",
-      "Enterprise SLA guarantees",
+      "Enterprise SLA guarantees for private sector clients",
+      "AI agent infrastructure management",
       "White-label platform licensing",
       "Full NNS governance integration",
       "Public API for third-party integrations",
@@ -574,8 +576,9 @@ export function LandingPage({
                   transition={{ duration: 0.55, delay: 0.35 }}
                 >
                   Provision engines on AWS, GCP, or Azure — then migrate your
-                  entire stack to another provider in under 5 seconds. No
-                  contracts, no lock-in, ever.
+                  entire stack to another provider in under 5 seconds. Built for
+                  private sector companies that need sovereign, secure compute
+                  for their data. No contracts, no lock-in, ever.
                 </motion.p>
 
                 {/* Dom quote credibility badge */}
@@ -728,6 +731,95 @@ export function LandingPage({
               </motion.div>
             ))}
           </motion.div>
+        </div>
+      </section>
+
+      {/* Private Sector / AI Agents callout */}
+      <section className="relative z-10 py-24 px-5 sm:px-8 md:px-12 border-y border-border/30">
+        <div className="max-w-4xl mx-auto text-center">
+          <div
+            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border text-xs font-mono mb-6"
+            style={{
+              background: "oklch(0.82 0.22 195 / 0.06)",
+              borderColor: "oklch(0.82 0.22 195 / 0.25)",
+              color: "oklch(0.82 0.22 195)",
+            }}
+          >
+            <span>The Private Sector Opportunity</span>
+          </div>
+          <h2
+            className="font-display font-bold tracking-tight mb-4"
+            style={{ fontSize: "clamp(1.6rem, 3.5vw, 2.25rem)" }}
+          >
+            Built for the companies AI runs on
+          </h2>
+          <p className="text-muted-foreground text-sm md:text-base max-w-2xl mx-auto mb-10">
+            Governments already have their cloud contracts locked in. The gap is
+            in the private sector — the companies handling sensitive business
+            data, running AI agents, and building the next generation of
+            enterprise software. They need sovereign, auditable compute that no
+            hyperscaler controls.
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
+            <div
+              className="flex flex-col gap-3 p-6 rounded-xl border backdrop-blur-sm"
+              style={{
+                background: "oklch(0.45 0.18 264 / 0.12)",
+                borderColor: "oklch(0.55 0.18 264 / 0.25)",
+                borderLeft: "3px solid oklch(0.55 0.18 264 / 0.5)",
+              }}
+            >
+              <div
+                className="font-display font-semibold text-sm"
+                style={{ color: "oklch(0.7 0.18 264)" }}
+              >
+                Data Sovereignty
+              </div>
+              <p className="text-muted-foreground text-xs leading-relaxed">
+                Your business data stays in infrastructure you control — not on
+                servers owned by a competitor.
+              </p>
+            </div>
+            <div
+              className="flex flex-col gap-3 p-6 rounded-xl border backdrop-blur-sm"
+              style={{
+                background: "oklch(0.82 0.22 195 / 0.08)",
+                borderColor: "oklch(0.82 0.22 195 / 0.22)",
+                borderLeft: "3px solid oklch(0.82 0.22 195 / 0.5)",
+              }}
+            >
+              <div
+                className="font-display font-semibold text-sm"
+                style={{ color: "oklch(0.82 0.22 195)" }}
+              >
+                AI Agent Security
+              </div>
+              <p className="text-muted-foreground text-xs leading-relaxed">
+                The next wave of enterprise AI runs agents directly on your
+                data. That compute needs to be isolated, auditable, and
+                sovereign.
+              </p>
+            </div>
+            <div
+              className="flex flex-col gap-3 p-6 rounded-xl border backdrop-blur-sm"
+              style={{
+                background: "oklch(0.65 0.18 158 / 0.1)",
+                borderColor: "oklch(0.65 0.18 158 / 0.25)",
+                borderLeft: "3px solid oklch(0.65 0.18 158 / 0.5)",
+              }}
+            >
+              <div
+                className="font-display font-semibold text-sm"
+                style={{ color: "oklch(0.72 0.18 158)" }}
+              >
+                No Hyperscaler Dependency
+              </div>
+              <p className="text-muted-foreground text-xs leading-relaxed">
+                AWS, Google, and Microsoft all have commercial interests in the
+                data they process. ICP doesn't.
+              </p>
+            </div>
+          </div>
         </div>
       </section>
 

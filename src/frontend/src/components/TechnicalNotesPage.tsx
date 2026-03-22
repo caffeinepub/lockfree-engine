@@ -151,6 +151,7 @@ export function TechnicalNotesPage() {
                 "Internet Identity handles authentication — no passwords, no JWTs, no centralised auth server. WebAuthn-derived key pairs are domain-scoped.",
                 "The NNS (Network Nervous System) governs subnet allocation, canister upgrades, and protocol decisions. LockFree Engine canisters run on NNS-managed subnets.",
                 "All state lives in the backend canister — orthogonally persistent, meaning variables survive message boundaries and canister upgrades without any external database.",
+                "ICP canisters are purpose-built for AI agent workloads requiring data sovereignty: each canister runs in a WebAssembly sandbox with deterministic execution, no shared memory between canisters, and cryptographically verifiable computation. Private sector companies running AI agents on sensitive business data can deploy those agents as ICP canisters — auditable, isolated, and controlled entirely by the canister owner, not a hyperscaler.",
               ].map((point) => (
                 <li key={point.slice(0, 30)} className="flex items-start gap-2">
                   <ArrowRight className="w-3.5 h-3.5 text-primary mt-0.5 flex-shrink-0" />
