@@ -58,6 +58,83 @@ interface GuideSection {
 
 const businessSections: GuideSection[] = [
   {
+    id: "whats-coming-biz",
+    title: "What's Coming",
+    icon: Rocket,
+    content: (
+      <div className="space-y-3">
+        <p>
+          LockFree Engine is already built and waiting. When the ICP Cloud
+          Engines API (Mission 70) goes public, the simulation becomes reality.
+          Here is what unlocks:
+        </p>
+        <div className="space-y-2">
+          <div className="rounded-md border border-border p-3">
+            <div className="font-medium text-sm mb-1">
+              🌐 Real Multi-Cloud Provisioning
+            </div>
+            <div className="text-xs text-muted-foreground">
+              Spin up genuine cloud engines across providers from a single
+              dashboard — not simulated, fully live.
+            </div>
+          </div>
+          <div className="rounded-md border border-border p-3">
+            <div className="font-medium text-sm mb-1">
+              💡 Live AI Cost Optimisation
+            </div>
+            <div className="text-xs text-muted-foreground">
+              Real-time AI recommendations based on actual usage patterns and
+              live pricing data from every provider.
+            </div>
+          </div>
+          <div className="rounded-md border border-border p-3">
+            <div className="font-medium text-sm mb-1">
+              ⚡ One-Click Migration with Zero Downtime
+            </div>
+            <div className="text-xs text-muted-foreground">
+              Move your entire workload between cloud providers without your
+              users noticing a thing.
+            </div>
+          </div>
+          <div className="rounded-md border border-border p-3">
+            <div className="font-medium text-sm mb-1">
+              📈 Automated Demand-Driven Scaling
+            </div>
+            <div className="text-xs text-muted-foreground">
+              Your engines grow and shrink automatically based on real demand —
+              no manual intervention required.
+            </div>
+          </div>
+          <div className="rounded-md border border-border p-3">
+            <div className="font-medium text-sm mb-1">
+              🛡️ Enterprise SLA Guarantees
+            </div>
+            <div className="text-xs text-muted-foreground">
+              Contractual uptime guarantees backed by ICP's decentralised
+              infrastructure — not a single provider's promise.
+            </div>
+          </div>
+        </div>
+        <p className="text-sm text-muted-foreground italic">
+          "LockFree Engine is already built and waiting. When the API goes live,
+          the simulation becomes reality."
+        </p>
+        <p className="text-xs text-muted-foreground">
+          Follow the Mission 70 roadmap at{" "}
+          <a
+            href="https://forum.dfinity.org"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-primary underline"
+          >
+            forum.dfinity.org
+          </a>
+          .
+        </p>
+      </div>
+    ),
+  },
+  {
     id: "what-is",
     title: "What is LockFree Engine?",
     icon: BookOpen,
@@ -65,7 +142,7 @@ const businessSections: GuideSection[] = [
       <div className="space-y-3">
         <p>
           LockFree Engine is a cloud management dashboard that gives you
-          complete freedom to run your business apps on{" "}
+          complete freedom to run your business apps on" "
           <strong>AWS, Google Cloud, or Azure</strong> — and switch between them
           anytime, without disruption.
         </p>
@@ -166,14 +243,14 @@ const businessSections: GuideSection[] = [
     content: (
       <div className="space-y-3">
         <p>
-          Not ready to connect real engines yet? The{" "}
+          Not ready to connect real engines yet? The" "
           <strong>Demo Data toggle</strong> lets you explore the full dashboard
           with simulated engine data — no sign-up required.
         </p>
         <p className="font-semibold text-sm">How it works:</p>
         <ul className="list-disc list-inside space-y-1 text-muted-foreground ml-2">
           <li>
-            On the <strong>login page</strong> and{" "}
+            On the <strong>login page</strong> and" "
             <strong>empty dashboard</strong>, you'll see a "Demo Data" toggle
             switch
           </li>
@@ -186,7 +263,7 @@ const businessSections: GuideSection[] = [
             empty state
           </li>
           <li>
-            In demo mode, a blue banner appears at the top — click{" "}
+            In demo mode, a blue banner appears at the top — click" "
             <strong>Exit Demo</strong> to return to the clean state
           </li>
           <li>Your toggle preference is remembered across refreshes</li>
@@ -309,7 +386,7 @@ const businessSections: GuideSection[] = [
         </p>
         <ol className="list-decimal list-inside space-y-1 text-muted-foreground ml-2">
           <li>
-            Visit{" "}
+            Visit" "
             <span className="font-mono text-xs bg-muted px-1 py-0.5 rounded">
               identity.ic0.app
             </span>
@@ -360,8 +437,8 @@ const businessSections: GuideSection[] = [
         </div>
         <p className="text-sm">
           Below the summary cards you'll find a{" "}
-          <strong>7-day cost trend chart</strong>, a{" "}
-          <strong>per-engine cost breakdown</strong>, and your{" "}
+          <strong>7-day cost trend chart</strong>, a" "
+          <strong>per-engine cost breakdown</strong>, and your" "
           <strong>recent migration history</strong>. Quick action buttons let
           you provision a new engine, launch the AI chat, or optimize costs from
           a single click.
@@ -445,7 +522,7 @@ const businessSections: GuideSection[] = [
               2
             </span>
             <span>
-              Choose your cloud provider: <strong>AWS</strong>,{" "}
+              Choose your cloud provider: <strong>AWS</strong>," "
               <strong>Google Cloud</strong>, or <strong>Azure</strong>.
             </span>
           </li>
@@ -454,7 +531,7 @@ const businessSections: GuideSection[] = [
               3
             </span>
             <span>
-              Use the sliders to set <strong>CPU cores</strong>,{" "}
+              Use the sliders to set <strong>CPU cores</strong>," "
               <strong>RAM (GB)</strong>, and <strong>Storage (GB)</strong>. The
               estimated hourly cost updates in real time.
             </span>
@@ -464,7 +541,7 @@ const businessSections: GuideSection[] = [
               4
             </span>
             <span>
-              Give your engine a name and click{" "}
+              Give your engine a name and click" "
               <strong>"Provision Engine"</strong>.
             </span>
           </li>
@@ -474,7 +551,7 @@ const businessSections: GuideSection[] = [
             </span>
             <span>
               Your engine appears in the list with a{" "}
-              <strong>Provisioning</strong> status, then switches to{" "}
+              <strong>Provisioning</strong> status, then switches to" "
               <strong>Running</strong> within seconds.
             </span>
           </li>
@@ -556,7 +633,7 @@ const businessSections: GuideSection[] = [
       <div className="space-y-3">
         <p>
           Distribution is the next level of resilience: instead of running your
-          workload on a single provider, you spread it across{" "}
+          workload on a single provider, you spread it across" "
           <strong>multiple providers simultaneously</strong>.
         </p>
         <p>
@@ -668,7 +745,7 @@ const businessSections: GuideSection[] = [
         <p className="text-sm text-muted-foreground">
           Click the sparkles button on the Live Cost Dashboard to see
           AI-generated recommendations. Each recommendation shows projected
-          savings and can be applied individually — or use{" "}
+          savings and can be applied individually — or use" "
           <strong>&quot;Apply All&quot;</strong> to action everything at once. A
           processing animation confirms each change and the projected cost
           updates on screen.
@@ -705,7 +782,7 @@ const businessSections: GuideSection[] = [
           </div>
           <div className="rounded-lg border border-primary/50 bg-primary/5 p-3">
             <div className="font-bold mb-0.5 flex items-center gap-1">
-              Pro{" "}
+              Pro" "
               <Badge variant="secondary" className="text-xs">
                 Popular
               </Badge>
@@ -794,7 +871,8 @@ const businessSections: GuideSection[] = [
     content: (
       <div className="space-y-3">
         <p>
-          Every LockFree Engine user gets a unique affiliate code in the format{" "}
+          Every LockFree Engine user gets a unique affiliate code in the format"
+          "
           <span className="font-mono text-sm bg-muted px-1.5 py-0.5 rounded">
             LFE-XXXXXX
           </span>
@@ -1031,61 +1109,84 @@ const businessSections: GuideSection[] = [
       </div>
     ),
   },
+];
+
+// ─── Developer Sections ───────────────────────────────────────────────────────
+
+const developerSections: GuideSection[] = [
   {
-    id: "whats-coming-biz",
+    id: "whats-coming-dev",
     title: "What's Coming",
     icon: Rocket,
     content: (
       <div className="space-y-3">
         <p>
-          LockFree Engine is already built and waiting. When the ICP Cloud
-          Engines API (Mission 70) goes public, the simulation becomes reality.
-          Here is what unlocks:
+          When the ICP Cloud Engines API (Mission 70) goes public, every
+          simulated call in LockFree Engine will be replaced with a real
+          endpoint. Here is what the developer surface looks like:
         </p>
         <div className="space-y-2">
           <div className="rounded-md border border-border p-3">
             <div className="font-medium text-sm mb-1">
-              🌐 Real Multi-Cloud Provisioning
+              🔌 Real API Endpoints
             </div>
             <div className="text-xs text-muted-foreground">
-              Spin up genuine cloud engines across providers from a single
-              dashboard — not simulated, fully live.
+              All simulated provisioning and migration calls will map to live
+              ICP Cloud Engine RPC methods. Drop-in replacement — no
+              architectural changes needed.
+            </div>
+          </div>
+          <div className="rounded-md border border-border p-3 font-mono">
+            <div className="font-medium text-sm mb-1 font-sans">
+              Subnet Migration
+            </div>
+            <code className="text-xs text-primary">
+              await cloud_engine.migrate(targetSubnet);
+            </code>
+            <div className="text-xs text-muted-foreground mt-1 font-sans">
+              Live cross-subnet migration with automatic state transfer and
+              zero-downtime cutover.
             </div>
           </div>
           <div className="rounded-md border border-border p-3">
             <div className="font-medium text-sm mb-1">
-              💡 Live AI Cost Optimisation
+              ⚖️ Demand-Driven Scaling via NNS
             </div>
             <div className="text-xs text-muted-foreground">
-              Real-time AI recommendations based on actual usage patterns and
-              live pricing data from every provider.
+              NNS governance controls subnet capacity allocation. Your engine
+              scales in response to on-chain demand signals — no manual scaling
+              policies.
+            </div>
+          </div>
+          <div className="rounded-md border border-border p-3 font-mono">
+            <div className="font-medium text-sm mb-1 font-sans">
+              WASM Hot-Swap
+            </div>
+            <code className="text-xs text-primary">
+              await cloud_engine.upgradeModule(newWasmBytes);
+            </code>
+            <div className="text-xs text-muted-foreground mt-1 font-sans">
+              Hot-swap your WASM module without downtime. State is preserved
+              across the upgrade boundary.
             </div>
           </div>
           <div className="rounded-md border border-border p-3">
             <div className="font-medium text-sm mb-1">
-              ⚡ One-Click Migration with Zero Downtime
+              🌍 Multi-Region Canister Replication
             </div>
             <div className="text-xs text-muted-foreground">
-              Move your entire workload between cloud providers without your
-              users noticing a thing.
+              Replicate your canister state across geographic subnets for
+              latency reduction and regional resilience.
             </div>
           </div>
           <div className="rounded-md border border-border p-3">
             <div className="font-medium text-sm mb-1">
-              📈 Automated Demand-Driven Scaling
+              ⛓️ Chain Fusion Cross-Chain Compute
             </div>
             <div className="text-xs text-muted-foreground">
-              Your engines grow and shrink automatically based on real demand —
-              no manual intervention required.
-            </div>
-          </div>
-          <div className="rounded-md border border-border p-3">
-            <div className="font-medium text-sm mb-1">
-              🛡️ Enterprise SLA Guarantees
-            </div>
-            <div className="text-xs text-muted-foreground">
-              Contractual uptime guarantees backed by ICP's decentralised
-              infrastructure — not a single provider's promise.
+              Direct integration with ICP Chain Fusion for cross-chain compute
+              triggers — your cloud engine can react to events on Ethereum,
+              Bitcoin, and other chains natively.
             </div>
           </div>
         </div>
@@ -1094,7 +1195,7 @@ const businessSections: GuideSection[] = [
           the simulation becomes reality."
         </p>
         <p className="text-xs text-muted-foreground">
-          Follow the Mission 70 roadmap at{" "}
+          Track Mission 70 progress at{" "}
           <a
             href="https://forum.dfinity.org"
             target="_blank"
@@ -1108,11 +1209,6 @@ const businessSections: GuideSection[] = [
       </div>
     ),
   },
-];
-
-// ─── Developer Sections ───────────────────────────────────────────────────────
-
-const developerSections: GuideSection[] = [
   {
     id: "architecture",
     title: "Architecture Overview",
@@ -1912,101 +2008,6 @@ dfx canister --network ic id lockfree_frontend`}</pre>
           Follow existing patterns in useQueries.ts for React Query setup. Use
           the <code className="text-xs bg-muted px-1 rounded">useActor</code>{" "}
           hook to access the backend actor — do not import it directly.
-        </p>
-      </div>
-    ),
-  },
-  {
-    id: "whats-coming-dev",
-    title: "What's Coming",
-    icon: Rocket,
-    content: (
-      <div className="space-y-3">
-        <p>
-          When the ICP Cloud Engines API (Mission 70) goes public, every
-          simulated call in LockFree Engine will be replaced with a real
-          endpoint. Here is what the developer surface looks like:
-        </p>
-        <div className="space-y-2">
-          <div className="rounded-md border border-border p-3">
-            <div className="font-medium text-sm mb-1">
-              🔌 Real API Endpoints
-            </div>
-            <div className="text-xs text-muted-foreground">
-              All simulated provisioning and migration calls will map to live
-              ICP Cloud Engine RPC methods. Drop-in replacement — no
-              architectural changes needed.
-            </div>
-          </div>
-          <div className="rounded-md border border-border p-3 font-mono">
-            <div className="font-medium text-sm mb-1 font-sans">
-              Subnet Migration
-            </div>
-            <code className="text-xs text-primary">
-              await cloud_engine.migrate(targetSubnet);
-            </code>
-            <div className="text-xs text-muted-foreground mt-1 font-sans">
-              Live cross-subnet migration with automatic state transfer and
-              zero-downtime cutover.
-            </div>
-          </div>
-          <div className="rounded-md border border-border p-3">
-            <div className="font-medium text-sm mb-1">
-              ⚖️ Demand-Driven Scaling via NNS
-            </div>
-            <div className="text-xs text-muted-foreground">
-              NNS governance controls subnet capacity allocation. Your engine
-              scales in response to on-chain demand signals — no manual scaling
-              policies.
-            </div>
-          </div>
-          <div className="rounded-md border border-border p-3 font-mono">
-            <div className="font-medium text-sm mb-1 font-sans">
-              WASM Hot-Swap
-            </div>
-            <code className="text-xs text-primary">
-              await cloud_engine.upgradeModule(newWasmBytes);
-            </code>
-            <div className="text-xs text-muted-foreground mt-1 font-sans">
-              Hot-swap your WASM module without downtime. State is preserved
-              across the upgrade boundary.
-            </div>
-          </div>
-          <div className="rounded-md border border-border p-3">
-            <div className="font-medium text-sm mb-1">
-              🌍 Multi-Region Canister Replication
-            </div>
-            <div className="text-xs text-muted-foreground">
-              Replicate your canister state across geographic subnets for
-              latency reduction and regional resilience.
-            </div>
-          </div>
-          <div className="rounded-md border border-border p-3">
-            <div className="font-medium text-sm mb-1">
-              ⛓️ Chain Fusion Cross-Chain Compute
-            </div>
-            <div className="text-xs text-muted-foreground">
-              Direct integration with ICP Chain Fusion for cross-chain compute
-              triggers — your cloud engine can react to events on Ethereum,
-              Bitcoin, and other chains natively.
-            </div>
-          </div>
-        </div>
-        <p className="text-sm text-muted-foreground italic">
-          "LockFree Engine is already built and waiting. When the API goes live,
-          the simulation becomes reality."
-        </p>
-        <p className="text-xs text-muted-foreground">
-          Track Mission 70 progress at{" "}
-          <a
-            href="https://forum.dfinity.org"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-primary underline"
-          >
-            forum.dfinity.org
-          </a>
-          .
         </p>
       </div>
     ),
