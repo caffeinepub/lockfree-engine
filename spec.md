@@ -1,26 +1,24 @@
 # LockFree Engine
 
 ## Current State
-The app is a fully functional demo on ICP with a Motoko backend and React frontend. The landing page has a "How it works" section with 3 steps (Provision, Deploy, Migrate Freely) and a Technical Depth section with 4 stack cards (Motoko, React, Internet Identity, NNS). The User Guide's Developer tab has a Migration Guide with code snippets for provisioning, migration flow, resilience scoring, cost tracking, AI chat, billing backend, affiliate system, and white-label. All content is currently written for a general/non-technical audience.
+The landing page has 13 sections, all with `py-24` or `py-28` padding (96–112px per section). This creates ~448px+ of excess vertical whitespace making the page feel very long. Several sections also have inconsistent visual styling — background darkness levels vary, card padding differs between sections, and section header margins are inconsistent.
 
 ## Requested Changes (Diff)
 
 ### Add
-- More precise technical detail to each HOW_IT_WORKS step (actor model, Candid, orthogonal persistence, Cloud Engines API swap-in)
-- Deeper technical descriptions to the 4 TECH_STACK cards (actor model concurrency, WebAssembly compilation, Candid IDL, NNS governance mechanics, subnet allocation)
-- Expanded code snippets in the Migration Guide: expand the migration-tech section to include realistic Motoko migration call with subnet ID, state transfer notes, and the simulation-to-production swap pattern; expand provisioning-tech to show the full actor call pattern with stable variable storage
+- Nothing new added in this build
 
 ### Modify
-- `HOW_IT_WORKS` array in LandingPage.tsx — add technical depth to each step's `desc` field
-- `TECH_STACK` array in LandingPage.tsx — expand each card's `desc` to include precise technical language
-- `migration-tech` accordion item in UserGuidePage.tsx — expand code snippet to show realistic subnet migration call
-- `provisioning-tech` accordion item in UserGuidePage.tsx — expand to show stable variable storage pattern
+- **Padding tightening:** Reduce all `py-24` sections to `py-16`, and `py-28` sections to `py-20`
+- **Section header margins:** Standardise `mb-16`/`mb-14` to `mb-10` across all sections
+- **Visual unification:** Bring Private Sector cards into the same card style as other sections (`bg-card/30`, `border border-border/40`), remove inline style overrides where possible, normalise background darkness levels across sections
+- **Card padding normalisation:** Bring Private Sector card padding from `p-8` down to `p-6` to match other sections
 
 ### Remove
-- Nothing removed
+- Inline style background overrides that cause inconsistent section darkness
 
 ## Implementation Plan
-1. Update `HOW_IT_WORKS` step descriptions in LandingPage.tsx to add technical depth alongside the existing plain-language framing
-2. Update `TECH_STACK` card descriptions in LandingPage.tsx with precise technical language (orthogonal persistence, actor model, Candid IDL, NNS subnet allocation mechanics)
-3. Expand `migration-tech` code snippet in UserGuidePage.tsx with realistic Motoko subnet migration call and simulation-to-production swap pattern
-4. Expand `provisioning-tech` code snippet in UserGuidePage.tsx with stable variable storage and full actor pattern
+1. In LandingPage.tsx: replace all `py-24` with `py-16` and `py-28` with `py-20` on section wrappers
+2. Standardise `mb-14`/`mb-16` on section headings to `mb-10`
+3. Update Private Sector cards to use `bg-card/30 border border-border/40` instead of inline oklch backgrounds with inline borderLeft
+4. Normalise section background inline styles to a consistent dark level

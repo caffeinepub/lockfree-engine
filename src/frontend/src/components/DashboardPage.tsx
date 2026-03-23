@@ -223,7 +223,7 @@ export function DashboardPage({
           <button
             type="button"
             onClick={() => setDemoTourOpen(true)}
-            className="text-xs font-medium px-2 py-1 rounded text-status-provisioning/80 hover:text-status-provisioning transition-colors"
+            className="flex-shrink-0 text-xs font-semibold px-3 py-1.5 rounded-md bg-status-provisioning/20 hover:bg-status-provisioning/30 text-status-provisioning border border-status-provisioning/50 hover:border-status-provisioning/70 transition-all shadow-sm shadow-status-provisioning/10"
             data-ocid="demo_tour.open_modal_button"
           >
             Take the Tour

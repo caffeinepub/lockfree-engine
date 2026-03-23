@@ -685,7 +685,7 @@ export function LandingPage({
       </section>
 
       {/* ── Features strip ── */}
-      <section className="relative z-10 py-16 border-y border-border/30 bg-card/20 backdrop-blur-sm px-5 sm:px-8 md:px-12">
+      <section className="relative z-10 py-24 border-y border-border/30 bg-card/20 backdrop-blur-sm px-5 sm:px-8 md:px-12">
         <div className="max-w-5xl mx-auto">
           <motion.div
             className="grid grid-cols-1 md:grid-cols-3 gap-6"
@@ -735,7 +735,7 @@ export function LandingPage({
       </section>
 
       {/* Private Sector / AI Agents callout */}
-      <section className="relative z-10 py-16 px-5 sm:px-8 md:px-12 border-y border-border/30">
+      <section className="relative z-10 py-24 px-5 sm:px-8 md:px-12 border-y border-border/30">
         <div className="max-w-4xl mx-auto text-center">
           <div
             className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border text-xs font-mono mb-6"
@@ -761,8 +761,18 @@ export function LandingPage({
             hyperscaler controls.
           </p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
-            <div className="flex flex-col gap-4 p-6 rounded-xl bg-card/30 border border-border/40 border-l-4 border-l-indigo-500/70 backdrop-blur-sm">
-              <div className="font-display font-semibold text-base text-indigo-400">
+            <div
+              className="flex flex-col gap-4 p-8 rounded-xl border backdrop-blur-sm"
+              style={{
+                background: "oklch(0.45 0.18 264 / 0.12)",
+                borderColor: "oklch(0.55 0.18 264 / 0.25)",
+                borderLeft: "3px solid oklch(0.55 0.18 264 / 0.5)",
+              }}
+            >
+              <div
+                className="font-display font-semibold text-base"
+                style={{ color: "oklch(0.7 0.18 264)" }}
+              >
                 Data Sovereignty
               </div>
               <p className="text-muted-foreground text-sm leading-relaxed">
@@ -770,8 +780,18 @@ export function LandingPage({
                 servers owned by a competitor.
               </p>
             </div>
-            <div className="flex flex-col gap-4 p-6 rounded-xl bg-card/30 border border-border/40 border-l-4 border-l-cyan-500/70 backdrop-blur-sm">
-              <div className="font-display font-semibold text-base text-cyan-400">
+            <div
+              className="flex flex-col gap-4 p-8 rounded-xl border backdrop-blur-sm"
+              style={{
+                background: "oklch(0.82 0.22 195 / 0.08)",
+                borderColor: "oklch(0.82 0.22 195 / 0.22)",
+                borderLeft: "3px solid oklch(0.82 0.22 195 / 0.5)",
+              }}
+            >
+              <div
+                className="font-display font-semibold text-base"
+                style={{ color: "oklch(0.82 0.22 195)" }}
+              >
                 AI Agent Security
               </div>
               <p className="text-muted-foreground text-sm leading-relaxed">
@@ -780,8 +800,18 @@ export function LandingPage({
                 sovereign.
               </p>
             </div>
-            <div className="flex flex-col gap-4 p-6 rounded-xl bg-card/30 border border-border/40 border-l-4 border-l-emerald-500/70 backdrop-blur-sm">
-              <div className="font-display font-semibold text-base text-emerald-400">
+            <div
+              className="flex flex-col gap-4 p-8 rounded-xl border backdrop-blur-sm"
+              style={{
+                background: "oklch(0.65 0.18 158 / 0.1)",
+                borderColor: "oklch(0.65 0.18 158 / 0.25)",
+                borderLeft: "3px solid oklch(0.65 0.18 158 / 0.5)",
+              }}
+            >
+              <div
+                className="font-display font-semibold text-base"
+                style={{ color: "oklch(0.72 0.18 158)" }}
+              >
                 No Hyperscaler Dependency
               </div>
               <p className="text-muted-foreground text-sm leading-relaxed">
@@ -795,7 +825,7 @@ export function LandingPage({
 
       {/* ── What is a Cloud Engine? ── */}
       <section
-        className="relative z-10 py-16 px-5 sm:px-8 md:px-12 border-y border-border/30"
+        className="relative z-10 py-24 px-5 sm:px-8 md:px-12 border-y border-border/30"
         style={{ background: "oklch(0.12 0.014 243 / 0.5)" }}
       >
         <div className="max-w-5xl mx-auto">
@@ -895,7 +925,7 @@ export function LandingPage({
 
       {/* ── Technical Depth: Built on a different kind of cloud ── */}
       <section
-        className="relative z-10 py-16 px-5 sm:px-8 md:px-12 border-b border-border/30 overflow-hidden"
+        className="relative z-10 py-24 px-5 sm:px-8 md:px-12 border-b border-border/30 overflow-hidden"
         style={{ background: "oklch(0.11 0.014 243 / 0.6)" }}
       >
         {/* Subtle dot-grid overlay */}
@@ -919,7 +949,7 @@ export function LandingPage({
         <div className="max-w-5xl mx-auto relative">
           {/* Section header */}
           <motion.div
-            className="text-center mb-10"
+            className="text-center mb-14"
             initial={{ opacity: 0, y: 18 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -1071,10 +1101,10 @@ export function LandingPage({
       </section>
 
       {/* ── How it works ── */}
-      <section className="relative z-10 py-16 px-5 sm:px-8 md:px-12">
+      <section className="relative z-10 py-24 px-5 sm:px-8 md:px-12">
         <div className="max-w-5xl mx-auto">
           <motion.div
-            className="text-center mb-10"
+            className="text-center mb-16"
             initial={{ opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -1147,10 +1177,10 @@ export function LandingPage({
       </section>
 
       {/* ── Security & Trust ── */}
-      <section className="relative z-10 py-16 px-5 sm:px-8 md:px-12 border-t border-border/30">
+      <section className="relative z-10 py-24 px-5 sm:px-8 md:px-12 border-t border-border/30">
         <div className="max-w-5xl mx-auto">
           <motion.div
-            className="text-center mb-10"
+            className="text-center mb-14"
             initial={{ opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -1250,7 +1280,7 @@ export function LandingPage({
 
       {/* ── Dom Testimonial ── */}
       <section
-        className="relative z-10 py-20 px-5 sm:px-8 md:px-12 border-t border-border/30 overflow-hidden"
+        className="relative z-10 py-28 px-5 sm:px-8 md:px-12 border-t border-border/30 overflow-hidden"
         style={{ background: "oklch(0.12 0.014 243 / 0.5)" }}
       >
         {/* Radial focal glow */}
@@ -1345,7 +1375,7 @@ export function LandingPage({
 
       {/* ── Roadmap ── */}
       <section
-        className="relative z-10 py-16 px-5 sm:px-8 md:px-12 border-t border-border/30 overflow-hidden"
+        className="relative z-10 py-24 px-5 sm:px-8 md:px-12 border-t border-border/30 overflow-hidden"
         style={{ background: "oklch(0.11 0.014 243 / 0.7)" }}
       >
         {/* Background glow */}
@@ -1360,7 +1390,7 @@ export function LandingPage({
         <div className="max-w-5xl mx-auto relative">
           {/* Section header */}
           <motion.div
-            className="text-center mb-10"
+            className="text-center mb-16"
             initial={{ opacity: 0, y: 18 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -1522,7 +1552,7 @@ export function LandingPage({
 
       {/* ── Vision / Future State ── */}
       <section
-        className="relative z-10 py-20 px-5 sm:px-8 md:px-12 border-t border-border/30 overflow-hidden"
+        className="relative z-10 py-28 px-5 sm:px-8 md:px-12 border-t border-border/30 overflow-hidden"
         style={{ background: "oklch(0.09 0.016 245)" }}
       >
         {/* Multi-point atmospheric glow */}
@@ -1547,7 +1577,7 @@ export function LandingPage({
         <div className="max-w-5xl mx-auto relative">
           {/* Section header */}
           <motion.div
-            className="text-center mb-10"
+            className="text-center mb-16"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -1579,7 +1609,7 @@ export function LandingPage({
 
           {/* Vision cards */}
           <motion.div
-            className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-10"
+            className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-16"
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-40px" }}
@@ -1685,7 +1715,7 @@ export function LandingPage({
       </section>
 
       {/* ── Footer CTA ── */}
-      <section className="relative z-10 py-20 px-5 sm:px-8 md:px-12 border-t border-border/30">
+      <section className="relative z-10 py-28 px-5 sm:px-8 md:px-12 border-t border-border/30">
         {/* Focal glow */}
         <div
           className="absolute inset-0 pointer-events-none"
