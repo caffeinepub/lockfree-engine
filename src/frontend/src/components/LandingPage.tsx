@@ -837,7 +837,10 @@ export function LandingPage({
                 take it anywhere.
               </p>
 
-              <p className="text-sm text-muted-foreground/75 leading-relaxed italic">
+              <p
+                className="text-sm leading-relaxed italic"
+                style={{ color: "oklch(0.82 0.22 195)" }}
+              >
                 LockFree Engine is the dashboard that makes all of this possible
                 — from one place, across every major cloud provider.
               </p>

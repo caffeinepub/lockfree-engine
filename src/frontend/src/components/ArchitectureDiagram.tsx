@@ -302,10 +302,16 @@ export function ArchitectureDiagram() {
         {/* ── combined vision note ─────────────────────────────────────────── */}
         <div className="w-full mt-4 rounded-xl border border-border bg-muted/20 p-3 flex items-start gap-3">
           <div className="flex-1 space-y-1">
-            <p className="text-[11px] font-semibold text-foreground">
+            <p
+              className="text-[11px] font-semibold"
+              style={{ color: "oklch(0.82 0.22 195)" }}
+            >
               The combined stack — no equivalent exists in Europe today
             </p>
-            <p className="text-[10px] text-muted-foreground/70 leading-relaxed">
+            <p
+              className="text-[10px] leading-relaxed"
+              style={{ color: "oklch(0.82 0.22 195 / 0.8)" }}
+            >
               NeoCloud provides the physical compute and EU sovereign
               compliance. DFINITY's Internet Computer provides the decentralised
               protocol, governance, and Cloud Engines substrate. LockFree Engine
