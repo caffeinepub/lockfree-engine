@@ -129,6 +129,7 @@ function ProviderNetwork() {
           </motion.g>
         ))}
 
+        {/* First pulse ring — reaches mid-distance */}
         <motion.circle
           cx={icp.x}
           cy={icp.y}
@@ -142,6 +143,22 @@ function ProviderNetwork() {
             repeat: Number.POSITIVE_INFINITY,
             ease: "easeOut",
             delay: 1,
+          }}
+        />
+        {/* Second pulse ring — reaches toward outer circles */}
+        <motion.circle
+          cx={icp.x}
+          cy={icp.y}
+          r="7"
+          fill="none"
+          stroke="oklch(0.72 0.19 245)"
+          strokeWidth="0.25"
+          animate={{ r: [7, 34], opacity: [0.3, 0] }}
+          transition={{
+            duration: 2.4,
+            repeat: Number.POSITIVE_INFINITY,
+            ease: "easeOut",
+            delay: 1.8,
           }}
         />
       </svg>
@@ -636,7 +653,7 @@ export function LandingPage({
 
             {/* Right col — network diagram */}
             <motion.div
-              className="hidden lg:flex flex-col items-center"
+              className="hidden landscape:flex lg:flex flex-col items-center landscape:scale-[0.65] landscape:origin-top lg:scale-100"
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{

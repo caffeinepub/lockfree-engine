@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Switch } from "@/components/ui/switch";
 import {
   Tooltip,
   TooltipContent,
@@ -10,8 +9,9 @@ import { useQuery } from "@tanstack/react-query";
 import {
   LayoutGrid,
   Megaphone,
+  Play,
   Plus,
-  ServerOff,
+  Server,
   Shuffle,
   X,
 } from "lucide-react";
@@ -52,8 +52,6 @@ function EngineGridSkeleton() {
 function EmptyEnginesState({
   onNew,
   onDemo,
-  onClearDemo,
-  isDemoMode,
 }: {
   onNew: () => void;
   onDemo: () => void;
@@ -62,58 +60,66 @@ function EmptyEnginesState({
 }) {
   return (
     <motion.div
-      className="console-panel flex flex-col items-center justify-center py-16 px-8 text-center"
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
       data-ocid="engines.empty_state"
+      className="w-full rounded-xl border border-emerald-500/25 bg-gradient-to-br from-emerald-950/40 via-card to-cyan-950/30 overflow-hidden"
     >
-      <div className="w-14 h-14 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center mb-5">
-        <ServerOff className="w-7 h-7 text-primary/60" />
-      </div>
-      <h3 className="font-display font-semibold text-lg mb-2">
-        No engines yet
-      </h3>
-      <p className="text-sm text-muted-foreground max-w-sm mb-6 leading-relaxed">
-        Provision your first cloud engine to get started. Engines run on ICP and
-        can migrate across AWS, GCP, and Azure instantly.
-      </p>
-      <div className="flex flex-col items-center gap-4">
-        <Button
-          onClick={onNew}
-          className="gap-2"
+      {/* Top accent line */}
+      <div className="h-0.5 w-full bg-gradient-to-r from-emerald-500/60 via-cyan-400/80 to-emerald-500/60" />
+
+      <div className="px-6 py-10 sm:px-10 sm:py-12 flex flex-col items-center text-center gap-6">
+        {/* Icon cluster */}
+        <div className="flex items-center justify-center gap-3">
+          <div className="w-12 h-12 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center">
+            <Server className="w-6 h-6 text-cyan-400" />
+          </div>
+          <div className="w-2 h-2 rounded-full bg-emerald-400/50" />
+          <div className="w-2 h-2 rounded-full bg-cyan-400/50" />
+          <div className="w-2 h-2 rounded-full bg-emerald-400/50" />
+        </div>
+
+        {/* Headline */}
+        <div className="flex flex-col gap-2">
+          <h3 className="font-display font-semibold text-xl sm:text-2xl tracking-tight text-foreground">
+            No engines loaded — explore the demo
+          </h3>
+          <p className="text-sm text-muted-foreground max-w-md leading-relaxed">
+            Load simulated cloud engines to explore all dashboard features
+          </p>
+        </div>
+
+        {/* Primary CTA */}
+        <button
+          type="button"
+          onClick={onDemo}
           data-ocid="engines.primary_button"
+          className="group relative flex items-center gap-3 px-7 py-3.5 rounded-xl font-semibold text-sm bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white shadow-lg shadow-emerald-900/40 border border-emerald-400/30 transition-all duration-200 hover:shadow-emerald-800/50 hover:scale-[1.02] active:scale-[0.98]"
+        >
+          {/* Glow */}
+          <span className="absolute inset-0 rounded-xl bg-emerald-400/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+          <Play className="w-4 h-4 fill-white relative z-10" />
+          <span className="relative z-10">Load Demo Engines</span>
+        </button>
+
+        {/* Divider */}
+        <div className="flex items-center gap-3 w-full max-w-xs">
+          <div className="flex-1 h-px bg-border/50" />
+          <span className="text-xs text-muted-foreground/60">or</span>
+          <div className="flex-1 h-px bg-border/50" />
+        </div>
+
+        {/* Secondary CTA */}
+        <Button
+          variant="outline"
+          onClick={onNew}
+          className="gap-2 border-border/60 hover:border-primary/40"
+          data-ocid="engines.secondary_button"
         >
           <Plus className="w-4 h-4" />
-          New Engine
+          Provision New Engine
         </Button>
-        {/* Demo Data toggle row */}
-        <div className="flex items-center justify-between gap-6 bg-card border border-border rounded-lg px-4 py-3 w-full max-w-xs">
-          <div className="flex flex-col text-left">
-            <span className="text-sm font-semibold text-emerald-300">
-              Demo Data
-            </span>
-            <span className="text-xs text-muted-foreground mt-0.5">
-              Load simulated engines to explore
-            </span>
-          </div>
-          <div className="relative">
-            <div className="absolute -inset-3 rounded-full bg-emerald-400/60 animate-pulse blur-md pointer-events-none" />
-            <div
-              className="absolute -inset-1 rounded-full bg-emerald-300/80 animate-pulse blur-sm pointer-events-none"
-              style={{ animationDelay: "0.4s" }}
-            />
-            <Switch
-              checked={isDemoMode}
-              onCheckedChange={(checked) => {
-                if (checked) onDemo();
-                else onClearDemo();
-              }}
-              data-ocid="dashboard.demo.toggle"
-              aria-label="Toggle demo data"
-              className="relative z-10"
-            />
-          </div>
-        </div>
       </div>
     </motion.div>
   );
@@ -223,7 +229,7 @@ export function DashboardPage({
           <button
             type="button"
             onClick={() => setDemoTourOpen(true)}
-            className="flex-shrink-0 text-xs font-semibold px-3 py-1.5 rounded-md bg-status-provisioning/20 hover:bg-status-provisioning/30 text-status-provisioning border border-status-provisioning/50 hover:border-status-provisioning/70 transition-all shadow-sm shadow-status-provisioning/10"
+            className="flex-shrink-0 text-xs font-semibold px-3 py-1.5 rounded-md bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-400 border border-emerald-500/40 hover:border-emerald-500/60 transition-colors"
             data-ocid="demo_tour.open_modal_button"
           >
             Take the Tour
