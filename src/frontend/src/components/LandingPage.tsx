@@ -26,6 +26,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 import { useInternetIdentity } from "../hooks/useInternetIdentity";
 import { useJoinWaitlist } from "../hooks/useQueries";
+import { ArchitectureDiagram } from "./ArchitectureDiagram";
 
 interface LandingPageProps {
   onSignIn: () => void;
@@ -1143,6 +1144,45 @@ export function LandingPage({
               </motion.div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* ── Architecture Diagram ── */}
+      <section className="relative z-10 py-16 px-5 sm:px-8 md:px-12 border-t border-border/30">
+        <div className="max-w-5xl mx-auto">
+          <motion.div
+            className="text-center mb-10"
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+          >
+            <span
+              className="inline-block text-xs font-semibold uppercase tracking-widest px-3 py-1 rounded-full border mb-4"
+              style={{
+                borderColor: "oklch(0.82 0.22 195 / 0.4)",
+                color: "oklch(0.82 0.22 195)",
+                background: "oklch(0.82 0.22 195 / 0.08)",
+              }}
+            >
+              System Architecture
+            </span>
+            <h2 className="text-3xl md:text-4xl font-display font-bold mb-3">
+              The Full Stack Vision
+            </h2>
+            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+              LockFree Engine, ICP, and NeoCloud 2014 three layers built to work
+              as one.
+            </p>
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+          >
+            <ArchitectureDiagram />
+          </motion.div>
         </div>
       </section>
 
