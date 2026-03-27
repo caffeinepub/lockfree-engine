@@ -587,7 +587,7 @@ export function LandingPage({
                 </h1>
 
                 <motion.p
-                  className="text-base md:text-lg text-muted-foreground leading-relaxed mb-6 max-w-md"
+                  className="text-base md:text-lg text-[oklch(0.88_0.008_240)] leading-relaxed mb-6 max-w-md"
                   style={{ fontWeight: 400 }}
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -742,7 +742,7 @@ export function LandingPage({
                   <div className="font-display text-base font-semibold mb-1.5">
                     {f.title}
                   </div>
-                  <div className="text-sm text-muted-foreground leading-relaxed">
+                  <div className="text-sm text-[oklch(0.88_0.008_240)] leading-relaxed">
                     {f.desc}
                   </div>
                 </div>
@@ -771,7 +771,7 @@ export function LandingPage({
           >
             Built for the companies AI runs on
           </h2>
-          <p className="text-muted-foreground text-sm md:text-base max-w-2xl mx-auto mb-10">
+          <p className="text-[oklch(0.88_0.008_240)] text-sm md:text-base max-w-2xl mx-auto mb-10">
             Governments already have their cloud contracts locked in. The gap is
             in the private sector — the companies handling sensitive business
             data, running AI agents, and building the next generation of
@@ -783,7 +783,7 @@ export function LandingPage({
               <div className="font-display font-semibold text-base text-indigo-400">
                 Data Sovereignty
               </div>
-              <p className="text-muted-foreground text-sm leading-relaxed">
+              <p className="text-[oklch(0.88_0.008_240)] text-sm leading-relaxed">
                 Your business data stays in infrastructure you control — not on
                 servers owned by a competitor.
               </p>
@@ -792,7 +792,7 @@ export function LandingPage({
               <div className="font-display font-semibold text-base text-cyan-400">
                 AI Agent Security
               </div>
-              <p className="text-muted-foreground text-sm leading-relaxed">
+              <p className="text-[oklch(0.88_0.008_240)] text-sm leading-relaxed">
                 The next wave of enterprise AI runs agents directly on your
                 data. That compute needs to be isolated, auditable, and
                 sovereign.
@@ -802,7 +802,7 @@ export function LandingPage({
               <div className="font-display font-semibold text-base text-emerald-400">
                 No Hyperscaler Dependency
               </div>
-              <p className="text-muted-foreground text-sm leading-relaxed">
+              <p className="text-[oklch(0.88_0.008_240)] text-sm leading-relaxed">
                 AWS, Google, and Microsoft all have commercial interests in the
                 data they process. ICP doesn't.
               </p>
@@ -845,7 +845,7 @@ export function LandingPage({
                 Your cloud. Fully portable.
               </h2>
 
-              <p className="text-sm md:text-base text-muted-foreground leading-relaxed mb-5">
+              <p className="text-sm md:text-base text-[oklch(0.88_0.008_240)] leading-relaxed mb-5">
                 Think of it like owning a food truck instead of a restaurant. A
                 traditional restaurant is fixed in one location — you're stuck
                 with one landlord, one location, and if you want to move, it's a
@@ -963,7 +963,7 @@ export function LandingPage({
             >
               Built on a different kind of cloud.
             </h2>
-            <p className="text-muted-foreground max-w-xl mx-auto leading-relaxed text-sm md:text-base">
+            <p className="text-[oklch(0.88_0.008_240)] max-w-xl mx-auto leading-relaxed text-sm md:text-base">
               Every part of LockFree Engine runs on the Internet Computer — no
               AWS, no GCP, no Azure under the hood. Here's exactly what that
               means.
@@ -1037,7 +1037,7 @@ export function LandingPage({
                   <h3 className="font-display font-semibold text-base mb-2 text-foreground">
                     {card.title}
                   </h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
+                  <p className="text-sm text-[oklch(0.88_0.008_240)] leading-relaxed">
                     {card.desc}
                   </p>
                 </div>
@@ -1121,7 +1121,7 @@ export function LandingPage({
             >
               Three steps to total cloud freedom.
             </h2>
-            <p className="text-sm md:text-base text-muted-foreground max-w-lg mx-auto leading-relaxed">
+            <p className="text-sm md:text-base text-[oklch(0.88_0.008_240)] max-w-lg mx-auto leading-relaxed">
               From zero to multi-cloud in minutes. Provision, deploy, then
               migrate instantly — no DevOps PhD required.
             </p>
@@ -1158,7 +1158,7 @@ export function LandingPage({
                 <div className="font-display text-lg font-semibold mb-2">
                   {step.title}
                 </div>
-                <div className="text-sm text-muted-foreground leading-relaxed">
+                <div className="text-sm text-[oklch(0.88_0.008_240)] leading-relaxed">
                   {step.desc}
                 </div>
               </motion.div>
@@ -1190,7 +1190,7 @@ export function LandingPage({
             <h2 className="text-3xl md:text-4xl font-display font-bold mb-3">
               The Full Stack Vision
             </h2>
-            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+            <p className="text-[oklch(0.88_0.008_240)] text-lg max-w-2xl mx-auto">
               LockFree Engine, ICP, and NeoCloud 2014 three layers built to work
               as one.
             </p>
@@ -1236,7 +1236,7 @@ export function LandingPage({
             >
               Built on infrastructure you can trust.
             </h2>
-            <p className="text-sm md:text-base text-muted-foreground max-w-lg mx-auto leading-relaxed">
+            <p className="text-sm md:text-base text-[oklch(0.88_0.008_240)] max-w-lg mx-auto leading-relaxed">
               No centralised server. No password database. No lock-in. These
               aren't marketing claims — they're technical facts about how ICP
               works.
@@ -1386,7 +1386,7 @@ export function LandingPage({
                   <cite className="not-italic font-display font-semibold text-foreground text-base">
                     Dominic Williams
                   </cite>
-                  <p className="text-sm text-muted-foreground font-medium">
+                  <p className="text-sm text-[oklch(0.88_0.008_240)] font-medium">
                     Founder &amp; Chief Scientist, DFINITY Foundation
                   </p>
                   <p
@@ -1443,7 +1443,7 @@ export function LandingPage({
             >
               The road to full cloud freedom.
             </h2>
-            <p className="text-muted-foreground max-w-xl mx-auto leading-relaxed text-sm md:text-base">
+            <p className="text-[oklch(0.88_0.008_240)] max-w-xl mx-auto leading-relaxed text-sm md:text-base">
               LockFree Engine is a working demo today. When the ICP Cloud
               Engines API goes public, this becomes the real thing.
             </p>
@@ -1630,7 +1630,7 @@ export function LandingPage({
             >
               What this becomes.
             </h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto leading-relaxed text-sm md:text-base">
+            <p className="text-[oklch(0.88_0.008_240)] max-w-2xl mx-auto leading-relaxed text-sm md:text-base">
               When the ICP Cloud Engines API launches publicly, LockFree Engine
               transforms from a visualization into the definitive multi-cloud
               management layer for the Internet Computer ecosystem.
@@ -1695,7 +1695,7 @@ export function LandingPage({
                   >
                     {card.title}
                   </h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
+                  <p className="text-sm text-[oklch(0.88_0.008_240)] leading-relaxed">
                     {card.body}
                   </p>
                 </div>
@@ -1767,7 +1767,7 @@ export function LandingPage({
             >
               Ready to break free?
             </h2>
-            <p className="text-base md:text-lg mb-10 leading-relaxed text-muted-foreground">
+            <p className="text-base md:text-lg mb-10 leading-relaxed text-[oklch(0.88_0.008_240)]">
               Sign in to get full access,{" "}
               <span
                 style={{

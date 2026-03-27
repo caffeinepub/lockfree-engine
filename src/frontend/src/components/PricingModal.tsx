@@ -101,7 +101,7 @@ const TIERS = [
       "10 user seats",
       "Everything in Pro",
       "Advanced cost optimization",
-      "Multi-cloud distribution controls",
+      "Multi-cloud distribution",
       "Affiliate dashboard access",
       "Priority support",
       "ICP on-chain transparency",
@@ -153,12 +153,12 @@ function TierCard({ tier, currentTier, annual, onUpgrade }: TierCardProps) {
 
   return (
     <div
-      className={`relative flex flex-col rounded-xl border p-5 transition-all duration-200 ${tier.cardClass}`}
+      className={`relative flex flex-col rounded-xl border p-4 transition-all duration-200 ${tier.cardClass}`}
     >
       {tier.badge && (
         <div className="absolute -top-3 left-1/2 -translate-x-1/2">
           <Badge
-            className={`${tier.badge.bg} text-background text-xs font-semibold px-3 py-0.5 shadow-lg`}
+            className={`${tier.badge.bg} text-background text-xs font-semibold px-3 py-0.5 shadow-lg whitespace-nowrap`}
           >
             <tier.badge.icon className="w-3 h-3 mr-1" />
             {tier.badge.label}
@@ -181,7 +181,7 @@ function TierCard({ tier, currentTier, annual, onUpgrade }: TierCardProps) {
 
         <div className="mb-1">
           {isFree ? (
-            <div className="font-display text-3xl font-bold text-foreground">
+            <div className="font-display text-2xl font-bold text-foreground">
               $0
               <span className="text-sm font-normal text-muted-foreground ml-1">
                 /month
@@ -189,7 +189,7 @@ function TierCard({ tier, currentTier, annual, onUpgrade }: TierCardProps) {
             </div>
           ) : (
             <div>
-              <div className="font-display text-3xl font-bold text-foreground">
+              <div className="font-display text-2xl font-bold text-foreground">
                 ${price}
                 <span className="text-sm font-normal text-muted-foreground ml-1">
                   /mo
@@ -214,14 +214,14 @@ function TierCard({ tier, currentTier, annual, onUpgrade }: TierCardProps) {
       {/* Features */}
       <ul className="flex-1 space-y-2 mb-5">
         {tier.features.map((feature) => (
-          <li key={feature} className="flex items-start gap-2 text-sm">
+          <li key={feature} className="flex items-start gap-2 text-sm min-w-0">
             <Check
               className={`w-3.5 h-3.5 mt-0.5 flex-shrink-0 ${tier.checkColor}`}
             />
             <span
-              className={
+              className={`break-words min-w-0 ${
                 isFree ? "text-muted-foreground" : "text-foreground/90"
-              }
+              }`}
             >
               {feature}
             </span>
@@ -230,10 +230,10 @@ function TierCard({ tier, currentTier, annual, onUpgrade }: TierCardProps) {
         {tier.notIncluded.map((feature) => (
           <li
             key={feature}
-            className="flex items-start gap-2 text-sm opacity-40"
+            className="flex items-start gap-2 text-sm opacity-40 min-w-0"
           >
             <X className="w-3.5 h-3.5 mt-0.5 flex-shrink-0 text-muted-foreground" />
-            <span className="text-muted-foreground line-through">
+            <span className="text-muted-foreground line-through break-words min-w-0">
               {feature}
             </span>
           </li>
@@ -245,7 +245,7 @@ function TierCard({ tier, currentTier, annual, onUpgrade }: TierCardProps) {
         <Button
           variant="outline"
           size="sm"
-          className="w-full"
+          className="w-full text-xs"
           disabled={isCurrent}
         >
           {isCurrent ? "Current Plan" : "Downgrade to Free"}
@@ -254,7 +254,7 @@ function TierCard({ tier, currentTier, annual, onUpgrade }: TierCardProps) {
         <Button
           size="sm"
           data-ocid="pricing.pro.primary_button"
-          className="w-full bg-[oklch(0.72_0.19_145)] hover:bg-[oklch(0.65_0.19_145)] text-background font-semibold"
+          className="w-full text-xs bg-[oklch(0.72_0.19_145)] hover:bg-[oklch(0.65_0.19_145)] text-background font-semibold"
           disabled={isCurrent}
           onClick={onUpgrade}
         >
@@ -264,7 +264,7 @@ function TierCard({ tier, currentTier, annual, onUpgrade }: TierCardProps) {
         <Button
           size="sm"
           data-ocid="pricing.business.primary_button"
-          className="w-full bg-[oklch(0.68_0.22_260)] hover:bg-[oklch(0.61_0.22_260)] text-background font-semibold"
+          className="w-full text-xs bg-[oklch(0.68_0.22_260)] hover:bg-[oklch(0.61_0.22_260)] text-background font-semibold"
           disabled={isCurrent}
           onClick={onUpgrade}
         >
@@ -274,7 +274,7 @@ function TierCard({ tier, currentTier, annual, onUpgrade }: TierCardProps) {
         <Button
           size="sm"
           data-ocid="pricing.enterprise.primary_button"
-          className="w-full bg-[oklch(0.75_0.18_60)] hover:bg-[oklch(0.68_0.18_60)] text-background font-semibold"
+          className="w-full text-xs bg-[oklch(0.75_0.18_60)] hover:bg-[oklch(0.68_0.18_60)] text-background font-semibold"
           disabled={isCurrent}
           onClick={onUpgrade}
         >
@@ -310,7 +310,7 @@ export function PricingModal({
   return (
     <>
       <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
-        <DialogContent className="max-w-4xl w-full p-0 gap-0 overflow-hidden max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-5xl w-full p-0 gap-0 overflow-hidden max-h-[90vh] overflow-y-auto">
           {/* Header */}
           <div className="relative px-6 pt-6 pb-4 border-b border-border bg-card">
             <button
@@ -368,7 +368,7 @@ export function PricingModal({
           </div>
 
           {/* Tier cards */}
-          <div className="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="p-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {TIERS.map((tier) => (
               <TierCard
                 key={tier.id}
