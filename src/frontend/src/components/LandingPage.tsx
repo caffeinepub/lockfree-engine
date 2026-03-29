@@ -1783,8 +1783,8 @@ export function LandingPage({
             <div className="flex justify-center">
               <Button
                 data-ocid="footer.primary_button"
-                size="lg"
-                className="h-12 px-8 font-semibold gap-2 text-sm"
+                size="default"
+                className="h-10 px-6 font-semibold gap-2 text-sm"
                 onClick={onSignIn}
                 disabled={isLoggingIn}
                 style={{
