@@ -292,13 +292,13 @@ const ROADMAP_PHASES = [
   },
   {
     phase: "Phase 2",
-    label: "Beta API Access",
+    label: "In Production on ICP",
     status: "UPCOMING" as const,
     accent: "oklch(0.82 0.22 195)",
     accentBg: "oklch(0.82 0.22 195 / 0.06)",
     accentBorder: "oklch(0.82 0.22 195 / 0.22)",
     items: [
-      "ICP Cloud Engines API integration (Mission 70)",
+      "ICP Cloud Engines API — live on the NNS now",
       "Real engine provisioning on ICP",
       "Live cost metering in ICP cycles",
       "Private sector enterprise onboarding",
@@ -328,7 +328,7 @@ const VISION_CARDS = [
   {
     icon: Layers,
     title: "The Infrastructure Layer",
-    body: "Every developer building on ICP will need a way to provision, manage, and migrate cloud engines. LockFree Engine becomes the canonical tool for that — the AWS Console equivalent for the Internet Computer era.",
+    body: "Cloud Engines are in production on ICP. Every developer and enterprise building on the network will need a way to provision, manage, and migrate them. LockFree Engine is the management interface built for exactly that — already live, already demonstrating the full vision.",
     accent: "oklch(0.82 0.22 195)",
     accentBg: "oklch(0.82 0.22 195 / 0.07)",
     accentBorder: "oklch(0.82 0.22 195 / 0.22)",
@@ -1444,8 +1444,9 @@ export function LandingPage({
               The road to full cloud freedom.
             </h2>
             <p className="text-[oklch(0.88_0.008_240)] max-w-xl mx-auto leading-relaxed text-sm md:text-base">
-              LockFree Engine is a working demo today. When the ICP Cloud
-              Engines API goes public, this becomes the real thing.
+              ICP Cloud Engines are in live production on the NNS. The API
+              integration that turns this demo into the real thing is no longer
+              a question of if — it's a question of when.
             </p>
           </motion.div>
 
@@ -1622,7 +1623,7 @@ export function LandingPage({
               }}
             >
               <Rocket className="w-3 h-3" />
-              Vision 2027
+              What Comes Next
             </div>
             <h2
               className="font-display font-bold tracking-tight mb-5"
@@ -1631,9 +1632,10 @@ export function LandingPage({
               What this becomes.
             </h2>
             <p className="text-[oklch(0.88_0.008_240)] max-w-2xl mx-auto leading-relaxed text-sm md:text-base">
-              When the ICP Cloud Engines API launches publicly, LockFree Engine
-              transforms from a visualization into the definitive multi-cloud
-              management layer for the Internet Computer ecosystem.
+              Cloud Engines are live on ICP. The simulation layer is ready to
+              swap for real API calls. LockFree Engine is positioned to become
+              the definitive management interface for sovereign compute on the
+              Internet Computer.
             </p>
           </motion.div>
 
