@@ -231,7 +231,7 @@ stable var users : [(Principal, UserRecord)] = [];
               {[
                 "All Cloud Engines API calls in this demo are simulated client-side using React state and demo data — zero backend involvement for simulated operations.",
                 "The simulation is intentionally isolated: all simulated logic lives in demo-mode conditional branches in frontend components, not in the backend actor.",
-                "When DFINITY releases the public Cloud Engines API, swapping in real calls requires replacing demo-mode branches with real actor method calls — the backend interface is already designed for this.",
+                "As DFINITY opens third-party developer access to the Cloud Engines API, swapping in real calls requires replacing demo-mode branches with real actor method calls — the backend interface is already designed for this.",
                 "The backend already exposes the correct method signatures (`provisionEngine`, `migrateEngine`, `distributeAcrossProviders`, etc.) — in demo mode these return mock data; in production they will invoke real Cloud Engines substrate.",
               ].map((point) => (
                 <li key={point.slice(0, 30)} className="flex items-start gap-2">
@@ -402,7 +402,7 @@ return await actor.provisionEngine(config);
                   status: "UPCOMING",
                   statusColor: "bg-primary/10 text-primary border-primary/30",
                   title: "Beta API Integration",
-                  desc: "When DFINITY releases the Cloud Engines API, demo-mode branches are replaced with real actor calls. The backend gains Cloud Engines substrate bindings. Cost tracking becomes real-time. No data loss — all stable variables carry forward across the canister upgrade.",
+                  desc: "The Cloud Engines API is in live production on the NNS. As DFINITY opens third-party developer access, demo-mode branches are replaced with real actor calls — the architecture is already structured for this swap. The backend gains Cloud Engines substrate bindings. Cost tracking becomes real-time. No data loss — all stable variables carry forward across the canister upgrade.",
                 },
                 {
                   phase: "Phase 3",
@@ -473,6 +473,8 @@ return await actor.provisionEngine(config);
                 "LockFree Engine's Enterprise white-label tier is the natural operator dashboard for NeoCloud clients — they receive a fully branded management interface without building one themselves.",
                 "Phase 3 integration: NeoCloud's physical infrastructure connects to ICP Cloud Engines as a sovereign subnet provider. LockFree Engine routes workloads and surfaces cost/resilience data for real compute.",
                 "The three-layer stack: NeoCloud (physical compute) + ICP Cloud Engines (protocol) + LockFree Engine (operator dashboard). No equivalent combination exists in Europe today.",
+                "Node providers earn 80% of all Cloud Engine revenue at the protocol level — 20% burns ICP. For NeoCloud, this means the Romanian subnet generates primary income directly from Cloud Engine workloads routed through it.",
+                "The Pakistan MoU is the first production-scale sovereign Cloud Engine deployment — a nation of 240 million citizens. The model is proven and repeatable across geographies and jurisdictions.",
               ].map((point) => (
                 <li key={point.slice(0, 30)} className="flex items-start gap-2">
                   <ArrowRight className="w-3.5 h-3.5 text-primary mt-0.5 flex-shrink-0" />
@@ -500,8 +502,8 @@ return await actor.provisionEngine(config);
       {/* Footer note */}
       <div className="text-xs text-muted-foreground/50 font-mono border-t border-border pt-4">
         LockFree Engine v1 — demo build — all Cloud Engine operations are
-        simulated pending public release of the ICP Cloud Engines API (DFINITY
-        Mission 70).
+        simulated pending third-party developer access to the ICP Cloud Engines
+        API. The API is in live production on the NNS.
       </div>
     </div>
   );

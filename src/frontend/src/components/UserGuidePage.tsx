@@ -64,9 +64,9 @@ const businessSections: GuideSection[] = [
     content: (
       <div className="space-y-3">
         <p>
-          LockFree Engine is already built and waiting. When the ICP Cloud
-          Engines API (Mission 70) goes public, the simulation becomes reality.
-          Here is what unlocks:
+          LockFree Engine is already built and waiting. ICP Cloud Engines are in
+          live production on the NNS. As third-party developer access opens, the
+          simulation becomes real API calls. Here is what unlocks:
         </p>
         <div className="space-y-2">
           <div className="rounded-md border border-border p-3">
@@ -116,9 +116,54 @@ const businessSections: GuideSection[] = [
           </div>
         </div>
         <p className="text-sm text-muted-foreground italic">
-          "LockFree Engine is already built and waiting. When the API goes live,
-          the simulation becomes reality."
+          "ICP Cloud Engines are in live production on the NNS. The simulation
+          becomes real API calls as third-party access opens."
         </p>
+        <div className="space-y-2 mt-2">
+          <p className="text-sm font-semibold text-foreground">
+            What&apos;s arriving soon:
+          </p>
+          <div className="rounded-md border border-border p-3">
+            <div className="font-medium text-sm mb-1">
+              🇵🇰 Pakistan MoU — Live
+            </div>
+            <div className="text-xs text-muted-foreground">
+              Pakistan (240 million citizens) signed an MoU with DFINITY for a
+              sovereign Cloud Engine subnet — the first production deployment.
+              The model is now proven at national scale.
+            </div>
+          </div>
+          <div className="rounded-md border border-border p-3">
+            <div className="font-medium text-sm mb-1">
+              💰 Node provider economics confirmed
+            </div>
+            <div className="text-xs text-muted-foreground">
+              Node providers earn 80% of all Cloud Engine revenue directly from
+              the protocol. 20% burns ICP. This is live, confirmed economics —
+              not a projection.
+            </div>
+          </div>
+          <div className="rounded-md border border-border p-3">
+            <div className="font-medium text-sm mb-1">
+              🛍️ Caffeine v3.0 App Market (April 7 2026)
+            </div>
+            <div className="text-xs text-muted-foreground">
+              Caffeine is launching a public App Market where apps can be
+              installed and remixed. LockFree Engine will be available for
+              enterprise teams to install their own instance.
+            </div>
+          </div>
+          <div className="rounded-md border border-border p-3">
+            <div className="font-medium text-sm mb-1">
+              🤖 Internet Intelligence Network (IIN)
+            </div>
+            <div className="text-xs text-muted-foreground">
+              DFINITY is proposing the IIN — verifiable AI inference at lower
+              cost than current AI clouds. Enterprise AI agent workloads running
+              on Cloud Engines will access inference through IIN.
+            </div>
+          </div>
+        </div>
         <p className="text-xs text-muted-foreground">
           Follow the Mission 70 roadmap at{" "}
           <a
@@ -1121,9 +1166,10 @@ const developerSections: GuideSection[] = [
     content: (
       <div className="space-y-3">
         <p>
-          When the ICP Cloud Engines API (Mission 70) goes public, every
-          simulated call in LockFree Engine will be replaced with a real
-          endpoint. Here is what the developer surface looks like:
+          ICP Cloud Engines are in live production on the NNS. As third-party
+          developer access opens, every simulated call in LockFree Engine will
+          be replaced with a real endpoint. Here is what the developer surface
+          looks like:
         </p>
         <div className="space-y-2">
           <div className="rounded-md border border-border p-3">
@@ -1191,9 +1237,55 @@ const developerSections: GuideSection[] = [
           </div>
         </div>
         <p className="text-sm text-muted-foreground italic">
-          "LockFree Engine is already built and waiting. When the API goes live,
-          the simulation becomes reality."
+          "ICP Cloud Engines are live on the NNS. Every simulated call maps to a
+          real API endpoint — the swap is architectural, not conceptual."
         </p>
+        <div className="space-y-2 mt-2">
+          <p className="text-sm font-semibold text-foreground">
+            What&apos;s arriving soon:
+          </p>
+          <div className="rounded-md border border-border p-3">
+            <div className="font-medium text-sm mb-1">
+              🔌 ICP Cloud Engines API — production pilots live
+            </div>
+            <div className="text-xs text-muted-foreground">
+              Cloud Engines are on the NNS in production. Third-party developer
+              access opens as DFINITY onboards independent node providers. Every
+              simulated call in LockFree Engine maps directly to real API
+              endpoints.
+            </div>
+          </div>
+          <div className="rounded-md border border-border p-3">
+            <div className="font-medium text-sm mb-1">
+              🧠 IIN — Internet Intelligence Network
+            </div>
+            <div className="text-xs text-muted-foreground">
+              DFINITY is proposing the IIN: verifiable AI inference at the
+              protocol level. LockFree Engine&apos;s AI Deploy Chat will connect
+              to IIN inference as it becomes available — providing tamperproof,
+              lower-cost AI for every deployment decision.
+            </div>
+          </div>
+          <div className="rounded-md border border-border p-3">
+            <div className="font-medium text-sm mb-1">
+              ☕ Caffeine v3.0 + App Market
+            </div>
+            <div className="text-xs text-muted-foreground">
+              Caffeine v3.0 launches April 7 with a public App Market and
+              improved AI-driven development. LockFree Engine is built on
+              Caffeine and benefits automatically from platform improvements.
+            </div>
+          </div>
+          <div className="rounded-md border border-border p-3">
+            <div className="font-medium text-sm mb-1">🐠 Caffeine Snorkel</div>
+            <div className="text-xs text-muted-foreground">
+              DFINITY has named Caffeine Snorkel — a future feature for
+              auto-migrating legacy apps to ICP. LockFree Engine&apos;s
+              Migration Guide documents the workflows that Snorkel will
+              automate.
+            </div>
+          </div>
+        </div>
         <p className="text-xs text-muted-foreground">
           Track Mission 70 progress at{" "}
           <a
@@ -1868,18 +1960,21 @@ const { data: history } = useQuery({
   },
   {
     id: "icp-cloud-engines-api",
-    title: "ICP Cloud Engines API (Future)",
+    title: "ICP Cloud Engines API — Now in Production",
     icon: Cpu,
     content: (
       <div className="space-y-3">
         <p>
           The current LockFree Engine implementation simulates the ICP Cloud
           Engines API described in DFINITY's{" "}
-          <strong>Mission 70 white paper</strong>. The real API has not yet been
-          publicly released.
+          <strong>Mission 70 white paper</strong>. The ICP Cloud Engines API is
+          in live production on the NNS. Pilots are active. Third-party
+          developer access is pending as DFINITY onboards independent node
+          providers.
         </p>
         <p className="text-sm font-semibold">
-          From the Mission 70 white paper:
+          Cloud Engines have moved past the white paper stage — they are active
+          in production. From the original Mission 70 framing:
         </p>
         <blockquote className="border-l-2 border-primary/50 pl-3 text-sm text-muted-foreground italic">
           "Cloud engines are configurable, application-specific execution
@@ -1888,10 +1983,10 @@ const { data: history } = useQuery({
           and resilience characteristics."
         </blockquote>
         <p className="text-sm text-muted-foreground">
-          When the API is released, the Motoko backend will be updated to call
-          the subnet provisioning endpoint directly. The React frontend and all
-          UI flows are already designed to the expected API contract and require
-          no structural changes.
+          As third-party developer access opens, the Motoko backend will be
+          updated to call the subnet provisioning endpoint directly. The React
+          frontend and all UI flows are already designed to the expected API
+          contract and require no structural changes.
         </p>
       </div>
     ),
@@ -2530,8 +2625,11 @@ export function UserGuidePage() {
                   content: (
                     <div className="space-y-2">
                       <p>
-                        LockFree Engine is currently in early access, ahead of
-                        the public launch of the ICP Cloud Engines API.
+                        LockFree Engine is live on ICP. Cloud Engines are in
+                        production on the NNS — the infrastructure this app is
+                        built to manage already exists. Third-party developer
+                        access opens as DFINITY onboards independent node
+                        providers.
                       </p>
                       <p>
                         <strong>To get started:</strong>
@@ -2542,8 +2640,9 @@ export function UserGuidePage() {
                           priority
                         </li>
                         <li>
-                          When the ICP Cloud Engines API launches publicly,
-                          you&apos;ll be onboarded first
+                          When third-party access opens to the Cloud Engines
+                          API, priority access goes to early adopters already
+                          using the platform
                         </li>
                         <li>
                           Enterprise and Business plan users receive dedicated
@@ -2897,8 +2996,8 @@ dfx canister --network ic status <canister-id>`}</code>
                       </ul>
                       <div className="mt-3 p-3 rounded-lg border border-primary/30 bg-primary/5">
                         <p className="text-sm font-medium text-primary">
-                          When the ICP Cloud Engines API launches publicly, your
-                          setup will automatically unlock dedicated subnet
+                          As third-party access to the Cloud Engines API opens,
+                          your setup will automatically unlock dedicated subnet
                           resources — no reconfiguration required.
                         </p>
                         <p className="text-xs text-muted-foreground mt-1">

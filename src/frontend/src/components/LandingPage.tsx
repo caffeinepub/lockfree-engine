@@ -270,7 +270,7 @@ const HOW_IT_WORKS = [
   {
     step: "03",
     title: "Migrate Freely",
-    desc: "Migration calls a subnet transfer endpoint on the Cloud Engines API. The simulation layer is architected to swap in the live DFINITY endpoint with no UI changes required — the Motoko actor interface stays identical. Zero downtime, zero lock-in.",
+    desc: "Migration routes through a subnet transfer endpoint on the Cloud Engines API — now in production pilots on the NNS. The simulation layer mirrors the real API structure and connects directly as third-party developer access opens. The Motoko actor interface is already aligned to the live endpoint — no UI changes required. Zero downtime, zero lock-in.",
   },
 ];
 
@@ -292,13 +292,15 @@ const ROADMAP_PHASES = [
   },
   {
     phase: "Phase 2",
-    label: "In Production on ICP",
-    status: "UPCOMING" as const,
+    label: "Active: API in Production Pilots",
+    status: "ACTIVE" as const,
     accent: "oklch(0.82 0.22 195)",
     accentBg: "oklch(0.82 0.22 195 / 0.06)",
     accentBorder: "oklch(0.82 0.22 195 / 0.22)",
     items: [
       "ICP Cloud Engines API — live on the NNS now",
+      "Pakistan MoU signed — first production Cloud Engine subnet live",
+      "Node providers earn 80% of Cloud Engine revenue (confirmed protocol economics)",
       "Real engine provisioning on ICP",
       "Live cost metering in ICP cycles",
       "Private sector enterprise onboarding",
@@ -328,7 +330,7 @@ const VISION_CARDS = [
   {
     icon: Layers,
     title: "The Infrastructure Layer",
-    body: "Cloud Engines are in production on ICP. Every developer and enterprise building on the network will need a way to provision, manage, and migrate them. LockFree Engine is the management interface built for exactly that — already live, already demonstrating the full vision.",
+    body: "Cloud Engines are in production on ICP. Dom Williams describes them as 'private subnets controlled via a control panel' — with three confirmed use cases: add nodes as a provider, create and switch engines, or monetise by letting others deploy. Node providers earn 80% of all Cloud Engine revenue at the protocol level. LockFree Engine is the enterprise management interface for exactly this — already live, already demonstrating the full vision.",
     accent: "oklch(0.82 0.22 195)",
     accentBg: "oklch(0.82 0.22 195 / 0.07)",
     accentBorder: "oklch(0.82 0.22 195 / 0.22)",
@@ -1444,9 +1446,11 @@ export function LandingPage({
               The road to full cloud freedom.
             </h2>
             <p className="text-[oklch(0.88_0.008_240)] max-w-xl mx-auto leading-relaxed text-sm md:text-base">
-              ICP Cloud Engines are in live production on the NNS. The API
-              integration that turns this demo into the real thing is no longer
-              a question of if — it's a question of when.
+              ICP Cloud Engines are in live production on the NNS. Pakistan — a
+              nation of 240 million — has already signed an MoU with DFINITY for
+              a sovereign cloud subnet. The integration that connects this demo
+              to real infrastructure is no longer a question of if — it's a
+              matter of timing as third-party developer access opens.
             </p>
           </motion.div>
 
