@@ -11,7 +11,7 @@ import {
   Zap,
 } from "lucide-react";
 import { useState } from "react";
-import { PaymentModal } from "./PaymentModal";
+import { OnboardingPaymentPage } from "./OnboardingPaymentPage";
 
 const TIERS = [
   {
@@ -286,107 +286,108 @@ export function PricingPage({
   onUpgrade,
   isDemoMode,
 }: PricingPageProps) {
-  const [paymentModalOpen, setPaymentModalOpen] = useState(false);
+  const [showPayment, setShowPayment] = useState(false);
   const [selectedTier, setSelectedTier] = useState<UpgradableTier>("pro");
   const [annual, setAnnual] = useState(false);
 
   function handleUpgrade(tier: UpgradableTier) {
     setSelectedTier(tier);
-    setPaymentModalOpen(true);
+    setShowPayment(true);
   }
 
   function handlePaymentSuccess(tier: string) {
-    setPaymentModalOpen(false);
+    setShowPayment(false);
     onUpgrade(tier);
   }
 
+  if (showPayment) {
+    return (
+      <OnboardingPaymentPage
+        tier={selectedTier}
+        isDemoMode={isDemoMode}
+        onBack={() => setShowPayment(false)}
+        onSuccess={handlePaymentSuccess}
+      />
+    );
+  }
+
   return (
-    <>
-      <div className="max-w-6xl mx-auto px-6 py-8 pb-16">
-        {/* Back button */}
-        <button
-          type="button"
-          onClick={onBack}
-          className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-8 group"
-          data-ocid="pricing.back_button"
-        >
-          <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-0.5" />
-          Back to Billing
-        </button>
+    <div className="max-w-6xl mx-auto px-6 py-8 pb-16">
+      {/* Back button */}
+      <button
+        type="button"
+        onClick={onBack}
+        className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-8 group"
+        data-ocid="pricing.back_button"
+      >
+        <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-0.5" />
+        Back to Billing
+      </button>
 
-        {/* Header */}
-        <div className="text-center mb-10">
-          <h1 className="font-display text-3xl font-bold text-foreground mb-3">
-            Choose Your Plan
-          </h1>
-          <p className="text-base text-muted-foreground max-w-xl mx-auto">
-            Scale from free to enterprise — migrate providers at any time, no
-            lock-in. All plans recorded on-chain for full transparency.
-          </p>
-
-          {/* Annual toggle */}
-          <div className="flex items-center justify-center gap-3 mt-7">
-            <span
-              className={`text-sm font-medium ${!annual ? "text-foreground" : "text-muted-foreground"}`}
-            >
-              Monthly
-            </span>
-            <button
-              type="button"
-              role="switch"
-              aria-checked={annual}
-              data-ocid="pricing.annual.toggle"
-              onClick={() => setAnnual((v) => !v)}
-              className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-primary/30 ${
-                annual ? "bg-[oklch(0.72_0.19_145)]" : "bg-muted"
-              }`}
-            >
-              <span
-                className={`inline-block h-5 w-5 transform rounded-full bg-white shadow-sm transition-transform ${
-                  annual ? "translate-x-6" : "translate-x-1"
-                }`}
-              />
-            </button>
-            <span
-              className={`text-sm font-medium ${annual ? "text-foreground" : "text-muted-foreground"}`}
-            >
-              Annual
-            </span>
-            {annual && (
-              <Badge className="bg-[oklch(0.72_0.19_145/0.15)] text-[oklch(0.82_0.19_145)] border border-[oklch(0.72_0.19_145/0.4)] text-xs">
-                Save 20% — 2 months free
-              </Badge>
-            )}
-          </div>
-        </div>
-
-        {/* Tier cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 items-start">
-          {TIERS.map((tier) => (
-            <TierCard
-              key={tier.id}
-              tier={tier}
-              currentTier={currentTier}
-              annual={annual}
-              onUpgrade={() => handleUpgrade(tier.id as UpgradableTier)}
-            />
-          ))}
-        </div>
-
-        {/* Footer note */}
-        <p className="text-center text-sm text-muted-foreground mt-10">
-          All plans include ICP on-chain transparency. Cancel or change plans
-          anytime.
+      {/* Header */}
+      <div className="text-center mb-10">
+        <h1 className="font-display text-3xl font-bold text-foreground mb-3">
+          Choose Your Plan
+        </h1>
+        <p className="text-base text-muted-foreground max-w-xl mx-auto">
+          Scale from free to enterprise — migrate providers at any time, no
+          lock-in. All plans recorded on-chain for full transparency.
         </p>
+
+        {/* Annual toggle */}
+        <div className="flex items-center justify-center gap-3 mt-7">
+          <span
+            className={`text-sm font-medium ${!annual ? "text-foreground" : "text-muted-foreground"}`}
+          >
+            Monthly
+          </span>
+          <button
+            type="button"
+            role="switch"
+            aria-checked={annual}
+            data-ocid="pricing.annual.toggle"
+            onClick={() => setAnnual((v) => !v)}
+            className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-primary/30 ${
+              annual ? "bg-[oklch(0.72_0.19_145)]" : "bg-muted"
+            }`}
+          >
+            <span
+              className={`inline-block h-5 w-5 transform rounded-full bg-white shadow-sm transition-transform ${
+                annual ? "translate-x-6" : "translate-x-1"
+              }`}
+            />
+          </button>
+          <span
+            className={`text-sm font-medium ${annual ? "text-foreground" : "text-muted-foreground"}`}
+          >
+            Annual
+          </span>
+          {annual && (
+            <Badge className="bg-[oklch(0.72_0.19_145/0.15)] text-[oklch(0.82_0.19_145)] border border-[oklch(0.72_0.19_145/0.4)] text-xs">
+              Save 20% — 2 months free
+            </Badge>
+          )}
+        </div>
       </div>
 
-      <PaymentModal
-        open={paymentModalOpen}
-        onClose={() => setPaymentModalOpen(false)}
-        tier={selectedTier}
-        onSuccess={handlePaymentSuccess}
-        isDemoMode={isDemoMode}
-      />
-    </>
+      {/* Tier cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 items-start">
+        {TIERS.map((tier) => (
+          <TierCard
+            key={tier.id}
+            tier={tier}
+            currentTier={currentTier}
+            annual={annual}
+            onUpgrade={() => handleUpgrade(tier.id as UpgradableTier)}
+          />
+        ))}
+      </div>
+
+      {/* Footer note */}
+      <p className="text-center text-sm text-muted-foreground mt-10">
+        All plans include ICP on-chain transparency. Cancel or change plans
+        anytime.
+      </p>
+    </div>
   );
 }

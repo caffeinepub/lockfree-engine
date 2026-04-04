@@ -13,6 +13,8 @@ import { DashboardPage } from "./components/DashboardPage";
 import { EnginesPage } from "./components/EnginesPage";
 import { LandingPage } from "./components/LandingPage";
 import { LoginPage } from "./components/LoginPage";
+import { OnboardingPaymentPage } from "./components/OnboardingPaymentPage";
+import { OnboardingPlanPage } from "./components/OnboardingPlanPage";
 import { OnboardingTour, TOUR_SEEN_KEY } from "./components/OnboardingTour";
 import { PartnersPage } from "./components/PartnersPage";
 import { PricingModal } from "./components/PricingModal";
@@ -126,6 +128,8 @@ const PAGE_TITLES: Record<Page, string> = {
 const PRICING_SHOWN_KEY = "lockfree_pricing_shown";
 const DEMO_PREF_KEY = "lockfree_demo_enabled";
 
+type OnboardingStep = "plan" | "payment" | "done";
+
 function AppShell() {
   const { identity, isInitializing, login, clear } = useInternetIdentity();
   const { actor } = useActor();
@@ -161,6 +165,12 @@ function AppShell() {
   const [showLanding, setShowLanding] = useState(true);
   const [showTerms, setShowTerms] = useState(false);
 
+  // Onboarding flow state — replaces the first-login pricing modal
+  const [onboardingStep, setOnboardingStep] = useState<OnboardingStep>("done");
+  const [selectedOnboardingTier, setSelectedOnboardingTier] = useState<
+    "pro" | "business" | "enterprise"
+  >("pro");
+
   // Safety-net: inject client-side demo engines into the React Query cache whenever they change
   useEffect(() => {
     if (demoEngines.length > 0) {
@@ -178,7 +188,7 @@ function AppShell() {
     }
   }, [identity]);
 
-  // Show pricing modal on first login
+  // Show onboarding plan page on first login (replaces the old pricing modal trigger)
   useEffect(() => {
     if (!identity) return;
     const shown = localStorage.getItem(PRICING_SHOWN_KEY);
@@ -186,7 +196,7 @@ function AppShell() {
       const tourSeen = localStorage.getItem(TOUR_SEEN_KEY);
       const delay = tourSeen ? 800 : 3000;
       const timer = setTimeout(() => {
-        setPricingOpen(true);
+        setOnboardingStep("plan");
         localStorage.setItem(PRICING_SHOWN_KEY, "true");
       }, delay);
       return () => clearTimeout(timer);
@@ -275,6 +285,7 @@ function AppShell() {
     setIsDemoMode(false);
     setDemoEngines([]);
     setDemoTier(null);
+    setOnboardingStep("done");
     queryClient.clear();
   }
 
@@ -332,6 +343,36 @@ function AppShell() {
       />
     );
   }
+
+  // ── Onboarding flow (first login) ─────────────────────────────────────────
+  if (onboardingStep === "plan") {
+    return (
+      <OnboardingPlanPage
+        currentTier={effectiveTier}
+        isDemoMode={isDemoMode}
+        onSelectTier={(tier) => {
+          setSelectedOnboardingTier(tier);
+          setOnboardingStep("payment");
+        }}
+        onSkip={() => setOnboardingStep("done")}
+      />
+    );
+  }
+
+  if (onboardingStep === "payment") {
+    return (
+      <OnboardingPaymentPage
+        tier={selectedOnboardingTier}
+        isDemoMode={isDemoMode}
+        onBack={() => setOnboardingStep("plan")}
+        onSuccess={(tier) => {
+          handleUpgrade(tier);
+          setOnboardingStep("done");
+        }}
+      />
+    );
+  }
+  // ─────────────────────────────────────────────────────────────────────────
 
   return (
     <div className="min-h-screen bg-background flex">
@@ -423,7 +464,7 @@ function AppShell() {
       {/* First-login onboarding tour */}
       <OnboardingTour open={tourOpen} onClose={() => setTourOpen(false)} />
 
-      {/* First-login pricing modal */}
+      {/* In-app upgrade pricing modal — used by Billing page and ChatPage */}
       <PricingModal
         open={pricingOpen}
         onClose={() => setPricingOpen(false)}
