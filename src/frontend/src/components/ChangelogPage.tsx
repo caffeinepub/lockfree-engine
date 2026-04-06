@@ -557,7 +557,7 @@ export function ChangelogPage() {
           {/* Footer */}
           <div className="mt-12 pt-8 border-t border-border text-center">
             <p className="text-sm text-muted-foreground">
-              LockFree Engine is actively developed.{" "}
+              LockFreeEngine is actively developed.{" "}
               <span className="text-primary font-medium">
                 More updates coming as Mission 70 unfolds.
               </span>

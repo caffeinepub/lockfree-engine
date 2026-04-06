@@ -1036,7 +1036,7 @@ function ReferralTab() {
           <span className="text-foreground font-medium">
             Referral Program:{" "}
           </span>
-          Invite friends to LockFree Engine. For every friend who signs up and
+          Invite friends to LockFreeEngine. For every friend who signs up and
           activates an account, you receive{" "}
           <span className="text-foreground font-semibold">
             1 free Pro month

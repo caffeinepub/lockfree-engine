@@ -270,7 +270,7 @@ const HOW_IT_WORKS = [
   {
     step: "03",
     title: "Migrate Freely",
-    desc: "Migration routes through a subnet transfer endpoint on the Cloud Engines API — now in production pilots on the NNS. The simulation layer mirrors the real API structure and connects directly as third-party developer access opens. The Motoko actor interface is already aligned to the live endpoint — no UI changes required. Zero downtime, zero lock-in.",
+    desc: "Migration routes through a subnet transfer endpoint on the Cloud Engines API — now in production pilots on the NNS. The simulation layer mirrors the real API structure and connects directly as third-party developer access opens with Caffeine v3.0 now live. The Motoko actor interface is already aligned to the live endpoint — no UI changes required. Zero downtime, zero lock-in.",
   },
 ];
 
@@ -292,12 +292,13 @@ const ROADMAP_PHASES = [
   },
   {
     phase: "Phase 2",
-    label: "Active: API in Production Pilots",
+    label: "Active: Caffeine v3.0 Live",
     status: "ACTIVE" as const,
     accent: "oklch(0.82 0.22 195)",
     accentBg: "oklch(0.82 0.22 195 / 0.06)",
     accentBorder: "oklch(0.82 0.22 195 / 0.22)",
     items: [
+      "Caffeine v3.0 launched — a new era of self-writing cloud begins",
       "ICP Cloud Engines API — live on the NNS now",
       "Pakistan MoU signed — first production Cloud Engine subnet live",
       "Node providers earn 80% of Cloud Engine revenue (confirmed protocol economics)",
@@ -330,7 +331,7 @@ const VISION_CARDS = [
   {
     icon: Layers,
     title: "The Infrastructure Layer",
-    body: "Cloud Engines are in production on ICP. Dom Williams describes them as 'private subnets controlled via a control panel' — with three confirmed use cases: add nodes as a provider, create and switch engines, or monetise by letting others deploy. Node providers earn 80% of all Cloud Engine revenue at the protocol level. LockFree Engine is the enterprise management interface for exactly this — already live, already demonstrating the full vision.",
+    body: "Cloud Engines are in production on ICP. Dom Williams describes them as 'private subnets controlled via a control panel' — with three confirmed use cases: add nodes as a provider, create and switch engines, or monetise by letting others deploy. Node providers earn 80% of all Cloud Engine revenue at the protocol level. LockFreeEngine is the enterprise management interface for exactly this — already live on Caffeine v3.0, already demonstrating the full vision.",
     accent: "oklch(0.82 0.22 195)",
     accentBg: "oklch(0.82 0.22 195 / 0.07)",
     accentBorder: "oklch(0.82 0.22 195 / 0.22)",
@@ -338,7 +339,7 @@ const VISION_CARDS = [
   {
     icon: Users2,
     title: "The Enterprise Standard",
-    body: "Fortune 500 teams and Web3-native companies alike will use white-labeled LockFree Engine deployments to manage their own cloud engine fleets. Demand-driven compute, no contracts, no lock-in.",
+    body: "Fortune 500 teams and Web3-native companies alike will use white-labeled LockFreeEngine deployments to manage their own cloud engine fleets. Demand-driven compute, no contracts, no lock-in.",
     accent: "oklch(0.74 0.19 145)",
     accentBg: "oklch(0.74 0.19 145 / 0.07)",
     accentBorder: "oklch(0.74 0.19 145 / 0.22)",
@@ -346,7 +347,7 @@ const VISION_CARDS = [
   {
     icon: Globe,
     title: "The Open Ecosystem",
-    body: "A public API and affiliate ecosystem means any tool, platform, or marketplace can integrate cloud engine management. LockFree Engine becomes infrastructure, not just an app.",
+    body: "A public API and affiliate ecosystem means any tool, platform, or marketplace can integrate cloud engine management. LockFreeEngine becomes infrastructure, not just an app.",
     accent: "oklch(0.72 0.2 310)",
     accentBg: "oklch(0.72 0.2 310 / 0.07)",
     accentBorder: "oklch(0.72 0.2 310 / 0.22)",
@@ -487,6 +488,28 @@ export function LandingPage({
 
       {/* Top accent line */}
       <div className="fixed top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/70 to-transparent z-50" />
+
+      {/* ── Announcement Banner ── */}
+      <div
+        className="relative z-50 flex items-center justify-center gap-2 px-4 py-2 text-xs font-mono text-center"
+        style={{
+          background:
+            "linear-gradient(90deg, oklch(0.82 0.22 195 / 0.12) 0%, oklch(0.72 0.2 310 / 0.10) 100%)",
+          borderBottom: "1px solid oklch(0.82 0.22 195 / 0.2)",
+          color: "oklch(0.88 0.008 240)",
+        }}
+      >
+        <span
+          className="w-1.5 h-1.5 rounded-full shrink-0 animate-pulse"
+          style={{ background: "oklch(0.74 0.19 145)" }}
+        />
+        <span>
+          <span style={{ color: "oklch(0.82 0.22 195)", fontWeight: 600 }}>
+            Caffeine v3.0 is live
+          </span>
+          {" — a new era of self-writing cloud on ICP"}
+        </span>
+      </div>
 
       {/* ── Nav ── */}
       <header className="relative z-40 flex items-center justify-between px-5 sm:px-8 md:px-12 py-4 border-b border-border/30 backdrop-blur-md bg-background/60">
@@ -860,7 +883,7 @@ export function LandingPage({
                 className="text-sm leading-relaxed italic"
                 style={{ color: "oklch(0.82 0.22 195)" }}
               >
-                LockFree Engine is the dashboard that makes all of this possible
+                LockFreeEngine is the dashboard that makes all of this possible
                 — from one place, across every major cloud provider.
               </p>
             </motion.div>
@@ -966,7 +989,7 @@ export function LandingPage({
               Built on a different kind of cloud.
             </h2>
             <p className="text-[oklch(0.88_0.008_240)] max-w-xl mx-auto leading-relaxed text-sm md:text-base">
-              Every part of LockFree Engine runs on the Internet Computer — no
+              Every part of LockFreeEngine runs on the Internet Computer — no
               AWS, no GCP, no Azure under the hood. Here's exactly what that
               means.
             </p>
@@ -1193,8 +1216,8 @@ export function LandingPage({
               The Full Stack Vision
             </h2>
             <p className="text-[oklch(0.88_0.008_240)] text-lg max-w-2xl mx-auto">
-              LockFree Engine, ICP, and NeoCloud 2014 three layers built to work
-              as one.
+              LockFreeEngine, ICP, and NeoCloud — three layers built to work as
+              one.
             </p>
           </motion.div>
           <motion.div
@@ -1268,7 +1291,7 @@ export function LandingPage({
               {
                 icon: Download,
                 title: "Data Sovereignty",
-                body: "Export your full account data at any time as JSON or CSV from Account Settings. LockFree Engine does not lock you in — true to our name. Your data belongs to you.",
+                body: "Export your full account data at any time as JSON or CSV from Account Settings. LockFreeEngine does not lock you in — true to our name. Your data belongs to you.",
                 accent: "0.72 0.17 290",
               },
             ].map((card, i) => (
@@ -1395,7 +1418,7 @@ export function LandingPage({
                     className="font-mono text-xs mt-2 italic"
                     style={{ color: "oklch(0.60 0.08 195)" }}
                   >
-                    Unsolicited reaction on seeing LockFree Engine for the first
+                    Unsolicited reaction on seeing LockFreeEngine for the first
                     time
                   </p>
                 </div>
@@ -1449,8 +1472,8 @@ export function LandingPage({
               ICP Cloud Engines are in live production on the NNS. Pakistan — a
               nation of 240 million — has already signed an MoU with DFINITY for
               a sovereign cloud subnet. The integration that connects this demo
-              to real infrastructure is no longer a question of if — it's a
-              matter of timing as third-party developer access opens.
+              to real infrastructure is no longer a question of if — it's a with
+              Caffeine v3.0 now live, that moment has arrived.
             </p>
           </motion.div>
 
@@ -1637,9 +1660,9 @@ export function LandingPage({
             </h2>
             <p className="text-[oklch(0.88_0.008_240)] max-w-2xl mx-auto leading-relaxed text-sm md:text-base">
               Cloud Engines are live on ICP. The simulation layer is ready to
-              swap for real API calls. LockFree Engine is positioned to become
-              the definitive management interface for sovereign compute on the
-              Internet Computer.
+              swap for real API calls. Caffeine v3.0 is live. LockFreeEngine is
+              positioned to become the definitive management interface for
+              sovereign compute on the Internet Computer.
             </p>
           </motion.div>
 
@@ -1742,8 +1765,8 @@ export function LandingPage({
                   backgroundClip: "text",
                 }}
               >
-                &ldquo;We&apos;re not waiting for the future. We&apos;re the
-                control layer for it.&rdquo;
+                &ldquo;The future arrived on April 7th. We&apos;re the control
+                layer for it.&rdquo;
               </p>
             </div>
           </motion.div>

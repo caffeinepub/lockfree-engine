@@ -67,9 +67,9 @@ export function TermsPage({ onBack }: TermsPageProps) {
             <div className="space-y-3 text-muted-foreground">
               <p>
                 Welcome to{" "}
-                <strong className="text-foreground">LockFree Engine</strong>, a
+                <strong className="text-foreground">LockFreeEngine</strong>, a
                 multi-cloud management dashboard built on the Internet Computer
-                Protocol (ICP) by DFINITY. LockFree Engine (referred to as "the
+                Protocol (ICP) by DFINITY. LockFreeEngine (referred to as "the
                 Service", "we", or "us") enables users to provision, deploy,
                 migrate, and manage cloud engine workloads across AWS, Google
                 Cloud Platform, and Microsoft Azure through a unified interface.
@@ -130,7 +130,7 @@ export function TermsPage({ onBack }: TermsPageProps) {
             </h2>
             <div className="space-y-3 text-muted-foreground">
               <p>
-                LockFree Engine operates a referral and affiliate programme that
+                LockFreeEngine operates a referral and affiliate programme that
                 rewards users for genuinely introducing new customers to the
                 platform. This section governs your participation in those
                 programmes.
@@ -146,7 +146,7 @@ export function TermsPage({ onBack }: TermsPageProps) {
                 </strong>{" "}
                 that count toward payout. Referrals beyond this cap will not
                 generate earnings unless the cap is explicitly raised by
-                LockFree Engine following a manual review of your account.
+                LockFreeEngine following a manual review of your account.
               </p>
 
               <h3 className="font-semibold text-foreground text-xs uppercase tracking-wide mt-4">
@@ -199,8 +199,8 @@ export function TermsPage({ onBack }: TermsPageProps) {
                   "Creating multiple Internet Identity accounts for the purpose of self-referral.",
                   "Using synthetic, bot-generated, or otherwise fraudulent signups as referrals.",
                   "Colluding with other parties to generate artificial referral activity.",
-                  "Misrepresenting the nature or features of LockFree Engine in referral materials.",
-                  "Using paid advertising that violates our brand guidelines or impersonates LockFree Engine.",
+                  "Misrepresenting the nature or features of LockFreeEngine in referral materials.",
+                  "Using paid advertising that violates our brand guidelines or impersonates LockFreeEngine.",
                 ].map((item) => (
                   <li
                     key={item.slice(0, 30)}
@@ -234,7 +234,7 @@ export function TermsPage({ onBack }: TermsPageProps) {
             </h2>
             <div className="space-y-3 text-muted-foreground">
               <p>
-                LockFree Engine is built on the{" "}
+                LockFreeEngine is built on the{" "}
                 <strong className="text-foreground">
                   Internet Computer Protocol (ICP)
                 </strong>
@@ -266,7 +266,7 @@ export function TermsPage({ onBack }: TermsPageProps) {
                   DFINITY Internet Identity
                 </strong>
                 , a cryptographic key-based system. No passwords are stored by
-                LockFree Engine or any third party. Your identity is controlled
+                LockFreeEngine or any third party. Your identity is controlled
                 by hardware-backed keys under your direct control. We do not
                 have access to your private keys.
               </p>
@@ -303,7 +303,7 @@ export function TermsPage({ onBack }: TermsPageProps) {
             </h2>
             <div className="space-y-3 text-muted-foreground">
               <p>
-                LockFree Engine offers four subscription tiers: Free, Pro,
+                LockFreeEngine offers four subscription tiers: Free, Pro,
                 Business, and Enterprise. Pricing and features are described on
                 the Billing page and are subject to change with reasonable
                 notice.
@@ -330,7 +330,7 @@ export function TermsPage({ onBack }: TermsPageProps) {
             </h2>
             <div className="space-y-3 text-muted-foreground">
               <p>
-                The LockFree Engine name, logo, visual design, and all software
+                The LockFreeEngine name, logo, visual design, and all software
                 code are owned by or licensed to us. You may not reproduce,
                 distribute, or create derivative works without express written
                 permission.
@@ -361,7 +361,7 @@ export function TermsPage({ onBack }: TermsPageProps) {
                 SERVICE.
               </p>
               <p>
-                LockFree Engine is a demonstration application. The ICP Cloud
+                LockFreeEngine is a demonstration application. The ICP Cloud
                 Engines API that it is designed around has not yet been publicly
                 released by DFINITY. All cloud engine provisioning and migration
                 functionality is simulated and does not represent actual compute
@@ -419,7 +419,7 @@ export function TermsPage({ onBack }: TermsPageProps) {
               </p>
               <div className="rounded-lg border border-border bg-muted/30 px-5 py-4 font-mono text-xs space-y-1">
                 <p>
-                  <span className="text-primary">Product:</span> LockFree Engine
+                  <span className="text-primary">Product:</span> LockFreeEngine
                 </p>
                 <p>
                   <span className="text-primary">Platform:</span> caffeine.ai
@@ -436,7 +436,7 @@ export function TermsPage({ onBack }: TermsPageProps) {
         {/* Footer */}
         <div className="mt-16 pt-6 border-t border-border/40 flex items-center justify-between">
           <p className="text-xs text-muted-foreground">
-            © {new Date().getFullYear()} LockFree Engine. Built on ICP.
+            © {new Date().getFullYear()} LockFreeEngine. Built on ICP.
           </p>
           <button
             type="button"

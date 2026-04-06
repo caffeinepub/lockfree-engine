@@ -87,11 +87,11 @@ export function ArchitectureDiagram() {
   return (
     <div className="w-full overflow-x-auto" data-ocid="arch.diagram">
       <div className="min-w-[560px] max-w-2xl mx-auto flex flex-col items-center gap-0 font-mono select-none">
-        {/* ── LAYER 1: LockFree Engine ─────────────────────────────────────── */}
+        {/* ── LAYER 1: LockFreeEngine ─────────────────────────────────────── */}
         <div className="w-full rounded-xl border border-cyan-500/40 bg-cyan-950/20 shadow-[0_0_18px_0_rgba(6,182,212,0.07)] p-4">
           <div className="flex items-center justify-between mb-3">
             <LayerLabel
-              label="LockFree Engine"
+              label="LockFreeEngine"
               sublabel="Operator layer"
               color="text-cyan-400"
             />
@@ -314,7 +314,7 @@ export function ArchitectureDiagram() {
             >
               NeoCloud provides the physical compute and EU sovereign
               compliance. DFINITY's Internet Computer provides the decentralised
-              protocol, governance, and Cloud Engines substrate. LockFree Engine
+              protocol, governance, and Cloud Engines substrate. LockFreeEngine
               is the operator interface — the product layer that makes the
               infrastructure visible, manageable, and commercially accessible to
               enterprise clients.

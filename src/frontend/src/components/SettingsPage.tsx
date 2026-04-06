@@ -253,7 +253,7 @@ export function SettingsPage({
           <h2 className="font-semibold text-sm">Your Data Rights</h2>
         </div>
         <p className="text-xs text-muted-foreground mb-4">
-          LockFree Engine honours data rights inspired by the EU General Data
+          LockFreeEngine honours data rights inspired by the EU General Data
           Protection Regulation (GDPR), regardless of your location. You have
           four core rights:
         </p>
@@ -293,7 +293,7 @@ export function SettingsPage({
           <h2 className="font-semibold text-sm">Data Portability</h2>
         </div>
         <p className="text-xs text-muted-foreground mb-4">
-          LockFree Engine doesn't lock you in. Export your full configuration,
+          LockFreeEngine doesn't lock you in. Export your full configuration,
           migration history, and billing data at any time.
         </p>
 
@@ -343,12 +343,12 @@ export function SettingsPage({
       <div className="console-panel p-5">
         <div className="flex items-center gap-2 mb-4">
           <Info className="w-4 h-4 text-primary" />
-          <h2 className="font-semibold text-sm">About LockFree Engine</h2>
+          <h2 className="font-semibold text-sm">About LockFreeEngine</h2>
         </div>
 
         <div className="space-y-2 text-sm text-muted-foreground">
           <p>
-            LockFree Engine is a multi-cloud infrastructure management platform
+            LockFreeEngine is a multi-cloud infrastructure management platform
             built entirely on the Internet Computer Protocol (ICP).
           </p>
           <p>

@@ -983,7 +983,7 @@ interface TourStep {
 
 const TOUR_STEPS: TourStep[] = [
   {
-    title: "Welcome to LockFree Engine",
+    title: "Welcome to LockFreeEngine",
     description:
       "The cloud infrastructure platform that ends vendor lock-in forever. Powered by ICP Mission 70.",
     illustration: <IllustrationWelcome />,

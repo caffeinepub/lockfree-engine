@@ -63,7 +63,7 @@ const DEMO_NOTIFICATIONS: Notification[] = [
     id: "n5",
     type: "info",
     message:
-      "LockFree Engine platform update deployed — new AI optimization features",
+      "LockFreeEngine platform update deployed — new AI optimization features",
     time: "2d ago",
     read: true,
   },
@@ -87,7 +87,7 @@ const NOTIFICATION_POOL: Array<Pick<Notification, "type" | "message">> = [
   {
     type: "info",
     message:
-      "LockFree Engine: new AI cost optimization recommendations available",
+      "LockFreeEngine: new AI cost optimization recommendations available",
   },
   {
     type: "migration",

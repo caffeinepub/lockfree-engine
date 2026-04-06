@@ -449,7 +449,7 @@ function AppShell() {
 
         {/* Footer */}
         <footer className="px-4 lg:px-6 py-3 border-t border-border text-xs text-muted-foreground flex items-center justify-between">
-          <span>LockFree Engine — Built on ICP</span>
+          <span>LockFreeEngine — Built on ICP</span>
           <a
             href={`https://caffeine.ai?utm_source=caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(window.location.hostname)}`}
             target="_blank"

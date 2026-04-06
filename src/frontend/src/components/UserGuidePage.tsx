@@ -64,7 +64,7 @@ const businessSections: GuideSection[] = [
     content: (
       <div className="space-y-3">
         <p>
-          LockFree Engine is already built and waiting. ICP Cloud Engines are in
+          LockFreeEngine is already built and waiting. ICP Cloud Engines are in
           live production on the NNS. As third-party developer access opens, the
           simulation becomes real API calls. Here is what unlocks:
         </p>
@@ -149,7 +149,7 @@ const businessSections: GuideSection[] = [
             </div>
             <div className="text-xs text-muted-foreground">
               Caffeine is launching a public App Market where apps can be
-              installed and remixed. LockFree Engine will be available for
+              installed and remixed. LockFreeEngine will be available for
               enterprise teams to install their own instance.
             </div>
           </div>
@@ -181,19 +181,19 @@ const businessSections: GuideSection[] = [
   },
   {
     id: "what-is",
-    title: "What is LockFree Engine?",
+    title: "What is LockFreeEngine?",
     icon: BookOpen,
     content: (
       <div className="space-y-3">
         <p>
-          LockFree Engine is a cloud management dashboard that gives you
-          complete freedom to run your business apps on" "
+          LockFreeEngine is a cloud management dashboard that gives you complete
+          freedom to run your business apps on" "
           <strong>AWS, Google Cloud, or Azure</strong> — and switch between them
           anytime, without disruption.
         </p>
         <p>
           Most businesses get "locked in" to a single cloud provider. Switching
-          later is painful, expensive, and risky. LockFree Engine solves this by
+          later is painful, expensive, and risky. LockFreeEngine solves this by
           making your cloud environment <em>portable by design</em>.
         </p>
         <p>
@@ -247,7 +247,7 @@ const businessSections: GuideSection[] = [
             No Lock-In Promise
           </p>
           <p className="text-xs text-muted-foreground">
-            LockFree Engine practices what it preaches. Your engine
+            LockFreeEngine practices what it preaches. Your engine
             configurations, migration history, cost data, and settings can be
             exported at any time. Your data belongs to you — take it anywhere.
           </p>
@@ -262,7 +262,7 @@ const businessSections: GuideSection[] = [
     content: (
       <div className="space-y-3">
         <p>
-          LockFree Engine defaults to <strong>dark mode</strong>, which is
+          LockFreeEngine defaults to <strong>dark mode</strong>, which is
           standard for cloud and developer tools. If you prefer a lighter
           interface, you can switch at any time.
         </p>
@@ -323,7 +323,7 @@ const businessSections: GuideSection[] = [
     content: (
       <div className="space-y-3">
         <p>
-          When you first visit LockFree Engine, you'll land on the public
+          When you first visit LockFreeEngine, you'll land on the public
           homepage. This page explains what the platform does and gives you two
           paths forward:
         </p>
@@ -364,7 +364,7 @@ const businessSections: GuideSection[] = [
     content: (
       <div className="space-y-3">
         <p>
-          Demo Mode lets you experience the full LockFree Engine dashboard
+          Demo Mode lets you experience the full LockFreeEngine dashboard
           without creating an account or logging in. It's ideal for evaluating
           the platform before committing.
         </p>
@@ -422,7 +422,7 @@ const businessSections: GuideSection[] = [
           <li>A unique identity anchor number is assigned to you</li>
           <li>
             Every app you use with Internet Identity gets a different derived
-            principal — your data on LockFree Engine is never linked to your
+            principal — your data on LockFreeEngine is never linked to your
             identity on other apps
           </li>
         </ul>
@@ -438,7 +438,7 @@ const businessSections: GuideSection[] = [
           </li>
           <li>Follow the prompts to register your device</li>
           <li>Save your anchor number in a safe place</li>
-          <li>Return to LockFree Engine and click "Sign In"</li>
+          <li>Return to LockFreeEngine and click "Sign In"</li>
         </ol>
         <p className="text-sm text-muted-foreground">
           Internet Identity is free to create and use. It is maintained by the
@@ -535,7 +535,7 @@ const businessSections: GuideSection[] = [
           </div>
         </div>
         <p className="text-sm text-muted-foreground">
-          Cloud Engines on LockFree Engine are currently simulated, pending the
+          Cloud Engines on LockFreeEngine are currently simulated, pending the
           public release of DFINITY's ICP Cloud Engines API from Mission 70. The
           interface and flows mirror exactly how the real API will behave.
         </p>
@@ -611,7 +611,7 @@ const businessSections: GuideSection[] = [
     content: (
       <div className="space-y-3">
         <p>
-          Migration is the core power of LockFree Engine — you can move any
+          Migration is the core power of LockFreeEngine — you can move any
           engine from one cloud provider to another without downtime or data
           loss.
         </p>
@@ -916,7 +916,7 @@ const businessSections: GuideSection[] = [
     content: (
       <div className="space-y-3">
         <p>
-          Every LockFree Engine user gets a unique affiliate code in the format"
+          Every LockFreeEngine user gets a unique affiliate code in the format"
           "
           <span className="font-mono text-sm bg-muted px-1.5 py-0.5 rounded">
             LFE-XXXXXX
@@ -1114,7 +1114,7 @@ const businessSections: GuideSection[] = [
       <div className="space-y-3">
         <p>
           The Partners Program rewards you for bringing enterprise customers to
-          LockFree Engine. There are three tiers, each with increasing revenue
+          LockFreeEngine. There are three tiers, each with increasing revenue
           sharing:
         </p>
         <div className="grid gap-2 sm:grid-cols-3">
@@ -1167,8 +1167,8 @@ const developerSections: GuideSection[] = [
       <div className="space-y-3">
         <p>
           ICP Cloud Engines are in live production on the NNS. As third-party
-          developer access opens, every simulated call in LockFree Engine will
-          be replaced with a real endpoint. Here is what the developer surface
+          developer access opens, every simulated call in LockFreeEngine will be
+          replaced with a real endpoint. Here is what the developer surface
           looks like:
         </p>
         <div className="space-y-2">
@@ -1251,7 +1251,7 @@ const developerSections: GuideSection[] = [
             <div className="text-xs text-muted-foreground">
               Cloud Engines are on the NNS in production. Third-party developer
               access opens as DFINITY onboards independent node providers. Every
-              simulated call in LockFree Engine maps directly to real API
+              simulated call in LockFreeEngine maps directly to real API
               endpoints.
             </div>
           </div>
@@ -1261,7 +1261,7 @@ const developerSections: GuideSection[] = [
             </div>
             <div className="text-xs text-muted-foreground">
               DFINITY is proposing the IIN: verifiable AI inference at the
-              protocol level. LockFree Engine&apos;s AI Deploy Chat will connect
+              protocol level. LockFreeEngine&apos;s AI Deploy Chat will connect
               to IIN inference as it becomes available — providing tamperproof,
               lower-cost AI for every deployment decision.
             </div>
@@ -1272,7 +1272,7 @@ const developerSections: GuideSection[] = [
             </div>
             <div className="text-xs text-muted-foreground">
               Caffeine v3.0 launches April 7 with a public App Market and
-              improved AI-driven development. LockFree Engine is built on
+              improved AI-driven development. LockFreeEngine is built on
               Caffeine and benefits automatically from platform improvements.
             </div>
           </div>
@@ -1280,9 +1280,8 @@ const developerSections: GuideSection[] = [
             <div className="font-medium text-sm mb-1">🐠 Caffeine Snorkel</div>
             <div className="text-xs text-muted-foreground">
               DFINITY has named Caffeine Snorkel — a future feature for
-              auto-migrating legacy apps to ICP. LockFree Engine&apos;s
-              Migration Guide documents the workflows that Snorkel will
-              automate.
+              auto-migrating legacy apps to ICP. LockFreeEngine&apos;s Migration
+              Guide documents the workflows that Snorkel will automate.
             </div>
           </div>
         </div>
@@ -1308,7 +1307,7 @@ const developerSections: GuideSection[] = [
     content: (
       <div className="space-y-3">
         <p>
-          LockFree Engine runs entirely on the{" "}
+          LockFreeEngine runs entirely on the{" "}
           <strong>Internet Computer Protocol (ICP)</strong>. There is no
           traditional server, no VPS, no load balancer — the entire stack lives
           on-chain.
@@ -1965,7 +1964,7 @@ const { data: history } = useQuery({
     content: (
       <div className="space-y-3">
         <p>
-          The current LockFree Engine implementation simulates the ICP Cloud
+          The current LockFreeEngine implementation simulates the ICP Cloud
           Engines API described in DFINITY's{" "}
           <strong>Mission 70 white paper</strong>. The ICP Cloud Engines API is
           in live production on the NNS. Pilots are active. Third-party
@@ -2340,7 +2339,7 @@ export function UserGuidePage() {
           <div>
             <h1 className="text-xl font-bold text-foreground">User Guide</h1>
             <p className="text-sm text-muted-foreground">
-              Everything you need to know about LockFree Engine
+              Everything you need to know about LockFreeEngine
             </p>
           </div>
         </div>
@@ -2496,7 +2495,7 @@ export function UserGuidePage() {
                         infrastructure.
                       </p>
                       <p>
-                        With LockFree Engine and the Internet Computer Protocol
+                        With LockFreeEngine and the Internet Computer Protocol
                         (ICP), your data lives on a{" "}
                         <strong>decentralised network</strong> instead of a
                         single provider&apos;s infrastructure. No single company
@@ -2566,12 +2565,12 @@ export function UserGuidePage() {
                           go-live
                         </li>
                         <li>
-                          Monitor the LockFree Engine dashboard once it&apos;s
+                          Monitor the LockFreeEngine dashboard once it&apos;s
                           running
                         </li>
                       </ul>
                       <p className="text-muted-foreground">
-                        LockFree Engine gives you a single dashboard to monitor
+                        LockFreeEngine gives you a single dashboard to monitor
                         everything — costs, resilience scores, and migration
                         status — without needing to touch any technical tools
                         yourself.
@@ -2581,7 +2580,7 @@ export function UserGuidePage() {
                 },
                 {
                   id: "mg-biz-4",
-                  title: "How does LockFree Engine manage the complexity?",
+                  title: "How does LockFreeEngine manage the complexity?",
                   icon: LayoutDashboard,
                   content: (
                     <div className="space-y-2">
@@ -2592,7 +2591,7 @@ export function UserGuidePage() {
                         setups —{" "}
                         <strong>everything is managed from one place</strong>.
                       </p>
-                      <p>From the LockFree Engine dashboard you can:</p>
+                      <p>From the LockFreeEngine dashboard you can:</p>
                       <ul className="list-disc list-inside space-y-1 text-muted-foreground ml-2">
                         <li>Provision new cloud engines with a few clicks</li>
                         <li>
@@ -2625,7 +2624,7 @@ export function UserGuidePage() {
                   content: (
                     <div className="space-y-2">
                       <p>
-                        LockFree Engine is live on ICP. Cloud Engines are in
+                        LockFreeEngine is live on ICP. Cloud Engines are in
                         production on the NNS — the infrastructure this app is
                         built to manage already exists. Third-party developer
                         access opens as DFINITY onboards independent node
@@ -2651,7 +2650,7 @@ export function UserGuidePage() {
                       </ol>
                       <p className="text-muted-foreground mt-2">
                         Already signed in? Explore the dashboard in Demo Mode to
-                        see exactly how LockFree Engine works before committing
+                        see exactly how LockFreeEngine works before committing
                         to a plan.
                       </p>
                     </div>
@@ -2976,12 +2975,12 @@ dfx canister --network ic status <canister-id>`}</code>
                 {
                   id: "mg-dev-8",
                   title:
-                    "Step 8: Provision Your Cloud Engine via LockFree Engine",
+                    "Step 8: Provision Your Cloud Engine via LockFreeEngine",
                   icon: Zap,
                   content: (
                     <div className="space-y-2">
                       <p>
-                        With your canister deployed, return to LockFree Engine
+                        With your canister deployed, return to LockFreeEngine
                         and provision a Cloud Engine pointing to your canister
                         ID. From here, all management is handled from the
                         dashboard:
@@ -3039,7 +3038,7 @@ dfx canister --network ic status <canister-id>`}</code>
 
       {/* Footer */}
       <div className="text-center py-6 text-xs text-muted-foreground border-t border-border">
-        LockFree Engine — Built on the Internet Computer Protocol (ICP) ·{" "}
+        LockFreeEngine — Built on the Internet Computer Protocol (ICP) ·{" "}
         <a
           href="https://dfinity.org"
           target="_blank"

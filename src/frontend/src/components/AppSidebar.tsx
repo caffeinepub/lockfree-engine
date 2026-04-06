@@ -157,7 +157,7 @@ export function AppSidebar({
                     </div>
                   </TooltipTrigger>
                   <TooltipContent side="right" className="max-w-52">
-                    Exploring LockFree Engine in demo mode — no login required
+                    Exploring LockFreeEngine in demo mode — no login required
                   </TooltipContent>
                 </Tooltip>
               ) : (

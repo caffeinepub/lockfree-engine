@@ -346,7 +346,7 @@ export function DashboardPage({
       {/* Quick tips */}
       <div className="console-panel p-5">
         <div className="text-base font-display font-semibold tracking-tight mb-4">
-          Why LockFree Engine?
+          Why LockFreeEngine?
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3">
           {[

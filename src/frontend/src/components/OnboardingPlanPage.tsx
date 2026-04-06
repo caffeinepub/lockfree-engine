@@ -333,7 +333,7 @@ export function OnboardingPlanPage({
             <Zap className="w-4 h-4 text-primary" />
           </div>
           <span className="font-display font-bold text-lg text-foreground tracking-tight">
-            LockFree Engine
+            LockFreeEngine
           </span>
         </div>
 

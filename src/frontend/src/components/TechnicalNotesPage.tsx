@@ -60,7 +60,7 @@ export function TechnicalNotesPage() {
               Technical Notes
             </h1>
             <p className="text-sm text-muted-foreground">
-              Architecture and implementation reference for LockFree Engine v1 —
+              Architecture and implementation reference for LockFreeEngine v1 —
               built on the Internet Computer Protocol
             </p>
           </div>
@@ -107,7 +107,7 @@ export function TechnicalNotesPage() {
         <CardHeader className="pb-3">
           <CardTitle className="text-sm font-semibold flex items-center gap-2">
             <Layers className="w-4 h-4 text-primary" />
-            Combined Architecture — ICP · NeoCloud · LockFree Engine
+            Combined Architecture — ICP · NeoCloud · LockFreeEngine
           </CardTitle>
           <CardDescription className="text-xs">
             Three-layer infrastructure vision: physical compute · protocol ·
@@ -149,7 +149,7 @@ export function TechnicalNotesPage() {
               {[
                 "Two canisters: the frontend canister serves the React SPA as static assets; the backend canister is a Motoko actor that manages all application state.",
                 "Internet Identity handles authentication — no passwords, no JWTs, no centralised auth server. WebAuthn-derived key pairs are domain-scoped.",
-                "The NNS (Network Nervous System) governs subnet allocation, canister upgrades, and protocol decisions. LockFree Engine canisters run on NNS-managed subnets.",
+                "The NNS (Network Nervous System) governs subnet allocation, canister upgrades, and protocol decisions. LockFreeEngine canisters run on NNS-managed subnets.",
                 "All state lives in the backend canister — orthogonally persistent, meaning variables survive message boundaries and canister upgrades without any external database.",
                 "ICP canisters are purpose-built for AI agent workloads requiring data sovereignty: each canister runs in a WebAssembly sandbox with deterministic execution, no shared memory between canisters, and cryptographically verifiable computation. Private sector companies running AI agents on sensitive business data can deploy those agents as ICP canisters — auditable, isolated, and controlled entirely by the canister owner, not a hyperscaler.",
               ].map((point) => (
@@ -409,7 +409,7 @@ return await actor.provisionEngine(config);
                   status: "FUTURE",
                   statusColor: "bg-muted text-muted-foreground border-border",
                   title: "Sovereign EU Infrastructure",
-                  desc: "NeoCloud's physical data centre (1MW Tier III, Romania) connects as a sovereign EU compute provider via ICP Cloud Engines. LockFree Engine becomes the operator dashboard for real workloads. The Enterprise white-label tier goes live for institutional clients — governments, defence, AI labs.",
+                  desc: "NeoCloud's physical data centre (1MW Tier III, Romania) connects as a sovereign EU compute provider via ICP Cloud Engines. LockFreeEngine becomes the operator dashboard for real workloads. The Enterprise white-label tier goes live for institutional clients — governments, defence, AI labs.",
                 },
               ].map(({ phase, status, statusColor, title, desc }) => (
                 <div
@@ -470,9 +470,9 @@ return await actor.provisionEngine(config);
               {[
                 "NeoCloud (PayEU NeoCloud) is a Romanian sovereign compute provider: 1MW Tier III data centre, NVIDIA H200 GPU clusters, EU AI Act and GDPR Art. 25 compliance.",
                 "Target clients: governments, defence contractors, enterprise AI labs — all requiring EU-jurisdiction, vendor-independent compute with full audit trails.",
-                "LockFree Engine's Enterprise white-label tier is the natural operator dashboard for NeoCloud clients — they receive a fully branded management interface without building one themselves.",
-                "Phase 3 integration: NeoCloud's physical infrastructure connects to ICP Cloud Engines as a sovereign subnet provider. LockFree Engine routes workloads and surfaces cost/resilience data for real compute.",
-                "The three-layer stack: NeoCloud (physical compute) + ICP Cloud Engines (protocol) + LockFree Engine (operator dashboard). No equivalent combination exists in Europe today.",
+                "LockFreeEngine's Enterprise white-label tier is the natural operator dashboard for NeoCloud clients — they receive a fully branded management interface without building one themselves.",
+                "Phase 3 integration: NeoCloud's physical infrastructure connects to ICP Cloud Engines as a sovereign subnet provider. LockFreeEngine routes workloads and surfaces cost/resilience data for real compute.",
+                "The three-layer stack: NeoCloud (physical compute) + ICP Cloud Engines (protocol) + LockFreeEngine (operator dashboard). No equivalent combination exists in Europe today.",
                 "Node providers earn 80% of all Cloud Engine revenue at the protocol level — 20% burns ICP. For NeoCloud, this means the Romanian subnet generates primary income directly from Cloud Engine workloads routed through it.",
                 "The Pakistan MoU is the first production-scale sovereign Cloud Engine deployment — a nation of 240 million citizens. The model is proven and repeatable across geographies and jurisdictions.",
               ].map((point) => (
@@ -490,7 +490,7 @@ return await actor.provisionEngine(config);
                 No equivalent infrastructure + protocol + management layer
                 combination currently exists in Europe. NeoCloud provides the
                 physical layer and EU compliance. DFINITY's ICP provides the
-                decentralised protocol. LockFree Engine provides the operator
+                decentralised protocol. LockFreeEngine provides the operator
                 interface. All three are aligned and moving toward a combined
                 pitch.
               </p>
@@ -501,7 +501,7 @@ return await actor.provisionEngine(config);
 
       {/* Footer note */}
       <div className="text-xs text-muted-foreground/50 font-mono border-t border-border pt-4">
-        LockFree Engine v1 — demo build — all Cloud Engine operations are
+        LockFreeEngine v1 — demo build — all Cloud Engine operations are
         simulated pending third-party developer access to the ICP Cloud Engines
         API. The API is in live production on the NNS.
       </div>

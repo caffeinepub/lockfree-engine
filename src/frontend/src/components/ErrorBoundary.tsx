@@ -20,7 +20,7 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error("LockFree Engine caught an error:", error, errorInfo);
+    console.error("LockFreeEngine caught an error:", error, errorInfo);
   }
 
   render() {

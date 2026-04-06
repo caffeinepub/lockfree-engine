@@ -254,9 +254,9 @@ function WhiteLabelSection({
       </div>
 
       <p className="text-sm text-muted-foreground">
-        Rebrand LockFree Engine with your company identity. All team members
-        will see your custom branding across the entire console — no vendor
-        lock-in, fully on-chain.
+        Rebrand LockFreeEngine with your company identity. All team members will
+        see your custom branding across the entire console — no vendor lock-in,
+        fully on-chain.
       </p>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -450,7 +450,7 @@ function WhiteLabelSection({
                   {savedPreview.companyName}
                 </p>
                 <p className="text-xs text-muted-foreground mt-0.5">
-                  Powered by LockFree Engine
+                  Powered by LockFreeEngine
                   {savedPreview.customDomain && (
                     <span className="ml-1.5 font-mono">
                       · {savedPreview.customDomain}
