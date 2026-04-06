@@ -1765,8 +1765,8 @@ export function LandingPage({
                   backgroundClip: "text",
                 }}
               >
-                &ldquo;The future arrived on April 7th. We&apos;re the control
-                layer for it.&rdquo;
+                &ldquo;We&apos;re not waiting for the future. We&apos;re the
+                control layer for it.&rdquo;
               </p>
             </div>
           </motion.div>
