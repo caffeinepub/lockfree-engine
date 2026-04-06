@@ -1279,9 +1279,10 @@ const developerSections: GuideSection[] = [
           <div className="rounded-md border border-border p-3">
             <div className="font-medium text-sm mb-1">🐠 Caffeine Snorkel</div>
             <div className="text-xs text-muted-foreground">
-              DFINITY has named Caffeine Snorkel — a future feature for
-              auto-migrating legacy apps to ICP. LockFreeEngine&apos;s Migration
-              Guide documents the workflows that Snorkel will automate.
+              Caffeine Snorkel is a named upcoming feature within the Caffeine
+              v3.0 roadmap — announced April 7th — for auto-migrating legacy
+              apps to ICP. LockFreeEngine&apos;s Migration Guide documents the
+              workflows that Snorkel will automate.
             </div>
           </div>
         </div>
@@ -2624,11 +2625,11 @@ export function UserGuidePage() {
                   content: (
                     <div className="space-y-2">
                       <p>
-                        LockFreeEngine is live on ICP. Cloud Engines are in
-                        production on the NNS — the infrastructure this app is
-                        built to manage already exists. Third-party developer
-                        access opens as DFINITY onboards independent node
-                        providers.
+                        LockFreeEngine is live on ICP and Caffeine v3.0 launched
+                        on April 7th. Cloud Engines are in production on the NNS
+                        — the infrastructure this app is built to manage already
+                        exists. Third-party developer access opens as DFINITY
+                        onboards independent node providers.
                       </p>
                       <p>
                         <strong>To get started:</strong>
@@ -2639,6 +2640,7 @@ export function UserGuidePage() {
                           priority
                         </li>
                         <li>
+                          With Caffeine v3.0 now live, the platform is ready.
                           When third-party access opens to the Cloud Engines
                           API, priority access goes to early adopters already
                           using the platform

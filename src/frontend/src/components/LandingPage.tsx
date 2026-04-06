@@ -565,22 +565,6 @@ export function LandingPage({
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
               >
-                {/* Mission badge */}
-                <motion.div
-                  className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border text-xs font-mono mb-9"
-                  style={{
-                    background: "oklch(0.82 0.22 195 / 0.06)",
-                    borderColor: "oklch(0.82 0.22 195 / 0.25)",
-                    color: "oklch(0.82 0.22 195)",
-                  }}
-                  initial={{ opacity: 0, y: -8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.1 }}
-                >
-                  <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-                  Powered by DFINITY Mission 70
-                </motion.div>
-
                 {/* Headline — cinematic type treatment */}
                 <h1 className="font-display font-extrabold tracking-tight leading-[1.05] mb-7">
                   <motion.span
