@@ -146,12 +146,13 @@ const businessSections: GuideSection[] = [
           </div>
           <div className="rounded-md border border-border p-3">
             <div className="font-medium text-sm mb-1">
-              🛍️ Caffeine v3.0 App Market (April 7 2026)
+              ☕ Caffeine v3.0 (April 7 2026)
             </div>
             <div className="text-xs text-muted-foreground">
-              Caffeine is launching a public App Market where apps can be
-              installed and remixed. LockFreeEngine will be available for
-              enterprise teams to install their own instance.
+              Caffeine v3.0 launched April 7th — a major platform upgrade
+              enabling non-technical people to build almost anything on the
+              Internet Computer through natural language alone. LockFreeEngine
+              benefits automatically from every platform improvement.
             </div>
           </div>
           <div className="rounded-md border border-border p-3">
@@ -1268,13 +1269,12 @@ const developerSections: GuideSection[] = [
             </div>
           </div>
           <div className="rounded-md border border-border p-3">
-            <div className="font-medium text-sm mb-1">
-              ☕ Caffeine v3.0 + App Market
-            </div>
+            <div className="font-medium text-sm mb-1">☕ Caffeine v3.0</div>
             <div className="text-xs text-muted-foreground">
-              Caffeine v3.0 launches April 7 with a public App Market and
-              improved AI-driven development. LockFreeEngine is built on
-              Caffeine and benefits automatically from platform improvements.
+              Caffeine v3.0 launched April 7th with a quantum leap in AI-driven
+              development — enabling more complex apps to be built through
+              natural language alone. LockFreeEngine is built on Caffeine and
+              benefits automatically from every platform advance.
             </div>
           </div>
           <div className="rounded-md border border-border p-3">
