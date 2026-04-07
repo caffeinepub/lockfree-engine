@@ -259,18 +259,18 @@ const STACK_TRACE = [
 const HOW_IT_WORKS = [
   {
     step: "01",
-    title: "Provision",
-    desc: "Spin up a Cloud Engine canister on your chosen provider. CPU, RAM, and storage parameters are passed via Candid to the Motoko backend, which stores the Engine record in a stable HashMap — persisting state across canister upgrades without a database.",
+    title: "Scan Your Legacy Stack",
+    desc: "Paste your existing tech stack into the Legacy App Scanner. LockFreeEngine analyses every component and maps it to ICP equivalents — giving you a tailored migration plan with cost savings and a timeline. No guesswork, no consultants.",
   },
   {
     step: "02",
-    title: "Deploy",
-    desc: "The AI Deploy Chat injects your engine context into each prompt, routing deployment commands as update calls to the backend actor. All state mutations go through the Internet Computer's consensus layer — no centralised server, no single point of failure.",
+    title: "Migrate with Snorkel",
+    desc: "Click 'Start Migration' and watch Snorkel work through your stack step by step — provisioning your sovereign subnet, deploying canisters, migrating your data, and verifying the deployment. Live progress, zero downtime.",
   },
   {
     step: "03",
-    title: "Migrate Freely",
-    desc: "Migration routes through a subnet transfer endpoint on the Cloud Engines API — now in production pilots on the NNS. The simulation layer mirrors the real API structure and connects directly as third-party developer access opens with Caffeine v3.0 now live. The Motoko actor interface is already aligned to the live endpoint — no UI changes required. Zero downtime, zero lock-in.",
+    title: "Manage from One Control Panel",
+    desc: "No lock-in. No cloud tax. Your infrastructure, your rules.",
   },
 ];
 
