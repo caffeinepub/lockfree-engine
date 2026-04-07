@@ -13,8 +13,11 @@ export function ChatPage({
   onOpenPricing,
 }: ChatPageProps) {
   return (
-    <div className="flex flex-col h-[calc(100dvh-3.5rem-2rem)] min-h-[500px]">
-      <div className="console-panel flex-1 flex flex-col overflow-hidden">
+    <div
+      className="flex flex-col"
+      style={{ height: "calc(100dvh - 3.5rem - 2rem)", minHeight: "480px" }}
+    >
+      <div className="console-panel flex-1 flex flex-col min-h-0 overflow-hidden">
         <ChatPanel
           preselectedEngineId={preselectedEngine?.id ?? null}
           subscription={subscription ?? "free"}
