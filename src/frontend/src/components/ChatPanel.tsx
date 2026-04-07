@@ -629,20 +629,20 @@ export function ChatPanel({
       </div>
 
       {/* Tab bar */}
-      <div className="flex border-b border-border flex-shrink-0 bg-secondary/10">
+      <div className="flex border-b border-border flex-shrink-0 bg-secondary/10 w-full">
         <button
           type="button"
           onClick={() => setActiveTab("chat")}
           data-ocid="chat_panel.tab.chat"
           className={[
-            "flex items-center gap-1.5 px-4 py-2.5 text-xs font-medium transition-colors border-b-2 -mb-px",
+            "flex flex-1 items-center justify-center gap-1.5 px-2 py-2 sm:px-4 sm:py-2.5 text-xs font-semibold transition-colors border-b-2 -mb-px min-w-0",
             activeTab === "chat"
               ? "border-cyan-400 text-cyan-400"
-              : "border-transparent text-muted-foreground hover:text-foreground",
+              : "border-transparent text-foreground/60 hover:text-foreground hover:border-foreground/20",
           ].join(" ")}
         >
-          <Sparkles className="w-3 h-3" />
-          AI Deploy Chat
+          <Sparkles className="w-3 h-3 flex-shrink-0" />
+          <span className="truncate">AI Deploy Chat</span>
         </button>
         <button
           type="button"
@@ -650,14 +650,14 @@ export function ChatPanel({
           data-ocid="chat_panel.tab.scanner"
           data-tour-id="chat-scanner-tab"
           className={[
-            "flex items-center gap-1.5 px-4 py-2.5 text-xs font-medium transition-colors border-b-2 -mb-px",
+            "flex flex-1 items-center justify-center gap-1.5 px-2 py-2 sm:px-4 sm:py-2.5 text-xs font-semibold transition-colors border-b-2 -mb-px min-w-0",
             activeTab === "scanner"
               ? "border-cyan-400 text-cyan-400"
-              : "border-transparent text-muted-foreground hover:text-foreground",
+              : "border-transparent text-foreground/60 hover:text-foreground hover:border-foreground/20",
           ].join(" ")}
         >
-          <ScanSearch className="w-3 h-3" />
-          Legacy App Scanner
+          <ScanSearch className="w-3 h-3 flex-shrink-0" />
+          <span className="truncate">Legacy App Scanner</span>
         </button>
       </div>
 
