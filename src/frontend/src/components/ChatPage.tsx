@@ -17,7 +17,7 @@ export function ChatPage({
       className="flex flex-col"
       style={{ height: "calc(100dvh - 3.5rem - 2rem)", minHeight: "480px" }}
     >
-      <div className="console-panel flex-1 flex flex-col min-h-0 overflow-hidden">
+      <div className="console-panel flex flex-col min-h-0 overflow-hidden h-full">
         <ChatPanel
           preselectedEngineId={preselectedEngine?.id ?? null}
           subscription={subscription ?? "free"}

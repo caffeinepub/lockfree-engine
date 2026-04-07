@@ -1,5 +1,4 @@
 import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Select,
   SelectContent,
@@ -536,7 +535,7 @@ export function ChatPanel({
   const atDeployLimit = subscription === "free" && deploymentsThisMonth >= 5;
 
   return (
-    <div className="flex flex-col h-full min-h-0">
+    <div className="flex flex-col h-full min-h-0 overflow-hidden">
       {/* Header */}
       <div
         className="flex items-center justify-between px-4 py-3 border-b border-border flex-shrink-0"
@@ -628,61 +627,65 @@ export function ChatPanel({
         </div>
       </div>
 
-      {/* Tab bar — flex-shrink-0 ensures it is NEVER clipped by flex children below */}
+      {/* Tab bar — inline flexShrink:0 is the reliable guard, Tailwind class can be overridden */}
       <div
-        className="flex border-b border-border flex-shrink-0 bg-secondary/10 w-full"
+        className="flex w-full border-b border-border bg-secondary/10"
         style={{ flexShrink: 0 }}
       >
         <button
           type="button"
           onClick={() => setActiveTab("chat")}
           data-ocid="chat_panel.tab.chat"
+          style={{ flexShrink: 0 }}
           className={[
-            "flex flex-1 items-center justify-center gap-1.5 px-2 py-2.5 text-xs font-semibold transition-colors border-b-2 -mb-px min-w-0",
+            "flex-1 flex items-center justify-center gap-1.5 py-3 text-xs font-medium transition-colors border-b-2 -mb-px",
             activeTab === "chat"
-              ? "border-cyan-400 text-cyan-400"
+              ? "border-cyan-400 text-foreground font-semibold"
               : "border-transparent text-muted-foreground hover:text-foreground hover:border-foreground/20",
           ].join(" ")}
         >
-          <Sparkles className="w-3 h-3 flex-shrink-0" />
-          <span className="truncate">AI Deploy Chat</span>
+          <Sparkles className="w-3.5 h-3.5" style={{ flexShrink: 0 }} />
+          AI Deploy Chat
         </button>
         <button
           type="button"
           onClick={() => setActiveTab("scanner")}
           data-ocid="chat_panel.tab.scanner"
           data-tour-id="chat-scanner-tab"
+          style={{ flexShrink: 0 }}
           className={[
-            "flex flex-1 items-center justify-center gap-1.5 px-2 py-2.5 text-xs font-semibold transition-colors border-b-2 -mb-px min-w-0",
+            "flex-1 flex items-center justify-center gap-1.5 py-3 text-xs font-medium transition-colors border-b-2 -mb-px",
             activeTab === "scanner"
-              ? "border-cyan-400 text-cyan-400"
+              ? "border-cyan-400 text-foreground font-semibold"
               : "border-transparent text-muted-foreground hover:text-foreground hover:border-foreground/20",
           ].join(" ")}
         >
-          <ScanSearch className="w-3 h-3 flex-shrink-0" />
-          <span className="truncate">Legacy App Scanner</span>
+          <ScanSearch className="w-3.5 h-3.5" style={{ flexShrink: 0 }} />
+          Legacy App Scanner
         </button>
       </div>
 
       {/* Scanner tab */}
       {activeTab === "scanner" && (
-        <ScrollArea className="flex-1">
-          {showMigrationProgress && migrationScanResult ? (
-            <MigrationProgressScreen
-              result={migrationScanResult}
-              stackInput={migrationStackInput}
-              onComplete={handleMigrationComplete}
-              onNewScan={handleMigrationNewScan}
-            />
-          ) : (
-            <LegacyAppScanner onDeployWithChat={handleScannerDeploy} />
-          )}
-        </ScrollArea>
+        <div className="flex flex-col flex-1 min-h-0 overflow-hidden">
+          <div className="flex-1 min-h-0 overflow-y-auto">
+            {showMigrationProgress && migrationScanResult ? (
+              <MigrationProgressScreen
+                result={migrationScanResult}
+                stackInput={migrationStackInput}
+                onComplete={handleMigrationComplete}
+                onNewScan={handleMigrationNewScan}
+              />
+            ) : (
+              <LegacyAppScanner onDeployWithChat={handleScannerDeploy} />
+            )}
+          </div>
+        </div>
       )}
 
       {/* Chat tab */}
       {activeTab === "chat" && (
-        <>
+        <div className="flex flex-col flex-1 min-h-0 overflow-hidden">
           {/* Engine selector */}
           <div className="px-4 py-2.5 border-b border-border bg-secondary/20 flex-shrink-0">
             <div className="flex items-center gap-2 text-xs">
@@ -725,7 +728,7 @@ export function ChatPanel({
           )}
 
           {/* Messages */}
-          <ScrollArea className="flex-1 px-4 py-4">
+          <div className="flex-1 min-h-0 overflow-y-auto px-4 py-4">
             <div className="space-y-5">
               <AnimatePresence>
                 {messages.map((msg) => (
@@ -748,7 +751,7 @@ export function ChatPanel({
 
               <div ref={bottomRef} />
             </div>
-          </ScrollArea>
+          </div>
 
           {/* Suggestions — show on first load or after welcome */}
           {messages.length <= 2 && (
@@ -806,7 +809,7 @@ export function ChatPanel({
               )}
             </p>
           </div>
-        </>
+        </div>
       )}
     </div>
   );
