@@ -11,8 +11,8 @@ import Order "mo:core/Order";
 import Runtime "mo:core/Runtime";
 
 
-import MixinAuthorization "authorization/MixinAuthorization";
-import AccessControl "authorization/access-control";
+import MixinAuthorization "mo:caffeineai-authorization/MixinAuthorization";
+import AccessControl "mo:caffeineai-authorization/access-control";
 
 
 actor {
@@ -21,17 +21,6 @@ actor {
 
   // Stable admin principal — survives canister upgrades
   var stableAdminPrincipal : ?Principal = null;
-
-  // Restore admin into accessControlState after every upgrade
-  system func postupgrade() {
-    switch (stableAdminPrincipal) {
-      case (?admin) {
-        accessControlState.userRoles.add(admin, #admin);
-        accessControlState.adminAssigned := true;
-      };
-      case (null) {};
-    };
-  };
 
   // Subscription tier
   public type SubscriptionTier = {

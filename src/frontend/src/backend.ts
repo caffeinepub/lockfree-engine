@@ -164,12 +164,13 @@ export enum UserRole {
 }
 export interface backendInterface {
     _getMigrationHistoryForTests(): Promise<Array<MigrationRecord>>;
-    _initializeAccessControlWithSecret(userSecret: string): Promise<void>;
+    _initializeAccessControl(): Promise<void>;
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
     claimInitialAdmin(): Promise<boolean>;
     clearFlaggedAffiliate(code: string): Promise<boolean>;
     createEngine(name: string, provider: string, cpu: bigint, ram: bigint, storage: bigint, costPerHour: number): Promise<bigint>;
     deleteEngine(id: bigint): Promise<void>;
+    deleteUserData(user: Principal): Promise<boolean>;
     deployApp(engineId: bigint, _prompt: string): Promise<string>;
     distributeAcrossProviders(): Promise<void>;
     distributeAndGetScore(): Promise<DistributeResult>;
@@ -247,17 +248,17 @@ export class Backend implements backendInterface {
             return result;
         }
     }
-    async _initializeAccessControlWithSecret(arg0: string): Promise<void> {
+    async _initializeAccessControl(): Promise<void> {
         if (this.processError) {
             try {
-                const result = await this.actor._initializeAccessControlWithSecret(arg0);
+                const result = await this.actor._initializeAccessControl();
                 return result;
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
-            const result = await this.actor._initializeAccessControlWithSecret(arg0);
+            const result = await this.actor._initializeAccessControl();
             return result;
         }
     }
@@ -328,6 +329,20 @@ export class Backend implements backendInterface {
             }
         } else {
             const result = await this.actor.deleteEngine(arg0);
+            return result;
+        }
+    }
+    async deleteUserData(arg0: Principal): Promise<boolean> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.deleteUserData(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.deleteUserData(arg0);
             return result;
         }
     }

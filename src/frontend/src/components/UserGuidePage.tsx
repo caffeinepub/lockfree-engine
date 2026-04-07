@@ -37,6 +37,7 @@ import {
   Shield,
   ShieldCheck,
   Shuffle,
+  Sparkles,
   Star,
   Sun,
   ToggleLeft,
@@ -2655,6 +2656,32 @@ export function UserGuidePage() {
                         see exactly how LockFreeEngine works before committing
                         to a plan.
                       </p>
+                      <div className="mt-3 rounded-lg border border-primary/25 bg-primary/5 px-4 py-3 flex gap-3">
+                        <div className="mt-0.5 flex-shrink-0 w-4 h-4 rounded-full bg-primary/20 flex items-center justify-center">
+                          <span className="text-primary text-[9px] font-bold leading-none">
+                            ✦
+                          </span>
+                        </div>
+                        <div className="text-xs text-foreground/80 leading-relaxed space-y-1">
+                          <p className="font-semibold text-foreground">
+                            Coming in the v3.0 roadmap: Caffeine Snorkel
+                          </p>
+                          <p>
+                            Snorkel will automate the technical migration steps
+                            — analysing your existing stack, mapping
+                            dependencies, and generating an ICP-compatible
+                            deployment automatically.
+                          </p>
+                          <p>
+                            LockFreeEngine's <strong>AI Deploy Chat</strong>{" "}
+                            will serve as the conversational interface for
+                            Snorkel. Describe your existing app in plain
+                            language — no command-line tools, no infrastructure
+                            expertise required. Business owners can initiate a
+                            migration the same way they'd send a chat message.
+                          </p>
+                        </div>
+                      </div>
                     </div>
                   ),
                 },
@@ -2701,6 +2728,56 @@ export function UserGuidePage() {
                 <p className="text-xs text-muted-foreground">
                   Step-by-step guide with code snippets for migrating Web2
                   systems to ICP Cloud Engines
+                </p>
+              </div>
+            </div>
+            {/* Snorkel automation callout */}
+            <div className="mb-4 rounded-lg border border-primary/30 bg-primary/5 overflow-hidden">
+              <div className="flex items-center gap-2 px-4 py-2.5 border-b border-primary/20 bg-primary/10">
+                <Sparkles className="w-3.5 h-3.5 text-primary flex-shrink-0" />
+                <span className="text-xs font-semibold text-primary">
+                  Coming in the Caffeine v3.0 roadmap: Caffeine Snorkel
+                </span>
+              </div>
+              <div className="px-4 py-3 space-y-2 text-xs text-foreground/80 leading-relaxed">
+                <p>
+                  The steps below are the{" "}
+                  <strong>current manual migration path</strong>. When{" "}
+                  <strong>Caffeine Snorkel</strong> goes live, they will be
+                  automated — Snorkel analyses your legacy stack, maps
+                  dependencies, and generates an ICP-compatible canister
+                  deployment without manual intervention.
+                </p>
+                <p>
+                  <strong>LockFreeEngine's AI Deploy Chat</strong> is the
+                  interface that will drive Snorkel migrations. The complete
+                  journey:
+                </p>
+                <ol className="list-decimal list-inside space-y-1 ml-2 text-foreground/70">
+                  <li>
+                    <strong>Describe</strong> — Tell the AI Deploy Chat about
+                    your existing app: stack, data, integrations
+                  </li>
+                  <li>
+                    <strong>Snorkel migrates</strong> — Your legacy codebase is
+                    analysed, dependencies resolved, ICP-compatible deployment
+                    generated automatically
+                  </li>
+                  <li>
+                    <strong>LockFreeEngine manages</strong> — Your migrated
+                    workload is provisioned on a sovereign ICP Cloud Engine
+                  </li>
+                  <li>
+                    <strong>Sovereign hosting</strong> — Running tamper-proof
+                    and unstoppable on ICP — optionally on EU sovereign node
+                    infrastructure
+                  </li>
+                </ol>
+                <p className="text-muted-foreground">
+                  Until Snorkel ships, use the steps below to migrate manually.
+                  The AI Deploy Chat already simulates the Snorkel conversation
+                  flow — try describing a legacy app to see what the automated
+                  path will look like.
                 </p>
               </div>
             </div>

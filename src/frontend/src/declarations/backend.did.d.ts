@@ -78,7 +78,7 @@ export interface WaitlistEntry {
 }
 export interface _SERVICE {
   '_getMigrationHistoryForTests' : ActorMethod<[], Array<MigrationRecord>>,
-  '_initializeAccessControlWithSecret' : ActorMethod<[string], undefined>,
+  '_initializeAccessControl' : ActorMethod<[], undefined>,
   'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
   'claimInitialAdmin' : ActorMethod<[], boolean>,
   'clearFlaggedAffiliate' : ActorMethod<[string], boolean>,
@@ -87,6 +87,7 @@ export interface _SERVICE {
     bigint
   >,
   'deleteEngine' : ActorMethod<[bigint], undefined>,
+  'deleteUserData' : ActorMethod<[Principal], boolean>,
   'deployApp' : ActorMethod<[bigint, string], string>,
   'distributeAcrossProviders' : ActorMethod<[], undefined>,
   'distributeAndGetScore' : ActorMethod<[], DistributeResult>,

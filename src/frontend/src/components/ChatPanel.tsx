@@ -35,10 +35,10 @@ import { useGetUsageSummary, useListEngines } from "../hooks/useQueries";
 export type { ChatMessage as Message };
 
 const SUGGESTED_PROMPTS = [
-  "Deploy a CRM with auth and database",
-  "Update my CRM with payments",
+  "Migrate my AWS app to ICP via Snorkel",
+  "I have a legacy Node.js app I want to migrate",
   "Add authentication to my app",
-  "Migrate my engine to GCP",
+  "Deploy a sovereign ICP cloud engine",
   "Optimize my cloud costs",
   "Distribute across providers",
 ];
@@ -47,7 +47,7 @@ const WELCOME_MESSAGE: ChatMessage = {
   id: "welcome",
   role: "assistant",
   content:
-    'Hello! I\'m your AI deployment assistant. Describe what you want to build and I\'ll deploy it directly to your chosen engine.\n\nTry: *"Deploy a CRM with user auth and a PostgreSQL database"* or *"Update my CRM with payments"*.',
+    "Hello! I'm your AI deployment assistant for LockFreeEngine. I can deploy new apps directly to your chosen engine — or help you migrate existing workloads onto sovereign ICP infrastructure.\n\nWith *Caffeine Snorkel* coming in the v3.0 roadmap, this chat will serve as the front-end interface for automated legacy migrations. Describe an existing app — whether it's running on AWS, Azure, or your own servers — and I'll outline a migration plan.",
   timestamp: new Date(),
 };
 
@@ -120,7 +120,32 @@ function generateAIResponse(content: string, engines: Engine[]): string {
     return `Provisioning a persistent database canister on *${engineName}* (${provider}).\n\n✓ Stable memory canister deployed\n✓ Query API live\n✓ Backup schedule configured (every 6h)\n\nData lives on ICP — no external database, no S3 costs, no provider dependency.`;
   }
 
-  // "migrate"
+  // Snorkel / legacy migration keywords
+  if (
+    lower.includes("snorkel") ||
+    lower.includes("legacy") ||
+    lower.includes("existing app") ||
+    lower.includes("existing service") ||
+    lower.includes("move my app") ||
+    lower.includes("aws app") ||
+    lower.includes("azure app") ||
+    ((lower.includes("migrate") || lower.includes("migration")) &&
+      (lower.includes("aws") ||
+        lower.includes("azure") ||
+        lower.includes("node") ||
+        lower.includes("react") ||
+        lower.includes("express") ||
+        lower.includes("django") ||
+        lower.includes("rails") ||
+        lower.includes("legacy") ||
+        lower.includes("existing") ||
+        lower.includes("snorkel") ||
+        lower.includes("icp")))
+  ) {
+    return `Migration request received. Here's how this works with LockFreeEngine.\n\n*LockFreeEngine's AI Deploy Chat is the conversational front-end for Caffeine Snorkel* — DFINITY's upcoming auto-migration engine, announced as part of the Caffeine v3.0 roadmap on April 7th.\n\nWhen Snorkel goes live, this chat will trigger the real migration pipeline. Here's what that journey looks like:\n\n① *Describe* — You tell me about your existing app (stack, data, integrations)\n② *Snorkel analyses* — Your legacy stack is scanned, dependencies mapped, ICP-compatible deployment generated automatically\n③ *LockFreeEngine manages* — Your migrated workload runs on a sovereign ICP Cloud Engine\n④ *Sovereign hosting* — Hosted on tamper-proof, unstoppable ICP infrastructure — optionally on EU sovereign nodes\n\n*Simulated migration plan for your workload:*\n✓ Legacy stack audit: dependencies mapped\n✓ Data export schema: normalised for ICP stable storage\n✓ Canister architecture: 3 canisters proposed (app logic, auth, data)\n✓ Destination engine: ${engineName} (${provider})\n\nSnorkel is coming. When it does, this is the interface that drives it. Join the waitlist for early access.`;
+  }
+
+  // "migrate" (provider-to-provider, not legacy)
   if (
     lower.includes("migrate") ||
     lower.includes("move") ||
@@ -163,7 +188,7 @@ function generateAIResponse(content: string, engines: Engine[]): string {
   }
 
   // Default
-  return `I can help you deploy apps, add auth, integrate payments, or migrate your engines.\n\nTry: *"Deploy a CRM with auth"* or *"Update my CRM with payments"* or *"Migrate ${engineName} to GCP"*\n\nPowered by ICP demand-driven compute — your infrastructure, your rules.`;
+  return `I can help you deploy new apps, add auth, integrate payments, migrate engines between providers — or describe an existing legacy workload you want to move to ICP via *Caffeine Snorkel*.\n\nTry: *"Migrate my AWS app to ICP via Snorkel"* or *"Deploy a sovereign ICP cloud engine"* or *"Optimize my cloud costs"*\n\nPowered by ICP demand-driven compute — your infrastructure, your rules.`;
 }
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
@@ -552,8 +577,9 @@ export function ChatPanel({
             </TooltipTrigger>
             <TooltipContent side="left" className="max-w-64">
               <p>
-                Describe what you want to build — the AI deploys it directly to
-                your engine as a canister on ICP. Chat history persists across
+                Deploy new apps or describe an existing workload to migrate to
+                ICP. When Caffeine Snorkel goes live, this chat will trigger
+                real automated migrations. Chat history persists across
                 sessions.
               </p>
             </TooltipContent>
@@ -654,7 +680,7 @@ export function ChatPanel({
             placeholder={
               atDeployLimit
                 ? "Upgrade to Pro to continue deploying..."
-                : "Deploy a CRM, update with payments, or migrate an engine..."
+                : "Deploy a new app, or describe an existing workload to migrate via Snorkel..."
             }
             value={input}
             onChange={(e) => setInput(e.target.value)}

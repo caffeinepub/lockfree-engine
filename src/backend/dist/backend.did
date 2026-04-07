@@ -1,0 +1,153 @@
+type WaitlistEntry = 
+ record {
+   email: text;
+   id: nat;
+   name: text;
+   submittedAt: int;
+ };
+type UserRole = 
+ variant {
+   admin;
+   guest;
+   user;
+ };
+type UserProfile = record {name: text;};
+type SeatMember = 
+ record {
+   invitedAt: int;
+   principalId: principal;
+   role: text;
+ };
+type MigrationRecord = 
+ record {
+   appCount: nat;
+   engineId: nat;
+   engineName: text;
+   fromProvider: text;
+   id: nat;
+   savedPerMonth: float64;
+   status: text;
+   timestamp: int;
+   toProvider: text;
+ };
+type FlaggedAffiliate = 
+ record {
+   code: text;
+   flaggedAt: int;
+   id: nat;
+   "principal": text;
+   reason: text;
+ };
+type Engine = 
+ record {
+   costPerHour: float64;
+   cpu: nat;
+   createdAt: int;
+   id: nat;
+   name: text;
+   ownerId: principal;
+   provider: text;
+   ram: nat;
+   resilienceScore: nat;
+   status: text;
+   storage: nat;
+ };
+type DistributeResult = 
+ record {
+   overallResilienceScore: nat;
+   updatedEngines: vec Engine;
+ };
+type ContentSettings = 
+ record {
+   affiliateEnabled: bool;
+   announcementBanner: text;
+   demoModeEnabled: bool;
+ };
+type BillingEvent = 
+ record {
+   amount: float64;
+   currency: text;
+   eventType: text;
+   id: nat;
+   note: text;
+   tier: text;
+   timestamp: int;
+   userId: principal;
+ };
+type AdminUserRecord = 
+ record {
+   principalId: principal;
+   tier: text;
+ };
+service : {
+  _getMigrationHistoryForTests: () -> (vec MigrationRecord) query;
+  _initializeAccessControl: () -> ();
+  assignCallerUserRole: (user: principal, role: UserRole) -> ();
+  claimInitialAdmin: () -> (bool);
+  clearFlaggedAffiliate: (code: text) -> (bool);
+  createEngine: (name: text, provider: text, cpu: nat, ram: nat, storage:
+   nat, costPerHour: float64) -> (nat);
+  deleteEngine: (id: nat) -> ();
+  deleteUserData: (user: principal) -> (bool);
+  deployApp: (engineId: nat, _prompt: text) -> (text);
+  distributeAcrossProviders: () -> ();
+  distributeAndGetScore: () -> (DistributeResult);
+  getAdminAnalytics: () ->
+   (record {
+      businessCount: nat;
+      enterpriseCount: nat;
+      freeCount: nat;
+      proCount: nat;
+      totalEngines: nat;
+      totalUsers: nat;
+      totalWaitlist: nat;
+    }) query;
+  getBillingEvents: () -> (vec BillingEvent) query;
+  getCallerUserProfile: () -> (opt UserProfile) query;
+  getCallerUserRole: () -> (UserRole) query;
+  getContentSettings: () -> (ContentSettings) query;
+  getCostSummary: () ->
+   (record {
+      engineCosts: vec record {
+                         nat;
+                         float64;
+                       };
+      totalCost: float64;
+    }) query;
+  getEngine: (id: nat) -> (Engine) query;
+  getFlaggedAffiliates: () -> (vec FlaggedAffiliate) query;
+  getMigrationHistory: () -> (vec MigrationRecord) query;
+  getMySubscription: () -> (text) query;
+  getPublicContentSettings: () -> (ContentSettings) query;
+  getReferralCount: (code: text) -> (nat) query;
+  getUsageSummary: () ->
+   (record {
+      deploymentsThisMonth: nat;
+      enginesCount: nat;
+      migrationsThisMonth: nat;
+    }) query;
+  getUserProfile: (user: principal) -> (opt UserProfile) query;
+  getWaitlistEntries: () -> (vec WaitlistEntry) query;
+  inviteSeat: (member: principal, role: text) -> ();
+  isCallerAdmin: () -> (bool) query;
+  joinWaitlist: (email: text, name: text) -> (bool);
+  listAllUsers: () -> (vec AdminUserRecord) query;
+  listEngines: () -> (vec Engine) query;
+  listSeats: () -> (vec SeatMember) query;
+  migrateEngine: (id: nat, targetProvider: text) -> ();
+  migrateEngineWithDetails: (id: nat, targetProvider: text) ->
+   (MigrationRecord);
+  populateDemoData: () -> ();
+  removeSeat: (member: principal) -> ();
+  reportReferral: (code: text) -> (variant {
+                                     capReached;
+                                     flagged;
+                                     ok: nat;
+                                   });
+  saveCallerUserProfile: (profile: UserProfile) -> ();
+  saveContentSettings: (settings: ContentSettings) -> ();
+  sendMessage: (content: text, _engineId: opt nat) -> (text);
+  setUserTier: (user: principal, tier: text) -> ();
+  updateEngineStatus: (id: nat, status: text) -> ();
+  upgradeSubscription: (tier: text, paymentMethod: text) -> ();
+}
