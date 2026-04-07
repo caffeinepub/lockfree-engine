@@ -18,6 +18,7 @@ import {
   ArrowRight,
   Bot,
   Info,
+  ScanSearch,
   Send,
   Sparkles,
   Trash2,
@@ -30,11 +31,14 @@ import { toast } from "sonner";
 import type { Engine } from "../backend.d.ts";
 import { type ChatMessage, useChatHistory } from "../hooks/useChatHistory";
 import { useGetUsageSummary, useListEngines } from "../hooks/useQueries";
+import { LegacyAppScanner, type ScanResult } from "./LegacyAppScanner";
+import { MigrationProgressScreen } from "./MigrationProgressScreen";
 
 // Re-export for backward compat
 export type { ChatMessage as Message };
 
 const SUGGESTED_PROMPTS = [
+  "Scan my legacy stack for ICP migration",
   "Migrate my AWS app to ICP via Snorkel",
   "I have a legacy Node.js app I want to migrate",
   "Add authentication to my app",
@@ -47,7 +51,7 @@ const WELCOME_MESSAGE: ChatMessage = {
   id: "welcome",
   role: "assistant",
   content:
-    "Hello! I'm your AI deployment assistant for LockFreeEngine. I can deploy new apps directly to your chosen engine — or help you migrate existing workloads onto sovereign ICP infrastructure.\n\nWith *Caffeine Snorkel* coming in the v3.0 roadmap, this chat will serve as the front-end interface for automated legacy migrations. Describe an existing app — whether it's running on AWS, Azure, or your own servers — and I'll outline a migration plan.",
+    "Hello! I'm your AI deployment assistant for LockFreeEngine. I can deploy new apps directly to your chosen engine — or help you migrate existing workloads onto sovereign ICP infrastructure.\n\nUse the *Legacy App Scanner* tab to analyse your existing infrastructure and get a personalised ICP migration plan.\n\nWith *Caffeine Snorkel* coming in the v3.0 roadmap, this chat will serve as the front-end interface for automated legacy migrations. Describe an existing app — whether it's running on AWS, Azure, or your own servers — and I'll outline a migration plan.",
   timestamp: new Date(),
 };
 
@@ -381,6 +385,11 @@ export function ChatPanel({
   );
   const [isTyping, setIsTyping] = useState(false);
   const [headerHovered, setHeaderHovered] = useState(false);
+  const [activeTab, setActiveTab] = useState<"chat" | "scanner">("chat");
+  const [migrationScanResult, setMigrationScanResult] =
+    useState<ScanResult | null>(null);
+  const [showMigrationProgress, setShowMigrationProgress] = useState(false);
+  const [migrationStackInput, setMigrationStackInput] = useState("");
   const bottomRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { data: engines } = useListEngines();
@@ -492,6 +501,38 @@ export function ChatPanel({
     );
   }
 
+  function handleScannerDeploy(msg: string, scanResult?: ScanResult) {
+    if (scanResult) {
+      setMigrationStackInput(msg);
+      setMigrationScanResult(scanResult);
+      setShowMigrationProgress(true);
+    } else {
+      setActiveTab("chat");
+      // Small delay so the tab switch animation completes
+      setTimeout(() => {
+        void handleSend(msg);
+      }, 300);
+    }
+  }
+
+  function handleMigrationComplete() {
+    setShowMigrationProgress(false);
+    setMigrationScanResult(null);
+    setActiveTab("chat");
+    setTimeout(() => {
+      void handleSend(
+        "My workload has been migrated to sovereign ICP infrastructure on NeoCloud eu-neocloud-1a. What can I do next?",
+      );
+    }, 300);
+  }
+
+  function handleMigrationNewScan() {
+    setShowMigrationProgress(false);
+    setMigrationScanResult(null);
+    setMigrationStackInput("");
+    // stays on scanner tab
+  }
+
   const atDeployLimit = subscription === "free" && deploymentsThisMonth >= 5;
 
   return (
@@ -517,7 +558,7 @@ export function ChatPanel({
         <div className="flex items-center gap-2">
           {/* Clear history button — hover-revealed */}
           <AnimatePresence>
-            {headerHovered && messages.length > 1 && (
+            {headerHovered && messages.length > 1 && activeTab === "chat" && (
               <motion.div
                 initial={{ opacity: 0, scale: 0.85 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -547,7 +588,7 @@ export function ChatPanel({
           </AnimatePresence>
 
           {/* Pro: Suggest cheapest provider button */}
-          {isPro && (
+          {isPro && activeTab === "chat" && (
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
@@ -578,8 +619,8 @@ export function ChatPanel({
             <TooltipContent side="left" className="max-w-64">
               <p>
                 Deploy new apps or describe an existing workload to migrate to
-                ICP. When Caffeine Snorkel goes live, this chat will trigger
-                real automated migrations. Chat history persists across
+                ICP. Use the Legacy App Scanner tab to get a full stack analysis
+                and personalised migration plan. Chat history persists across
                 sessions.
               </p>
             </TooltipContent>
@@ -587,126 +628,183 @@ export function ChatPanel({
         </div>
       </div>
 
-      {/* Engine selector */}
-      <div className="px-4 py-2.5 border-b border-border bg-secondary/20 flex-shrink-0">
-        <div className="flex items-center gap-2 text-xs">
-          <span className="text-muted-foreground">Deploy to:</span>
-          <Select value={selectedEngineId} onValueChange={setSelectedEngineId}>
-            <SelectTrigger className="h-7 text-xs flex-1 max-w-52">
-              <SelectValue placeholder="Select an engine" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="none">No engine selected</SelectItem>
-              {engines?.map((e) => (
-                <SelectItem key={e.id.toString()} value={e.id.toString()}>
-                  {e.name} ({e.provider})
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+      {/* Tab bar */}
+      <div className="flex border-b border-border flex-shrink-0 bg-secondary/10">
+        <button
+          type="button"
+          onClick={() => setActiveTab("chat")}
+          data-ocid="chat_panel.tab.chat"
+          className={[
+            "flex items-center gap-1.5 px-4 py-2.5 text-xs font-medium transition-colors border-b-2 -mb-px",
+            activeTab === "chat"
+              ? "border-cyan-400 text-cyan-400"
+              : "border-transparent text-muted-foreground hover:text-foreground",
+          ].join(" ")}
+        >
+          <Sparkles className="w-3 h-3" />
+          AI Deploy Chat
+        </button>
+        <button
+          type="button"
+          onClick={() => setActiveTab("scanner")}
+          data-ocid="chat_panel.tab.scanner"
+          data-tour-id="chat-scanner-tab"
+          className={[
+            "flex items-center gap-1.5 px-4 py-2.5 text-xs font-medium transition-colors border-b-2 -mb-px",
+            activeTab === "scanner"
+              ? "border-cyan-400 text-cyan-400"
+              : "border-transparent text-muted-foreground hover:text-foreground",
+          ].join(" ")}
+        >
+          <ScanSearch className="w-3 h-3" />
+          Legacy App Scanner
+        </button>
       </div>
 
-      {/* Deployment limit warning */}
-      {atDeployLimit && (
-        <div className="mx-4 mt-3 flex items-center gap-2.5 p-2.5 rounded-lg bg-[oklch(0.72_0.18_55/0.1)] border border-[oklch(0.72_0.18_55/0.3)] flex-shrink-0">
-          <AlertTriangle className="w-4 h-4 text-[oklch(0.72_0.18_55)] flex-shrink-0" />
-          <p className="text-xs text-[oklch(0.82_0.18_55)] flex-1">
-            You've reached the Free tier limit (5 deployments/month).
-          </p>
-          <Button
-            size="sm"
-            variant="ghost"
-            className="h-6 text-xs px-2 text-[oklch(0.72_0.18_55)] hover:bg-[oklch(0.72_0.18_55/0.1)] flex-shrink-0"
-            onClick={onOpenPricing}
-          >
-            Upgrade
-          </Button>
-        </div>
+      {/* Scanner tab */}
+      {activeTab === "scanner" && (
+        <ScrollArea className="flex-1">
+          {showMigrationProgress && migrationScanResult ? (
+            <MigrationProgressScreen
+              result={migrationScanResult}
+              stackInput={migrationStackInput}
+              onComplete={handleMigrationComplete}
+              onNewScan={handleMigrationNewScan}
+            />
+          ) : (
+            <LegacyAppScanner onDeployWithChat={handleScannerDeploy} />
+          )}
+        </ScrollArea>
       )}
 
-      {/* Messages */}
-      <ScrollArea className="flex-1 px-4 py-4">
-        <div className="space-y-5">
-          <AnimatePresence>
-            {messages.map((msg) => (
-              <MessageBubble
-                key={msg.id}
-                message={msg}
-                onMigrate={handleMigrateSuggestion}
-              />
-            ))}
-          </AnimatePresence>
+      {/* Chat tab */}
+      {activeTab === "chat" && (
+        <>
+          {/* Engine selector */}
+          <div className="px-4 py-2.5 border-b border-border bg-secondary/20 flex-shrink-0">
+            <div className="flex items-center gap-2 text-xs">
+              <span className="text-muted-foreground">Deploy to:</span>
+              <Select
+                value={selectedEngineId}
+                onValueChange={setSelectedEngineId}
+              >
+                <SelectTrigger className="h-7 text-xs flex-1 max-w-52">
+                  <SelectValue placeholder="Select an engine" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">No engine selected</SelectItem>
+                  {engines?.map((e) => (
+                    <SelectItem key={e.id.toString()} value={e.id.toString()}>
+                      {e.name} ({e.provider})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
 
-          {isTyping && (
-            <div className="flex gap-2.5">
-              <div className="w-7 h-7 rounded-full bg-secondary border border-border flex items-center justify-center flex-shrink-0 mt-0.5">
-                <Bot className="w-3.5 h-3.5 text-muted-foreground" />
-              </div>
-              <TypingDots visible />
+          {/* Deployment limit warning */}
+          {atDeployLimit && (
+            <div className="mx-4 mt-3 flex items-center gap-2.5 p-2.5 rounded-lg bg-[oklch(0.72_0.18_55/0.1)] border border-[oklch(0.72_0.18_55/0.3)] flex-shrink-0">
+              <AlertTriangle className="w-4 h-4 text-[oklch(0.72_0.18_55)] flex-shrink-0" />
+              <p className="text-xs text-[oklch(0.82_0.18_55)] flex-1">
+                You've reached the Free tier limit (5 deployments/month).
+              </p>
+              <Button
+                size="sm"
+                variant="ghost"
+                className="h-6 text-xs px-2 text-[oklch(0.72_0.18_55)] hover:bg-[oklch(0.72_0.18_55/0.1)] flex-shrink-0"
+                onClick={onOpenPricing}
+              >
+                Upgrade
+              </Button>
             </div>
           )}
 
-          <div ref={bottomRef} />
-        </div>
-      </ScrollArea>
+          {/* Messages */}
+          <ScrollArea className="flex-1 px-4 py-4">
+            <div className="space-y-5">
+              <AnimatePresence>
+                {messages.map((msg) => (
+                  <MessageBubble
+                    key={msg.id}
+                    message={msg}
+                    onMigrate={handleMigrateSuggestion}
+                  />
+                ))}
+              </AnimatePresence>
 
-      {/* Suggestions — show on first load or after welcome */}
-      {messages.length <= 2 && (
-        <div className="px-4 py-2 border-t border-border flex-shrink-0">
-          <div className="text-xs text-muted-foreground/70 mb-2">
-            Suggested prompts
-          </div>
-          <div className="flex flex-wrap gap-1.5">
-            {SUGGESTED_PROMPTS.slice(0, 4).map((p) => (
-              <button
-                type="button"
-                key={p}
-                onClick={() => void handleSend(p)}
-                className="text-xs px-2.5 py-1 rounded-full border border-border bg-secondary/50 hover:bg-secondary hover:border-primary/30 hover:text-primary transition-colors active:scale-[0.97]"
-              >
-                {p}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
+              {isTyping && (
+                <div className="flex gap-2.5">
+                  <div className="w-7 h-7 rounded-full bg-secondary border border-border flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <Bot className="w-3.5 h-3.5 text-muted-foreground" />
+                  </div>
+                  <TypingDots visible />
+                </div>
+              )}
 
-      {/* Input */}
-      <div className="px-4 pb-4 pt-2 flex-shrink-0">
-        <div className="flex gap-2 items-end">
-          <Textarea
-            ref={textareaRef}
-            placeholder={
-              atDeployLimit
-                ? "Upgrade to Pro to continue deploying..."
-                : "Deploy a new app, or describe an existing workload to migrate via Snorkel..."
-            }
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={handleKeyDown}
-            rows={2}
-            className="resize-none text-sm leading-relaxed min-h-[64px]"
-            disabled={atDeployLimit}
-          />
-          <Button
-            size="icon"
-            className="h-9 w-9 flex-shrink-0 active:scale-[0.97]"
-            onClick={() => void handleSend()}
-            disabled={!input.trim() || isTyping || atDeployLimit}
-          >
-            <Send className="w-4 h-4" />
-          </Button>
-        </div>
-        <p className="text-xs text-muted-foreground/60 mt-1.5">
-          Enter to send · Shift+Enter for new line
-          {!isPro && (
-            <span className="ml-2">
-              · {5 - deploymentsThisMonth} deployments remaining
-            </span>
+              <div ref={bottomRef} />
+            </div>
+          </ScrollArea>
+
+          {/* Suggestions — show on first load or after welcome */}
+          {messages.length <= 2 && (
+            <div className="px-4 py-2 border-t border-border flex-shrink-0">
+              <div className="text-xs text-muted-foreground/70 mb-2">
+                Suggested prompts
+              </div>
+              <div className="flex flex-wrap gap-1.5">
+                {SUGGESTED_PROMPTS.slice(0, 4).map((p) => (
+                  <button
+                    type="button"
+                    key={p}
+                    onClick={() => void handleSend(p)}
+                    className="text-xs px-2.5 py-1 rounded-full border border-border bg-secondary/50 hover:bg-secondary hover:border-primary/30 hover:text-primary transition-colors active:scale-[0.97]"
+                  >
+                    {p}
+                  </button>
+                ))}
+              </div>
+            </div>
           )}
-        </p>
-      </div>
+
+          {/* Input */}
+          <div className="px-4 pb-4 pt-2 flex-shrink-0">
+            <div className="flex gap-2 items-end">
+              <Textarea
+                ref={textareaRef}
+                placeholder={
+                  atDeployLimit
+                    ? "Upgrade to Pro to continue deploying..."
+                    : "Deploy a new app, or describe an existing workload to migrate via Snorkel..."
+                }
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={handleKeyDown}
+                rows={2}
+                className="resize-none text-sm leading-relaxed min-h-[64px]"
+                disabled={atDeployLimit}
+              />
+              <Button
+                size="icon"
+                className="h-9 w-9 flex-shrink-0 active:scale-[0.97]"
+                onClick={() => void handleSend()}
+                disabled={!input.trim() || isTyping || atDeployLimit}
+              >
+                <Send className="w-4 h-4" />
+              </Button>
+            </div>
+            <p className="text-xs text-muted-foreground/60 mt-1.5">
+              Enter to send · Shift+Enter for new line
+              {!isPro && (
+                <span className="ml-2">
+                  · {5 - deploymentsThisMonth} deployments remaining
+                </span>
+              )}
+            </p>
+          </div>
+        </>
+      )}
     </div>
   );
 }

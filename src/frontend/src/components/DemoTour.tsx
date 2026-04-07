@@ -36,6 +36,18 @@ const TOUR_STEPS: TourStep[] = [
       "Describe any application in plain English. The AI builds and deploys it as an ICP canister directly to this engine — live in seconds.",
   },
   {
+    targetId: "chat-scanner-tab",
+    title: "Legacy App Scanner",
+    description:
+      "Switch to the Legacy App Scanner tab, paste your tech stack — Kubernetes, Node.js, PostgreSQL, or NeoCloud's own stack — and get a full component mapping plus a sovereign EU migration plan powered by Snorkel.",
+  },
+  {
+    targetId: "snorkel-migration-progress",
+    title: "Snorkel Migration in Action",
+    description:
+      "After scanning, click 'Start Migration with Snorkel' to watch the animated 6-step migration: parsing your stack, mapping to ICP architecture, provisioning the NeoCloud EU subnet, deploying canisters, migrating persistent state, and a final health check — ending with your workload live.",
+  },
+  {
     targetId: "live-cost-dashboard",
     title: "Live Cost Dashboard",
     description:

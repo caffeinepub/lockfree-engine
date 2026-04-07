@@ -1031,6 +1031,18 @@ const businessSections: GuideSection[] = [
           <li>Type your question and press Enter or click Send</li>
           <li>The AI responds with context-aware guidance for that engine</li>
         </ol>
+        <div className="rounded-md border border-border bg-secondary/30 p-3 space-y-1.5">
+          <p className="font-semibold text-sm">Legacy App Scanner</p>
+          <p className="text-sm text-muted-foreground">
+            The <strong>Legacy App Scanner</strong> tab inside AI Deploy lets
+            you describe your existing software stack and instantly see how it
+            maps to ICP infrastructure, with a cost comparison and migration
+            timeline. Paste your tech stack — whether it's AWS, Azure,
+            Kubernetes, or any other platform — and receive a personalised ICP
+            migration plan showing projected savings, a phased timeline, and the
+            sovereign EU deployment options available through LockFreeEngine.
+          </p>
+        </div>
         <p className="text-sm text-muted-foreground">
           Your conversation history is saved automatically — if you close the
           browser and come back, your previous messages will still be there. The
@@ -1804,6 +1816,24 @@ const systemContext = engine
           <li>Responses simulate realistic ICP/cloud deployment guidance</li>
           <li>Free tier is rate-limited to 10 messages/session</li>
         </ul>
+        <div className="rounded-md border border-border bg-secondary/30 p-3 space-y-1.5">
+          <p className="font-semibold text-sm">Legacy App Scanner</p>
+          <p className="text-sm text-muted-foreground">
+            The <strong>Legacy App Scanner</strong> tab tokenises the user's
+            stack description, maps each detected component to its ICP
+            equivalent using a pre-built mapping table (40+ tech stack entries),
+            and generates a structured migration plan with phase breakdown, cost
+            delta analysis, and Snorkel integration notes. The component mapper
+            performs keyword matching against a curated mapping table covering
+            infrastructure, databases, auth, backend languages, frontend
+            frameworks, messaging queues, container orchestration, payments,
+            storage, security, blockchain runtimes, and AI/ML tooling. When an
+            enterprise sovereign stack is detected (Kubernetes, Sui Move, NATS,
+            Ceph NVMe, TEE BFT, PostgreSQL, Go/Node.js, React), a special
+            NeoCloud callout is triggered with GDPR-native sovereign EU
+            deployment guidance and adjusted cost modelling.
+          </p>
+        </div>
       </div>
     ),
   },
