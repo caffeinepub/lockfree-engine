@@ -187,7 +187,7 @@ const FEATURES = [
   },
 ];
 
-const CLOUD_ENGINE_FEATURES = [
+const _CLOUD_ENGINE_FEATURES = [
   {
     icon: MapPin,
     title: "Park it anywhere",
@@ -210,7 +210,7 @@ const CLOUD_ENGINE_FEATURES = [
   },
 ];
 
-const TECH_STACK = [
+const _TECH_STACK = [
   {
     badge: "// motoko",
     icon: Code2,
@@ -249,7 +249,7 @@ const TECH_STACK = [
   },
 ];
 
-const STACK_TRACE = [
+const _STACK_TRACE = [
   "React UI",
   "Motoko Canister",
   "ICP Network",
@@ -274,7 +274,7 @@ const HOW_IT_WORKS = [
   },
 ];
 
-const ROADMAP_PHASES = [
+const _ROADMAP_PHASES = [
   {
     phase: "Phase 1",
     label: "Now: Visualization & Demo",
@@ -354,7 +354,7 @@ const VISION_CARDS = [
   },
 ];
 
-function WaitlistForm() {
+function _WaitlistForm() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const { mutateAsync: joinWaitlist, isPending, isSuccess } = useJoinWaitlist();
@@ -633,6 +633,8 @@ export function LandingPage({
                   </p>
                 </motion.div>
 
+                {/* DEMO MODE: WaitlistForm removed for Madelina/Dom demo — restore to show */}
+                {/*
                 <motion.div
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -640,6 +642,7 @@ export function LandingPage({
                 >
                   <WaitlistForm />
                 </motion.div>
+                */}
 
                 <motion.p
                   className="text-xs text-muted-foreground mt-4"
@@ -761,7 +764,8 @@ export function LandingPage({
         </div>
       </section>
 
-      {/* Private Sector / AI Agents callout */}
+      {/* DEMO MODE: Private Sector callout removed for Madelina/Dom demo — restore to show */}
+      {/*
       <section className="relative z-10 py-16 px-5 sm:px-8 md:px-12 border-y border-border/30">
         <div className="max-w-4xl mx-auto text-center">
           <div
@@ -819,22 +823,22 @@ export function LandingPage({
           </div>
         </div>
       </section>
+      */}
 
-      {/* ── What is a Cloud Engine? ── */}
+      {/* DEMO MODE: Cloud Engine explainer removed for Madelina/Dom demo — restore to show */}
+      {/*
       <section
         className="relative z-10 py-16 px-5 sm:px-8 md:px-12 border-y border-border/30"
         style={{ background: "oklch(0.12 0.014 243 / 0.5)" }}
       >
         <div className="max-w-5xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-            {/* Left column — text */}
             <motion.div
               initial={{ opacity: 0, y: 24 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
             >
-              {/* Badge */}
               <div
                 className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full border text-xs font-mono mb-6"
                 style={{
@@ -846,14 +850,12 @@ export function LandingPage({
                 <Truck className="w-3 h-3" />
                 What is a Cloud Engine?
               </div>
-
               <h2
                 className="font-display font-bold tracking-tight mb-5"
                 style={{ fontSize: "clamp(1.75rem, 4vw, 2.5rem)" }}
               >
                 Your cloud. Fully portable.
               </h2>
-
               <p className="text-sm md:text-base text-[oklch(0.88_0.008_240)] leading-relaxed mb-5">
                 Think of it like owning a food truck instead of a restaurant. A
                 traditional restaurant is fixed in one location — you're stuck
@@ -862,7 +864,6 @@ export function LandingPage({
                 contains everything you need to run your business, and you can
                 take it anywhere.
               </p>
-
               <p
                 className="text-sm leading-relaxed italic"
                 style={{ color: "oklch(0.82 0.22 195)" }}
@@ -871,8 +872,6 @@ export function LandingPage({
                 — from one place, across every major cloud provider.
               </p>
             </motion.div>
-
-            {/* Right column — 2x2 feature cards */}
             <motion.div
               className="grid grid-cols-1 sm:grid-cols-2 gap-4"
               initial="hidden"
@@ -922,13 +921,14 @@ export function LandingPage({
           </div>
         </div>
       </section>
+      */}
 
-      {/* ── Technical Depth: Built on a different kind of cloud ── */}
+      {/* DEMO MODE: Technical Depth section removed for Madelina/Dom demo — restore to show */}
+      {/*
       <section
         className="relative z-10 py-16 px-5 sm:px-8 md:px-12 border-b border-border/30 overflow-hidden"
         style={{ background: "oklch(0.11 0.014 243 / 0.6)" }}
       >
-        {/* Subtle dot-grid overlay */}
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
@@ -937,7 +937,6 @@ export function LandingPage({
             backgroundSize: "28px 28px",
           }}
         />
-        {/* Atmospheric focal glow */}
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
@@ -945,9 +944,7 @@ export function LandingPage({
               "radial-gradient(ellipse 80% 60% at 50% 0%, oklch(0.82 0.22 195 / 0.04) 0%, transparent 70%)",
           }}
         />
-
         <div className="max-w-5xl mx-auto relative">
-          {/* Section header */}
           <motion.div
             className="text-center mb-10"
             initial={{ opacity: 0, y: 18 }}
@@ -978,8 +975,6 @@ export function LandingPage({
               means.
             </p>
           </motion.div>
-
-          {/* 2×2 tech stack cards */}
           <motion.div
             className="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-10"
             initial="hidden"
@@ -1007,15 +1002,12 @@ export function LandingPage({
                   },
                 }}
               >
-                {/* Corner glow on hover */}
                 <div
                   className="absolute -top-10 -right-10 w-28 h-28 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
                   style={{
                     background: `radial-gradient(circle, ${card.color.replace(")", " / 0.15)")} 0%, transparent 70%)`,
                   }}
                 />
-
-                {/* Badge row */}
                 <div className="flex items-center justify-between">
                   <span
                     className="font-mono text-[10px] font-semibold tracking-wider px-2.5 py-1 rounded-md border"
@@ -1040,8 +1032,6 @@ export function LandingPage({
                     />
                   </div>
                 </div>
-
-                {/* Content */}
                 <div>
                   <h3 className="font-display font-semibold text-base mb-2 text-foreground">
                     {card.title}
@@ -1053,8 +1043,6 @@ export function LandingPage({
               </motion.div>
             ))}
           </motion.div>
-
-          {/* Stack trace bar */}
           <motion.div
             className="flex items-center justify-center"
             initial={{ opacity: 0, y: 12 }}
@@ -1099,6 +1087,7 @@ export function LandingPage({
           </motion.div>
         </div>
       </section>
+      */}
 
       {/* ── How it works ── */}
       <section className="relative z-10 py-16 px-5 sm:px-8 md:px-12">
@@ -1215,7 +1204,8 @@ export function LandingPage({
         </div>
       </section>
 
-      {/* ── Security & Trust ── */}
+      {/* DEMO MODE: Security & Trust section removed for Madelina/Dom demo — restore to show */}
+      {/*
       <section className="relative z-10 py-16 px-5 sm:px-8 md:px-12 border-t border-border/30">
         <div className="max-w-5xl mx-auto">
           <motion.div
@@ -1251,7 +1241,6 @@ export function LandingPage({
               works.
             </p>
           </motion.div>
-
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             {[
               {
@@ -1316,6 +1305,7 @@ export function LandingPage({
           </div>
         </div>
       </section>
+      */}
 
       {/* ── Dom Testimonial ── */}
       <section
@@ -1461,7 +1451,8 @@ export function LandingPage({
             </p>
           </motion.div>
 
-          {/* Desktop: horizontal connector line */}
+          {/* DEMO MODE: Roadmap phase cards removed for Madelina/Dom demo — restore to show */}
+          {/*
           <div className="hidden lg:block relative mb-2">
             <div
               className="absolute left-[16.66%] right-[16.66%] top-[2.2rem] h-px"
@@ -1471,8 +1462,6 @@ export function LandingPage({
               }}
             />
           </div>
-
-          {/* Phase cards */}
           <motion.div
             className="grid grid-cols-1 lg:grid-cols-3 gap-5"
             initial="hidden"
@@ -1500,7 +1489,6 @@ export function LandingPage({
                   },
                 }}
               >
-                {/* Top status bar */}
                 <div
                   className="h-0.5 w-full"
                   style={{
@@ -1510,9 +1498,7 @@ export function LandingPage({
                         : `linear-gradient(to right, ${phase.accent.replace(")", " / 0.25)")}, transparent)`,
                   }}
                 />
-
                 <div className="p-6 flex flex-col gap-4 flex-1">
-                  {/* Phase label + status pill */}
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <div
@@ -1555,10 +1541,6 @@ export function LandingPage({
                       {phase.status}
                     </div>
                   </div>
-
-                  {/* Period */}
-
-                  {/* Items */}
                   <ul className="flex flex-col gap-2 mt-1">
                     {phase.items.map((item) => (
                       <li key={item} className="flex items-start gap-2.5">
@@ -1589,6 +1571,7 @@ export function LandingPage({
               </motion.div>
             ))}
           </motion.div>
+          */}
         </div>
       </section>
 
