@@ -22,7 +22,7 @@ import type { ContentSettings, Engine } from "../backend.d.ts";
 import { useActor } from "../hooks/useActor";
 import { useDeleteEngine, useListEngines } from "../hooks/useQueries";
 import { CostAlerts } from "./CostAlerts";
-import { DEMO_TOUR_SEEN_KEY, DemoTour } from "./DemoTour";
+import { DEMO_TOUR_SEEN_KEY } from "./DemoTour";
 import { DistributeModal } from "./DistributeModal";
 import { EngineCard } from "./EngineCard";
 import { LiveCostDashboard } from "./LiveCostDashboard";
@@ -37,6 +37,8 @@ interface DashboardPageProps {
   onNavigateToChat: (engine?: Engine) => void;
   onClearDemo: () => void;
   onEngineCreated?: (engine: Engine) => void;
+  /** Called when the user clicks "Take the Tour" — handled at the app shell level */
+  onTakeTour?: () => void;
 }
 
 function EngineGridSkeleton() {
@@ -147,11 +149,11 @@ export function DashboardPage({
   onNavigateToChat,
   onClearDemo,
   onEngineCreated,
+  onTakeTour,
 }: DashboardPageProps) {
   const [newModalOpen, setNewModalOpen] = useState(false);
   const [distributeOpen, setDistributeOpen] = useState(false);
   const [bannerDismissed, setBannerDismissed] = useState(false);
-  const [demoTourOpen, setDemoTourOpen] = useState(false);
   const { data: engines, isLoading } = useListEngines();
   const { mutate: deleteEngine, isPending: isDeleting } = useDeleteEngine();
   const { actor } = useActor();
@@ -182,10 +184,10 @@ export function DashboardPage({
     );
     if (!hasDemoEngines) return;
     const t = setTimeout(() => {
-      setDemoTourOpen(true);
+      onTakeTour?.();
     }, 1200);
     return () => clearTimeout(t);
-  }, [isDemoMode, engines]);
+  }, [isDemoMode, engines, onTakeTour]);
 
   function handleDelete(id: bigint) {
     deleteEngine(id, {
@@ -258,7 +260,7 @@ export function DashboardPage({
           </span>
           <button
             type="button"
-            onClick={() => setDemoTourOpen(true)}
+            onClick={() => onTakeTour?.()}
             className="flex-shrink-0 text-xs font-semibold px-3 py-1.5 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-400 border border-emerald-500/40 hover:border-emerald-500/60 transition-colors"
             data-ocid="demo_tour.open_modal_button"
           >
@@ -472,8 +474,6 @@ export function DashboardPage({
         engines={engines ?? []}
         isDemoMode={isDemoMode}
       />
-
-      <DemoTour open={demoTourOpen} onClose={() => setDemoTourOpen(false)} />
     </div>
   );
 }

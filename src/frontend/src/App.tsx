@@ -11,6 +11,7 @@ import { BillingPage } from "./components/BillingPage";
 import { ChatPage } from "./components/ChatPage";
 import { SNORKEL_ENGINES_KEY } from "./components/ChatPanel";
 import { DashboardPage } from "./components/DashboardPage";
+import { DemoTour } from "./components/DemoTour";
 import { EnginesPage } from "./components/EnginesPage";
 import { LandingPage } from "./components/LandingPage";
 import { LoginPage } from "./components/LoginPage";
@@ -171,6 +172,7 @@ function AppShell() {
   const [chatEngine, setChatEngine] = useState<Engine | undefined>(undefined);
   const [pricingOpen, setPricingOpen] = useState(false);
   const [tourOpen, setTourOpen] = useState(false);
+  const [demoTourOpen, setDemoTourOpen] = useState(false);
   const [showLanding, setShowLanding] = useState(true);
   const [showTerms, setShowTerms] = useState(false);
 
@@ -452,6 +454,7 @@ function AppShell() {
               onNavigateToChat={handleNavigateToChat}
               onClearDemo={handleClearDemo}
               onEngineCreated={handleEngineCreated}
+              onTakeTour={() => setDemoTourOpen(true)}
             />
           )}
           {activePage === "engines" && (
@@ -516,6 +519,14 @@ function AppShell() {
 
       {/* First-login onboarding tour */}
       <OnboardingTour open={tourOpen} onClose={() => setTourOpen(false)} />
+
+      {/* Demo tour — hosted at shell level so it can navigate across pages */}
+      <DemoTour
+        open={demoTourOpen}
+        onClose={() => setDemoTourOpen(false)}
+        onNavigate={(page) => setActivePage(page as Page)}
+        activePage={activePage}
+      />
 
       {/* In-app upgrade pricing modal — used by Billing page and ChatPage */}
       <PricingModal

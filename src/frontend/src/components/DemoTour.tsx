@@ -1,78 +1,138 @@
 import { AnimatePresence, motion } from "motion/react";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 export const DEMO_TOUR_SEEN_KEY = "lockfree_demo_tour_seen";
 
+// ── Amber accent (replaces cyan) ─────────────────────────────────────────────
+const AMBER = {
+  ring: "rgba(245, 158, 11, 0.85)",
+  glow: "rgba(245, 158, 11, 0.45)",
+  ringDim: "rgba(245, 158, 11, 0.35)",
+  text: "rgba(245, 158, 11, 0.75)",
+  btn: "rgba(245, 158, 11, 0.9)",
+  btnHover: "rgba(245, 158, 11, 1)",
+  progress: "rgba(245, 158, 11, 0.9)",
+  progressBg: "rgba(245, 158, 11, 0.15)",
+  border: "rgba(245, 158, 11, 0.35)",
+  shadow: "rgba(245, 158, 11, 0.12)",
+  dot: "rgba(245, 158, 11, 0.9)",
+  dotDim: "rgba(245, 158, 11, 0.35)",
+};
+
+// ── Types ─────────────────────────────────────────────────────────────────────
+
+/** Which app page this step lives on. Matches AppShell's Page type. */
+type AppPage =
+  | "dashboard"
+  | "chat"
+  | "billing"
+  | "engines"
+  | "referrals"
+  | "partners"
+  | "settings"
+  | "userguide"
+  | "technotes"
+  | "admin";
+
 interface TourStep {
+  /** data-tour-id attribute of the target element */
   targetId: string | null;
   title: string;
   description: string;
+  /** Which page this element lives on. Defaults to "dashboard" */
+  page?: AppPage;
+  /**
+   * Optional selector to click BEFORE looking for targetId.
+   * Use to open a modal/panel that contains the target element.
+   */
+  triggerSelector?: string;
 }
+
+interface DemoTourProps {
+  open: boolean;
+  onClose: () => void;
+  /** Called when the tour needs to navigate to a different page */
+  onNavigate?: (page: AppPage) => void;
+  /** Current active page in the app shell */
+  activePage?: string;
+}
+
+// ── Step definitions ──────────────────────────────────────────────────────────
 
 const TOUR_STEPS: TourStep[] = [
   {
     targetId: "summary-cards",
+    page: "dashboard",
     title: "Your Live Metrics",
     description:
       "These cards show your total engines, monthly cost, average resilience score, and migrations completed. In demo mode the figures update live every few seconds — click the info icon on any card for more detail.",
   },
   {
     targetId: "new-engine-btn",
+    page: "dashboard",
     title: "Provision a New Engine",
     description:
       "Click here to provision a new cloud engine in seconds. Choose your provider, CPU, RAM, and storage — then watch the multi-stage deployment animation.",
   },
   {
     targetId: "engine-card-0",
+    page: "dashboard",
     title: "Your Cloud Engines",
     description:
       "Each engine runs on ICP and can migrate to any cloud provider instantly. Try the Stop/Start, Restart, and Scale buttons on a card — each runs a live progress animation and updates the engine status.",
   },
   {
     targetId: "ai-deploy-btn-0",
+    page: "dashboard",
     title: "AI-Powered Deployment",
     description:
       "Describe any application in plain English. The AI builds and deploys it as an ICP canister directly to this engine — live in seconds.",
   },
   {
     targetId: "chat-scanner-tab",
+    page: "chat",
     title: "Legacy App Scanner",
     description:
       "Switch to the Legacy App Scanner tab, paste your tech stack — Kubernetes, Node.js, PostgreSQL, or NeoCloud's own stack — and get a full component mapping plus a sovereign EU migration plan powered by Snorkel.",
   },
   {
     targetId: "snorkel-migration-progress",
+    page: "chat",
     title: "Snorkel Migration in Action",
     description:
       "After scanning, click 'Start Migration with Snorkel' to watch the animated 6-step migration: parsing your stack, mapping to ICP architecture, provisioning the NeoCloud EU subnet, deploying canisters, migrating persistent state, and a final health check.",
   },
   {
     targetId: "live-cost-dashboard",
+    page: "dashboard",
     title: "Live Cost Dashboard",
     description:
       "Your spending updates automatically every few seconds in demo mode. Hit the sparkles button to get AI-powered cost optimisation recommendations — apply them individually or all at once.",
   },
   {
     targetId: "notification-bell",
+    page: "dashboard",
     title: "Live Notifications",
     description:
       "In demo mode, realistic alerts arrive automatically every 30–60 seconds — cost spikes, scaling events, migration completions. The badge updates in real time as new notifications land.",
   },
   {
     targetId: "sidebar-billing",
+    page: "billing",
     title: "Plan Upgrade & Billing",
     description:
       "Click Billing in the sidebar to simulate upgrading your plan. Choose a tier, go through the mock payment flow, and watch your plan update instantly — no real card needed.",
   },
   {
     targetId: "exit-demo-btn",
+    page: "dashboard",
     title: "Ready for the Real Thing?",
     description:
       "When you're done exploring, sign in with Internet Identity to provision real engines, set up billing, and take full control of your cloud infrastructure.",
   },
 ];
 
-// ── Highlight helpers (no scroll-lock, no overlay, no rAF) ───────────────────
+// ── Highlight helpers ─────────────────────────────────────────────────────────
 
 function removeHighlights() {
   for (const el of document.querySelectorAll("[data-tour-highlighted]")) {
@@ -84,69 +144,214 @@ function removeHighlights() {
   }
 }
 
-function highlightElement(targetId: string | null) {
-  removeHighlights();
-  if (!targetId) return;
-
-  // Try the exact ID first, then fall back to engine-card-0 for ai-deploy-btn-0
+function findTarget(targetId: string): HTMLElement | null {
   let el = document.querySelector<HTMLElement>(`[data-tour-id="${targetId}"]`);
+  // Fallback: ai-deploy-btn-0 may not be visible, use the engine card instead
   if (!el && targetId === "ai-deploy-btn-0") {
     el = document.querySelector<HTMLElement>('[data-tour-id="engine-card-0"]');
   }
-  if (!el) return;
+  return el;
+}
 
+function highlightElement(el: HTMLElement) {
+  removeHighlights();
   el.setAttribute("data-tour-highlighted", "true");
-  el.style.boxShadow =
-    "0 0 0 3px rgba(6, 182, 212, 0.85), 0 0 24px rgba(6, 182, 212, 0.5)";
+  el.style.boxShadow = `0 0 0 3px ${AMBER.ring}, 0 0 24px ${AMBER.glow}`;
   el.style.zIndex = "10";
   el.style.position = "relative";
+}
 
-  // Scroll the highlighted element into view, centered, with room for the bottom panel
-  el.scrollIntoView({ behavior: "smooth", block: "center", inline: "nearest" });
+// ── Tooltip position calculator ───────────────────────────────────────────────
+
+interface TooltipPos {
+  top: number;
+  left: number;
+  width: number;
+  placement: "below" | "above";
+}
+
+const TOOLTIP_WIDTH = 340;
+const TOOLTIP_GAP = 14;
+const VIEWPORT_MARGIN = 16;
+
+function calcTooltipPos(el: HTMLElement): TooltipPos {
+  const rect = el.getBoundingClientRect();
+  const vpW = window.innerWidth;
+  const vpH = window.innerHeight;
+  // Approximate tooltip height for flip calculation
+  const approxHeight = 160;
+
+  // Decide vertical placement
+  const spaceBelow = vpH - rect.bottom;
+  const spaceAbove = rect.top;
+  let top: number;
+  let placement: "below" | "above";
+
+  if (spaceBelow >= approxHeight + TOOLTIP_GAP || spaceBelow >= spaceAbove) {
+    top = rect.bottom + TOOLTIP_GAP;
+    placement = "below";
+  } else {
+    top = rect.top - approxHeight - TOOLTIP_GAP;
+    placement = "above";
+  }
+
+  // Clamp top so tooltip stays within viewport
+  top = Math.max(
+    VIEWPORT_MARGIN,
+    Math.min(top, vpH - approxHeight - VIEWPORT_MARGIN),
+  );
+
+  // Horizontal: centre on the element, then clamp within viewport
+  const effectiveWidth = Math.min(TOOLTIP_WIDTH, vpW - VIEWPORT_MARGIN * 2);
+  let left = rect.left + rect.width / 2 - effectiveWidth / 2;
+  left = Math.max(
+    VIEWPORT_MARGIN,
+    Math.min(left, vpW - effectiveWidth - VIEWPORT_MARGIN),
+  );
+
+  return { top, left, width: effectiveWidth, placement };
 }
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
-interface DemoTourProps {
-  open: boolean;
-  onClose: () => void;
-}
-
-export function DemoTour({ open, onClose }: DemoTourProps) {
+export function DemoTour({
+  open,
+  onClose,
+  onNavigate,
+  activePage,
+}: DemoTourProps) {
   const [currentStep, setCurrentStep] = useState(0);
-  const highlightTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [tooltipPos, setTooltipPos] = useState<TooltipPos | null>(null);
+  const [isNavigating, setIsNavigating] = useState(false);
 
   const step = TOUR_STEPS[currentStep];
   const isLast = currentStep === TOUR_STEPS.length - 1;
   const progressPct = ((currentStep + 1) / TOUR_STEPS.length) * 100;
 
-  // Apply highlight whenever step changes or tour opens
+  const highlightTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const rafRef = useRef<number | null>(null);
+
+  // ── Position updater — re-runs on scroll/resize ──────────────────────────
+  const updatePosition = useCallback(() => {
+    if (!step.targetId) return;
+    const el = findTarget(step.targetId);
+    if (!el) return;
+    setTooltipPos(calcTooltipPos(el));
+  }, [step.targetId]);
+
+  // ── Core: navigate → trigger → highlight → position ─────────────────────
+  const activateStep = useCallback(
+    (stepIndex: number) => {
+      const s = TOUR_STEPS[stepIndex];
+      if (!s) return;
+
+      const targetPage = s.page ?? "dashboard";
+      const currentPage = (activePage ?? "dashboard") as AppPage;
+      const needsNav = targetPage !== currentPage;
+
+      function doHighlight() {
+        if (!s.targetId) {
+          setTooltipPos(null);
+          return;
+        }
+
+        // Optional trigger (click a button to open a modal/panel)
+        if (s.triggerSelector) {
+          const trigger = document.querySelector<HTMLElement>(
+            s.triggerSelector,
+          );
+          if (trigger) trigger.click();
+        }
+
+        // Wait for DOM to settle after trigger, then highlight
+        const settle = s.triggerSelector ? 350 : 0;
+        highlightTimer.current = setTimeout(() => {
+          const el = findTarget(s.targetId!);
+          if (!el) {
+            // Element not found — skip gracefully
+            console.warn(
+              `[DemoTour] Element not found: ${s.targetId}, skipping`,
+            );
+            setTooltipPos(null);
+            return;
+          }
+          highlightElement(el);
+          // Scroll element into view (center, with room for the tooltip)
+          el.scrollIntoView({
+            behavior: "smooth",
+            block: "center",
+            inline: "nearest",
+          });
+
+          // After scroll settles, compute tooltip position
+          const posTimer = setTimeout(() => {
+            rafRef.current = requestAnimationFrame(() => {
+              setTooltipPos(calcTooltipPos(el));
+            });
+          }, 350);
+          highlightTimer.current = posTimer;
+        }, settle);
+      }
+
+      if (needsNav && onNavigate) {
+        setIsNavigating(true);
+        onNavigate(targetPage);
+        // Wait for React to re-render the new page, then highlight
+        highlightTimer.current = setTimeout(() => {
+          setIsNavigating(false);
+          doHighlight();
+        }, 400);
+      } else {
+        doHighlight();
+      }
+    },
+    [activePage, onNavigate],
+  );
+
+  // ── Re-run when step or open changes ────────────────────────────────────
   useEffect(() => {
     if (!open) {
       removeHighlights();
+      setTooltipPos(null);
       return;
     }
     if (highlightTimer.current) clearTimeout(highlightTimer.current);
-    // Small delay: let React render the new step text before scrolling
-    highlightTimer.current = setTimeout(() => {
-      highlightElement(TOUR_STEPS[currentStep].targetId);
-    }, 150);
-    return () => {
-      if (highlightTimer.current) clearTimeout(highlightTimer.current);
-    };
-  }, [open, currentStep]);
+    if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    activateStep(currentStep);
+  }, [open, currentStep, activateStep]);
 
-  // Full cleanup on unmount
+  // ── Update tooltip on scroll/resize ────────────────────────────────────
+  useEffect(() => {
+    if (!open || !step.targetId) return;
+    const handler = () => updatePosition();
+    window.addEventListener("scroll", handler, { passive: true });
+    window.addEventListener("resize", handler, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", handler);
+      window.removeEventListener("resize", handler);
+    };
+  }, [open, step.targetId, updatePosition]);
+
+  // ── Full cleanup on unmount ──────────────────────────────────────────────
   useEffect(() => {
     return () => {
       removeHighlights();
       if (highlightTimer.current) clearTimeout(highlightTimer.current);
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
   }, []);
 
+  // Reset to step 0 each time the tour opens
+  useEffect(() => {
+    if (open) setCurrentStep(0);
+  }, [open]);
+
+  // ── Handlers ─────────────────────────────────────────────────────────────
   function handleClose() {
     removeHighlights();
     if (highlightTimer.current) clearTimeout(highlightTimer.current);
+    if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    setTooltipPos(null);
     onClose();
   }
 
@@ -164,65 +369,99 @@ export function DemoTour({ open, onClose }: DemoTourProps) {
     }
   }
 
-  // Reset to step 0 each time the tour opens
-  useEffect(() => {
-    if (open) setCurrentStep(0);
-  }, [open]);
+  // ── Render ────────────────────────────────────────────────────────────────
+
+  if (!open) return null;
 
   return (
     <AnimatePresence>
       {open && (
         <motion.div
-          key="demo-tour-panel"
-          initial={{ y: 80, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          exit={{ y: 80, opacity: 0 }}
-          transition={{ type: "spring", stiffness: 340, damping: 32 }}
-          // Fixed to the bottom of the viewport — never affected by page scroll
+          key={`demo-tour-tooltip-${currentStep}`}
+          initial={{ opacity: 0, y: 6, scale: 0.97 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: 4, scale: 0.97 }}
+          transition={{ type: "spring", stiffness: 380, damping: 30 }}
           style={{
             position: "fixed",
-            bottom: 0,
-            left: 0,
-            right: 0,
             zIndex: 9999,
-            // Narrow and centered on desktop
-            display: "flex",
-            justifyContent: "center",
-            pointerEvents: "none",
+            pointerEvents: "auto",
+            // Positioning: use calc'd position if available, else centre-bottom fallback
+            ...(tooltipPos
+              ? {
+                  top: tooltipPos.top,
+                  left: tooltipPos.left,
+                  width: tooltipPos.width,
+                }
+              : {
+                  bottom: isNavigating ? "50%" : 80,
+                  left: "50%",
+                  transform: "translateX(-50%)",
+                  width: Math.min(
+                    TOOLTIP_WIDTH,
+                    window.innerWidth - VIEWPORT_MARGIN * 2,
+                  ),
+                }),
           }}
         >
+          {/* Arrow pointing to element */}
+          {tooltipPos && tooltipPos.placement === "below" && (
+            <div
+              style={{
+                position: "absolute",
+                top: -6,
+                left: "50%",
+                transform: "translateX(-50%)",
+                width: 0,
+                height: 0,
+                borderLeft: "7px solid transparent",
+                borderRight: "7px solid transparent",
+                borderBottom: `7px solid ${AMBER.border}`,
+              }}
+            />
+          )}
+          {tooltipPos && tooltipPos.placement === "above" && (
+            <div
+              style={{
+                position: "absolute",
+                bottom: -6,
+                left: "50%",
+                transform: "translateX(-50%)",
+                width: 0,
+                height: 0,
+                borderLeft: "7px solid transparent",
+                borderRight: "7px solid transparent",
+                borderTop: `7px solid ${AMBER.border}`,
+              }}
+            />
+          )}
+
+          {/* Card */}
           <div
             style={{
-              width: "100%",
-              maxWidth: 640,
-              margin: "0 auto 0",
-              pointerEvents: "auto",
               background: "rgba(9, 13, 27, 0.97)",
               backdropFilter: "blur(16px)",
               WebkitBackdropFilter: "blur(16px)",
-              borderTop: "1px solid rgba(6, 182, 212, 0.35)",
-              borderLeft: "1px solid rgba(6, 182, 212, 0.15)",
-              borderRight: "1px solid rgba(6, 182, 212, 0.15)",
-              borderRadius: "12px 12px 0 0",
-              boxShadow:
-                "0 -4px 32px rgba(6, 182, 212, 0.12), 0 -1px 0 rgba(6, 182, 212, 0.2)",
-              padding: "16px 20px 20px",
+              border: `1px solid ${AMBER.border}`,
+              borderRadius: 12,
+              boxShadow: `0 8px 32px ${AMBER.shadow}, 0 2px 8px rgba(0,0,0,0.4)`,
+              padding: "14px 16px 16px",
             }}
           >
             {/* Progress bar */}
             <div
               style={{
                 height: 2,
-                background: "rgba(6, 182, 212, 0.15)",
+                background: AMBER.progressBg,
                 borderRadius: 2,
-                marginBottom: 14,
+                marginBottom: 12,
                 overflow: "hidden",
               }}
             >
               <motion.div
                 style={{
                   height: "100%",
-                  background: "rgba(6, 182, 212, 0.9)",
+                  background: AMBER.progress,
                   borderRadius: 2,
                 }}
                 initial={false}
@@ -238,39 +477,38 @@ export function DemoTour({ open, onClose }: DemoTourProps) {
                 fontWeight: 600,
                 letterSpacing: "0.1em",
                 textTransform: "uppercase",
-                color: "rgba(6, 182, 212, 0.65)",
+                color: AMBER.text,
                 marginBottom: 6,
                 fontFamily: "var(--font-mono, monospace)",
               }}
             >
               Step {currentStep + 1} of {TOUR_STEPS.length}
+              {isNavigating && (
+                <span style={{ marginLeft: 8, opacity: 0.65 }}>
+                  navigating…
+                </span>
+              )}
             </div>
 
             {/* Content row */}
-            <div
-              style={{
-                display: "flex",
-                alignItems: "flex-start",
-                gap: 16,
-              }}
-            >
+            <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
               {/* Text block */}
               <div style={{ flex: 1, minWidth: 0 }}>
                 <AnimatePresence mode="wait">
                   <motion.div
                     key={`step-content-${currentStep}`}
-                    initial={{ opacity: 0, x: 8 }}
+                    initial={{ opacity: 0, x: 6 }}
                     animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -8 }}
-                    transition={{ duration: 0.18, ease: "easeOut" }}
+                    exit={{ opacity: 0, x: -6 }}
+                    transition={{ duration: 0.16, ease: "easeOut" }}
                   >
                     <div
                       style={{
-                        fontSize: 15,
+                        fontSize: 14,
                         fontWeight: 600,
                         color: "#ffffff",
-                        lineHeight: 1.35,
-                        marginBottom: 4,
+                        lineHeight: 1.3,
+                        marginBottom: 5,
                         fontFamily: "var(--font-display, sans-serif)",
                       }}
                     >
@@ -278,9 +516,9 @@ export function DemoTour({ open, onClose }: DemoTourProps) {
                     </div>
                     <div
                       style={{
-                        fontSize: 13,
+                        fontSize: 12,
                         color: "rgba(203, 213, 225, 0.85)",
-                        lineHeight: 1.5,
+                        lineHeight: 1.55,
                       }}
                     >
                       {step.description}
@@ -289,7 +527,7 @@ export function DemoTour({ open, onClose }: DemoTourProps) {
                 </AnimatePresence>
               </div>
 
-              {/* Buttons — always visible, no scroll needed */}
+              {/* Buttons */}
               <div
                 style={{
                   display: "flex",
@@ -304,25 +542,25 @@ export function DemoTour({ open, onClose }: DemoTourProps) {
                   onClick={handleNext}
                   data-ocid="demo_tour.next_button"
                   style={{
-                    background: "rgba(6, 182, 212, 0.9)",
-                    color: "#ffffff",
+                    background: AMBER.btn,
+                    color: "#000000",
                     border: "none",
                     borderRadius: 8,
-                    padding: "8px 18px",
-                    fontSize: 13,
-                    fontWeight: 600,
+                    padding: "8px 16px",
+                    fontSize: 12,
+                    fontWeight: 700,
                     cursor: "pointer",
                     whiteSpace: "nowrap",
-                    boxShadow: "0 0 12px rgba(6, 182, 212, 0.35)",
+                    boxShadow: `0 0 12px ${AMBER.glow}`,
                     transition: "background 0.15s ease",
                   }}
                   onMouseEnter={(e) => {
                     (e.currentTarget as HTMLButtonElement).style.background =
-                      "rgba(6, 182, 212, 1)";
+                      AMBER.btnHover;
                   }}
                   onMouseLeave={(e) => {
                     (e.currentTarget as HTMLButtonElement).style.background =
-                      "rgba(6, 182, 212, 0.9)";
+                      AMBER.btn;
                   }}
                 >
                   {isLast ? "Finish" : "Next →"}
@@ -336,8 +574,8 @@ export function DemoTour({ open, onClose }: DemoTourProps) {
                     background: "transparent",
                     color: "rgba(148, 163, 184, 0.7)",
                     border: "none",
-                    padding: "4px 6px",
-                    fontSize: 12,
+                    padding: "3px 4px",
+                    fontSize: 11,
                     cursor: "pointer",
                     whiteSpace: "nowrap",
                     transition: "color 0.15s ease",
@@ -360,9 +598,9 @@ export function DemoTour({ open, onClose }: DemoTourProps) {
             <div
               style={{
                 display: "flex",
-                gap: 5,
+                gap: 4,
                 justifyContent: "center",
-                marginTop: 14,
+                marginTop: 12,
               }}
             >
               {TOUR_STEPS.map((_, i) => (
@@ -372,14 +610,14 @@ export function DemoTour({ open, onClose }: DemoTourProps) {
                     i
                   }`}
                   style={{
-                    width: i === currentStep ? 16 : 6,
-                    height: 6,
+                    width: i === currentStep ? 14 : 5,
+                    height: 5,
                     borderRadius: 3,
                     background:
                       i === currentStep
-                        ? "rgba(6, 182, 212, 0.9)"
+                        ? AMBER.dot
                         : i < currentStep
-                          ? "rgba(6, 182, 212, 0.35)"
+                          ? AMBER.dotDim
                           : "rgba(71, 85, 105, 0.5)",
                     transition: "all 0.25s ease",
                   }}
