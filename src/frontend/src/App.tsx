@@ -75,29 +75,17 @@ const DEMO_ENGINES: Engine[] = [
   },
   {
     id: 3n,
-    name: "Demo — Storage Cluster (Azure)",
+    name: "Demo — Data Warehouse (Azure)",
     provider: "Azure",
     status: "running",
-    cpu: 2n,
-    ram: 8n,
-    storage: 1000n,
-    costPerHour: 0.08,
-    resilienceScore: 61n,
+    cpu: 8n,
+    ram: 32n,
+    storage: 800n,
+    // ~$580/month ÷ 730 hours
+    costPerHour: 0.79,
+    resilienceScore: 87n,
     ownerId: ANON_PRINCIPAL,
-    createdAt: NOW_NS - 86_400_000_000_000n * 3n,
-  },
-  {
-    id: 4n,
-    name: "Demo — Dev/Staging (AWS)",
-    provider: "AWS",
-    status: "provisioning",
-    cpu: 2n,
-    ram: 4n,
-    storage: 50n,
-    costPerHour: 0.05,
-    resilienceScore: 40n,
-    ownerId: ANON_PRINCIPAL,
-    createdAt: NOW_NS - 86_400_000_000_000n * 1n,
+    createdAt: NOW_NS - 86_400_000_000_000n * 5n,
   },
 ];
 
@@ -199,20 +187,36 @@ function AppShell() {
     }
   }, [demoEngines, queryClient]);
 
-  // On mount: merge any previously Snorkel-migrated engines back into the cache
+  // On mount: if demo mode is on, seed the 3 base engines first, then merge
+  // any Snorkel-migrated engines additively on top — never replacing the base set.
   // biome-ignore lint/correctness/useExhaustiveDependencies: run once on mount, queryClient is stable
   useEffect(() => {
-    const snorkelEngines = loadSnorkelEngines();
-    if (snorkelEngines.length > 0) {
-      queryClient.setQueryData<Engine[]>(queryKeys.engines, (prev) => {
-        const existing = prev ?? [];
-        // Avoid duplicates by id
-        const existingIds = new Set(existing.map((e) => e.id.toString()));
-        const newOnes = snorkelEngines.filter(
-          (e) => !existingIds.has(e.id.toString()),
-        );
-        return newOnes.length > 0 ? [...existing, ...newOnes] : existing;
-      });
+    const demoEnabled = localStorage.getItem(DEMO_PREF_KEY) !== "false";
+    if (demoEnabled) {
+      // Always start from the canonical 3-engine base
+      const base = DEMO_ENGINES;
+      const snorkelEngines = loadSnorkelEngines();
+      // Merge Snorkel engines that don't conflict with base IDs
+      const baseIds = new Set(base.map((e) => e.id.toString()));
+      const extras = snorkelEngines.filter(
+        (e) => !baseIds.has(e.id.toString()),
+      );
+      const merged = extras.length > 0 ? [...base, ...extras] : base;
+      queryClient.setQueryData(queryKeys.engines, merged);
+      setDemoEngines(merged);
+    } else {
+      // Not in demo mode — still load any Snorkel engines from a previous session
+      const snorkelEngines = loadSnorkelEngines();
+      if (snorkelEngines.length > 0) {
+        queryClient.setQueryData<Engine[]>(queryKeys.engines, (prev) => {
+          const existing = prev ?? [];
+          const existingIds = new Set(existing.map((e) => e.id.toString()));
+          const newOnes = snorkelEngines.filter(
+            (e) => !existingIds.has(e.id.toString()),
+          );
+          return newOnes.length > 0 ? [...existing, ...newOnes] : existing;
+        });
+      }
     }
   }, []); // run once on mount
 
@@ -271,6 +275,9 @@ function AppShell() {
 
   async function handleLoadDemo() {
     localStorage.setItem(DEMO_PREF_KEY, "true");
+    // Clear any previously persisted Snorkel engines so they don't duplicate
+    // or replace the 3 base demo engines when demo mode is freshly activated.
+    localStorage.removeItem(SNORKEL_ENGINES_KEY);
     if (!identity) {
       // Set cache immediately and synchronously — don't rely on the useEffect chain
       queryClient.setQueryData(queryKeys.engines, DEMO_ENGINES);
@@ -294,6 +301,7 @@ function AppShell() {
 
   function handleClearDemo() {
     localStorage.setItem(DEMO_PREF_KEY, "false");
+    localStorage.removeItem(SNORKEL_ENGINES_KEY);
     queryClient.setQueryData(queryKeys.engines, []);
     setDemoEngines([]);
     setIsDemoMode(false);
