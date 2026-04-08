@@ -11,7 +11,6 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Select,
   SelectContent,
@@ -20,14 +19,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import {
   Tooltip,
   TooltipContent,
@@ -55,11 +46,13 @@ import {
   useGetFlaggedAffiliates,
 } from "../../hooks/useReferralQueries";
 
-const TIER_COLORS: Record<string, string> = {
-  free: "bg-muted text-muted-foreground",
-  pro: "bg-blue-500/20 text-blue-400 border-blue-500/30",
-  business: "bg-purple-500/20 text-purple-400 border-purple-500/30",
-  enterprise: "bg-amber-500/20 text-amber-400 border-amber-500/30",
+const TIER_BADGE: Record<string, string> = {
+  free: "bg-muted/60 text-muted-foreground border-border/60",
+  pro: "bg-[oklch(0.72_0.19_145/0.12)] text-[oklch(0.82_0.19_145)] border-[oklch(0.72_0.19_145/0.3)]",
+  business:
+    "bg-[oklch(0.68_0.22_260/0.12)] text-[oklch(0.78_0.22_260)] border-[oklch(0.68_0.22_260/0.3)]",
+  enterprise:
+    "bg-[oklch(0.75_0.18_60/0.12)] text-[oklch(0.85_0.18_60)] border-[oklch(0.75_0.18_60/0.3)]",
 };
 
 function truncatePrincipal(p: string): string {
@@ -89,7 +82,7 @@ function CopyPrincipalButton({ principalId }: { principalId: string }) {
             data-ocid="admin.users.copy_button"
           >
             {copied ? (
-              <ClipboardCheck className="w-3.5 h-3.5 text-emerald-400" />
+              <ClipboardCheck className="w-3.5 h-3.5 text-[oklch(0.72_0.19_145)]" />
             ) : (
               <ClipboardCopy className="w-3.5 h-3.5" />
             )}
@@ -128,215 +121,211 @@ export function AdminUsersTab() {
   }
 
   return (
-    <Card className="bg-card border-border">
-      <CardHeader className="pb-3">
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-base font-semibold flex items-center gap-2">
-            <Users className="w-4 h-4 text-primary" />
+    <div className="rounded-2xl backdrop-blur-md bg-card/60 border border-white/8 overflow-hidden">
+      {/* Header */}
+      <div className="px-5 py-4 border-b border-white/6 bg-background/30 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Users className="w-4 h-4 text-primary" />
+          <h3 className="font-display text-sm font-semibold text-foreground">
             Registered Users
-          </CardTitle>
-          {users && users.length > 0 && (
-            <Badge variant="secondary" className="text-xs">
-              {users.length} users
-            </Badge>
-          )}
+          </h3>
         </div>
-      </CardHeader>
-      <CardContent>
-        {isLoading ? (
-          <div className="space-y-2" data-ocid="admin.users.loading_state">
-            {[1, 2, 3].map((i) => (
-              <Skeleton key={i} className="h-12 w-full" />
-            ))}
-          </div>
-        ) : !users || users.length === 0 ? (
-          <div
-            data-ocid="admin.users.empty_state"
-            className="flex flex-col items-center justify-center py-12 text-center"
-          >
-            <Users className="w-10 h-10 text-muted-foreground/40 mb-3" />
-            <p className="text-sm font-medium text-muted-foreground">
-              No registered users yet
-            </p>
-            <p className="text-xs text-muted-foreground/70 mt-1">
-              Users who sign in will appear here.
-            </p>
-          </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <Table data-ocid="admin.users.table">
-              <TableHeader>
-                <TableRow className="border-border hover:bg-transparent">
-                  <TableHead className="text-xs text-muted-foreground font-medium w-12">
-                    #
-                  </TableHead>
-                  <TableHead className="text-xs text-muted-foreground font-medium">
-                    Principal ID
-                  </TableHead>
-                  <TableHead className="text-xs text-muted-foreground font-medium">
-                    Current Tier
-                  </TableHead>
-                  <TableHead className="text-xs text-muted-foreground font-medium w-44">
-                    Change Tier
-                  </TableHead>
-                  <TableHead className="text-xs text-muted-foreground font-medium w-24">
-                    Export
-                  </TableHead>
-                  <TableHead className="text-xs text-muted-foreground font-medium w-24">
-                    Delete
-                  </TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {users.map((user, idx) => {
-                  const pid = user.principalId.toString();
-                  const tierClass = TIER_COLORS[user.tier] ?? TIER_COLORS.free;
-                  return (
-                    <TableRow
-                      key={pid}
-                      data-ocid={`admin.users.row.${idx + 1}`}
-                      className="border-border hover:bg-muted/30 transition-colors"
-                    >
-                      <TableCell className="text-xs text-muted-foreground font-mono">
-                        {idx + 1}
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex flex-col gap-0.5">
-                          <span className="text-[10px] text-muted-foreground/60 uppercase tracking-wide leading-none">
-                            Principal ID
-                          </span>
-                          <div className="flex items-center">
-                            <span className="font-mono text-xs text-foreground">
-                              {truncatePrincipal(pid)}
-                            </span>
-                            <CopyPrincipalButton principalId={pid} />
-                          </div>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <Badge
-                          variant="outline"
-                          className={`text-xs capitalize border ${tierClass}`}
-                        >
-                          {user.tier}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <Select
-                          defaultValue={user.tier}
-                          onValueChange={(val) => handleTierChange(pid, val)}
-                          disabled={isPending}
-                        >
-                          <SelectTrigger
-                            data-ocid={`admin.users.tier.select.${idx + 1}`}
-                            className="h-7 text-xs bg-muted border-border w-36"
-                          >
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent className="bg-popover border-border">
-                            <SelectItem value="free" className="text-xs">
-                              Free
-                            </SelectItem>
-                            <SelectItem value="pro" className="text-xs">
-                              Pro
-                            </SelectItem>
-                            <SelectItem value="business" className="text-xs">
-                              Business
-                            </SelectItem>
-                            <SelectItem value="enterprise" className="text-xs">
-                              Enterprise
-                            </SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </TableCell>
-                      <TableCell>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="h-7 text-xs gap-1 text-muted-foreground hover:text-foreground"
-                          onClick={() => {
-                            const exportData = {
-                              principalId: pid,
-                              tier: user.tier,
-                              exportedAt: new Date().toISOString(),
-                              engines: [],
-                              migrations: [],
-                              billingData: {
-                                currentTier: user.tier,
-                                invoices: [],
-                              },
-                              preferences: {},
-                            };
-                            const blob = new Blob(
-                              [JSON.stringify(exportData, null, 2)],
-                              { type: "application/json" },
-                            );
-                            const url = URL.createObjectURL(blob);
-                            const a = document.createElement("a");
-                            a.href = url;
-                            a.download = `lockfreeengine-user-${pid.slice(0, 8)}.json`;
-                            a.click();
-                            URL.revokeObjectURL(url);
-                            toast.success("User data exported");
-                          }}
-                        >
-                          <Download className="w-3 h-3" />
-                          Export
-                        </Button>
-                      </TableCell>
-                      <TableCell>
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-7 text-xs gap-1 text-destructive/70 hover:text-destructive hover:bg-destructive/10"
-                              disabled={isDeleting}
-                              data-ocid={`admin.users.delete_button.${idx + 1}`}
-                            >
-                              <Trash2 className="w-3 h-3" />
-                              Delete
-                            </Button>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent className="bg-card border-border">
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>
-                                Delete user data permanently?
-                              </AlertDialogTitle>
-                              <AlertDialogDescription className="text-muted-foreground">
-                                This will permanently delete all data for
-                                principal{" "}
-                                <span className="font-mono text-foreground">
-                                  {truncatePrincipal(pid)}
-                                </span>
-                                , including their engines, migration history,
-                                billing records, and profile. This action cannot
-                                be undone.
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel className="border-border">
-                                Cancel
-                              </AlertDialogCancel>
-                              <AlertDialogAction
-                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                                onClick={() => handleDeleteUser(pid)}
-                              >
-                                Delete permanently
-                              </AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
-          </div>
+        {users && users.length > 0 && (
+          <Badge className="bg-primary/10 text-primary border border-primary/20 text-xs">
+            {users.length} users
+          </Badge>
         )}
-      </CardContent>
-    </Card>
+      </div>
+
+      {/* Content */}
+      {isLoading ? (
+        <div className="p-5 space-y-2.5" data-ocid="admin.users.loading_state">
+          {[1, 2, 3].map((i) => (
+            <Skeleton key={i} className="h-12 w-full rounded-lg" />
+          ))}
+        </div>
+      ) : !users || users.length === 0 ? (
+        <div
+          data-ocid="admin.users.empty_state"
+          className="flex flex-col items-center justify-center py-14 text-center"
+        >
+          <Users className="w-10 h-10 text-muted-foreground/30 mb-3" />
+          <p className="text-sm font-medium text-muted-foreground">
+            No registered users yet
+          </p>
+          <p className="text-xs text-muted-foreground/60 mt-1">
+            Users who sign in will appear here.
+          </p>
+        </div>
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="w-full" data-ocid="admin.users.table">
+            <thead>
+              <tr className="border-b border-white/6 bg-background/40">
+                <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground/70 w-10">
+                  #
+                </th>
+                <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground/70">
+                  Principal ID
+                </th>
+                <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground/70">
+                  Tier
+                </th>
+                <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground/70 w-44">
+                  Change Tier
+                </th>
+                <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground/70 w-24">
+                  Export
+                </th>
+                <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground/70 w-24">
+                  Delete
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {users.map((user, idx) => {
+                const pid = user.principalId.toString();
+                const tierBadge = TIER_BADGE[user.tier] ?? TIER_BADGE.free;
+                return (
+                  <tr
+                    key={pid}
+                    data-ocid={`admin.users.row.${idx + 1}`}
+                    className={`border-b border-white/5 transition-colors hover:bg-muted/20 ${idx % 2 === 0 ? "" : "bg-white/[0.02]"}`}
+                  >
+                    <td className="px-4 py-3.5 text-xs text-muted-foreground font-mono">
+                      {idx + 1}
+                    </td>
+                    <td className="px-4 py-3.5">
+                      <div className="flex items-center gap-1 bg-background/60 border border-white/8 rounded-lg px-2 py-1 w-fit">
+                        <span className="font-mono text-xs text-foreground/80">
+                          {truncatePrincipal(pid)}
+                        </span>
+                        <CopyPrincipalButton principalId={pid} />
+                      </div>
+                    </td>
+                    <td className="px-4 py-3.5">
+                      <Badge
+                        variant="outline"
+                        className={`text-xs capitalize border ${tierBadge}`}
+                      >
+                        {user.tier}
+                      </Badge>
+                    </td>
+                    <td className="px-4 py-3.5">
+                      <Select
+                        defaultValue={user.tier}
+                        onValueChange={(val) => handleTierChange(pid, val)}
+                        disabled={isPending}
+                      >
+                        <SelectTrigger
+                          data-ocid={`admin.users.tier.select.${idx + 1}`}
+                          className="h-7 text-xs bg-background/60 border-white/10 w-36 rounded-lg"
+                        >
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent className="bg-popover border-border">
+                          <SelectItem value="free" className="text-xs">
+                            Free
+                          </SelectItem>
+                          <SelectItem value="pro" className="text-xs">
+                            Pro
+                          </SelectItem>
+                          <SelectItem value="business" className="text-xs">
+                            Business
+                          </SelectItem>
+                          <SelectItem value="enterprise" className="text-xs">
+                            Enterprise
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </td>
+                    <td className="px-4 py-3.5">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="h-7 text-xs gap-1.5 border-white/10 hover:border-white/20 bg-transparent"
+                        onClick={() => {
+                          const exportData = {
+                            principalId: pid,
+                            tier: user.tier,
+                            exportedAt: new Date().toISOString(),
+                            engines: [],
+                            migrations: [],
+                            billingData: {
+                              currentTier: user.tier,
+                              invoices: [],
+                            },
+                            preferences: {},
+                          };
+                          const blob = new Blob(
+                            [JSON.stringify(exportData, null, 2)],
+                            { type: "application/json" },
+                          );
+                          const url = URL.createObjectURL(blob);
+                          const a = document.createElement("a");
+                          a.href = url;
+                          a.download = `lockfreeengine-user-${pid.slice(0, 8)}.json`;
+                          a.click();
+                          URL.revokeObjectURL(url);
+                          toast.success("User data exported");
+                        }}
+                      >
+                        <Download className="w-3 h-3" />
+                        Export
+                      </Button>
+                    </td>
+                    <td className="px-4 py-3.5">
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="h-7 text-xs gap-1.5 border-red-500/20 text-destructive/70 hover:text-destructive hover:bg-destructive/10 hover:border-red-500/40 bg-transparent"
+                            disabled={isDeleting}
+                            data-ocid={`admin.users.delete_button.${idx + 1}`}
+                          >
+                            <Trash2 className="w-3 h-3" />
+                            Delete
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent className="bg-card border-border">
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>
+                              Delete user data permanently?
+                            </AlertDialogTitle>
+                            <AlertDialogDescription className="text-muted-foreground">
+                              This will permanently delete all data for
+                              principal{" "}
+                              <span className="font-mono text-foreground">
+                                {truncatePrincipal(pid)}
+                              </span>
+                              , including their engines, migration history,
+                              billing records, and profile. This action cannot
+                              be undone.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel className="border-border">
+                              Cancel
+                            </AlertDialogCancel>
+                            <AlertDialogAction
+                              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                              onClick={() => handleDeleteUser(pid)}
+                            >
+                              Delete permanently
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -356,119 +345,123 @@ function FlaggedAffiliatesSection() {
   }
 
   return (
-    <Card className="bg-card border-border mt-6">
-      <CardHeader className="pb-3">
-        <div className="flex items-center gap-2">
-          <AlertTriangle className="w-4 h-4 text-amber-400" />
-          <CardTitle className="text-base font-semibold">
+    <div className="rounded-2xl backdrop-blur-md bg-card/60 border border-white/8 overflow-hidden mt-6">
+      {/* Header */}
+      <div className="px-5 py-4 border-b border-white/6 bg-background/30 flex items-start gap-3">
+        <AlertTriangle className="w-4 h-4 text-[oklch(0.75_0.18_60)] mt-0.5 flex-shrink-0" />
+        <div>
+          <h3 className="font-display text-sm font-semibold text-foreground">
             Flagged Affiliates
-          </CardTitle>
+          </h3>
+          <p className="text-xs text-muted-foreground mt-0.5">
+            Accounts flagged for unusual referral activity. Review and clear
+            once resolved.
+          </p>
         </div>
-        <p className="text-xs text-muted-foreground">
-          Accounts flagged for unusual referral activity. Review and clear flags
-          once resolved.
-        </p>
-      </CardHeader>
-      <CardContent>
-        {isLoading ? (
-          <div className="space-y-2" data-ocid="admin.flagged.loading_state">
-            {[1, 2].map((i) => (
-              <Skeleton key={i} className="h-10 w-full" />
-            ))}
-          </div>
-        ) : isError ? (
-          <div
-            data-ocid="admin.flagged.error_state"
-            className="text-xs text-destructive py-4 text-center"
-          >
-            Failed to load flagged affiliates.
-          </div>
-        ) : !flagged || flagged.length === 0 ? (
-          <div
-            data-ocid="admin.flagged.empty_state"
-            className="flex flex-col items-center justify-center py-10 text-center"
-          >
-            <CheckCircle2 className="w-9 h-9 text-muted-foreground/30 mb-3" />
-            <p className="text-sm font-medium text-muted-foreground">
-              No flagged affiliate accounts
-            </p>
-            <p className="text-xs text-muted-foreground/70 mt-1">
-              All activity looks clean.
-            </p>
-          </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <Table data-ocid="admin.flagged.table">
-              <TableHeader>
-                <TableRow className="border-border hover:bg-transparent">
-                  <TableHead className="text-xs text-muted-foreground font-medium">
-                    Code
-                  </TableHead>
-                  <TableHead className="text-xs text-muted-foreground font-medium">
-                    Principal
-                  </TableHead>
-                  <TableHead className="text-xs text-muted-foreground font-medium">
-                    Reason
-                  </TableHead>
-                  <TableHead className="text-xs text-muted-foreground font-medium">
-                    Flagged At
-                  </TableHead>
-                  <TableHead className="text-xs text-muted-foreground font-medium w-28">
-                    Actions
-                  </TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {flagged.map((f, idx) => (
-                  <TableRow
-                    key={f.code}
-                    data-ocid={`admin.flagged.row.${idx + 1}`}
-                    className="border-border hover:bg-muted/30 transition-colors"
-                  >
-                    <TableCell className="font-mono text-xs text-amber-400 font-semibold">
-                      {f.code}
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center">
-                        <span className="font-mono text-xs text-muted-foreground">
-                          {truncatePrincipal(f.principal)}
-                        </span>
-                        <CopyPrincipalButton principalId={f.principal} />
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-xs text-muted-foreground max-w-xs truncate">
-                      {f.reason}
-                    </TableCell>
-                    <TableCell className="text-xs text-muted-foreground">
-                      {new Date(
-                        Number(f.flaggedAt) / 1_000_000,
-                      ).toLocaleDateString("en-GB", {
-                        day: "numeric",
-                        month: "short",
-                        year: "numeric",
-                      })}
-                    </TableCell>
-                    <TableCell>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="h-7 text-xs gap-1.5"
-                        disabled={isClearing}
-                        data-ocid={`admin.flagged.delete_button.${idx + 1}`}
-                        onClick={() => handleClear(f.code)}
-                      >
-                        <CheckCircle2 className="w-3 h-3" />
-                        Clear
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-        )}
-      </CardContent>
-    </Card>
+      </div>
+
+      {/* Content */}
+      {isLoading ? (
+        <div
+          className="p-5 space-y-2.5"
+          data-ocid="admin.flagged.loading_state"
+        >
+          {[1, 2].map((i) => (
+            <Skeleton key={i} className="h-10 w-full rounded-lg" />
+          ))}
+        </div>
+      ) : isError ? (
+        <div
+          data-ocid="admin.flagged.error_state"
+          className="text-xs text-destructive py-6 text-center"
+        >
+          Failed to load flagged affiliates.
+        </div>
+      ) : !flagged || flagged.length === 0 ? (
+        <div
+          data-ocid="admin.flagged.empty_state"
+          className="flex flex-col items-center justify-center py-12 text-center"
+        >
+          <CheckCircle2 className="w-9 h-9 text-muted-foreground/30 mb-3" />
+          <p className="text-sm font-medium text-muted-foreground">
+            No flagged affiliate accounts
+          </p>
+          <p className="text-xs text-muted-foreground/60 mt-1">
+            All activity looks clean.
+          </p>
+        </div>
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="w-full" data-ocid="admin.flagged.table">
+            <thead>
+              <tr className="border-b border-white/6 bg-background/40">
+                <th className="text-left px-5 py-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground/70">
+                  Code
+                </th>
+                <th className="text-left px-5 py-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground/70">
+                  Principal
+                </th>
+                <th className="text-left px-5 py-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground/70">
+                  Reason
+                </th>
+                <th className="text-left px-5 py-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground/70">
+                  Flagged At
+                </th>
+                <th className="text-left px-5 py-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground/70 w-28">
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {flagged.map((f, idx) => (
+                <tr
+                  key={f.code}
+                  data-ocid={`admin.flagged.row.${idx + 1}`}
+                  className={`border-b border-white/5 transition-colors hover:bg-muted/20 ${idx % 2 === 0 ? "" : "bg-white/[0.02]"}`}
+                >
+                  <td className="px-5 py-3.5 font-mono text-xs text-[oklch(0.85_0.18_60)] font-semibold">
+                    {f.code}
+                  </td>
+                  <td className="px-5 py-3.5">
+                    <div className="flex items-center">
+                      <span className="font-mono text-xs text-muted-foreground">
+                        {truncatePrincipal(f.principal)}
+                      </span>
+                      <CopyPrincipalButton principalId={f.principal} />
+                    </div>
+                  </td>
+                  <td className="px-5 py-3.5 text-xs text-muted-foreground max-w-xs truncate">
+                    {f.reason}
+                  </td>
+                  <td className="px-5 py-3.5 text-xs text-muted-foreground">
+                    {new Date(
+                      Number(f.flaggedAt) / 1_000_000,
+                    ).toLocaleDateString("en-GB", {
+                      day: "numeric",
+                      month: "short",
+                      year: "numeric",
+                    })}
+                  </td>
+                  <td className="px-5 py-3.5">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="h-7 text-xs gap-1.5 border-white/10 hover:border-[oklch(0.72_0.19_145/0.4)] hover:text-[oklch(0.82_0.19_145)] bg-transparent"
+                      disabled={isClearing}
+                      data-ocid={`admin.flagged.delete_button.${idx + 1}`}
+                      onClick={() => handleClear(f.code)}
+                    >
+                      <CheckCircle2 className="w-3 h-3" />
+                      Clear
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
   );
 }
 

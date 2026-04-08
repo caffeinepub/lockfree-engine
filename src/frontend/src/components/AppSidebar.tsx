@@ -18,10 +18,10 @@ import {
   Users,
   X,
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { useIsAdmin } from "../hooks/useAdminQueries";
 import { useInternetIdentity } from "../hooks/useInternetIdentity";
 import { truncatePrincipal } from "../lib/providerUtils";
-import { NavLink } from "./NavLink";
 
 const HARDCODED_ADMIN_PRINCIPAL =
   "7xb3p-r7kxo-tjbki-fkmcf-buzj5-i5ux2-tcaye-tkujv-zmd6t-whrx7-lqe";
@@ -46,6 +46,41 @@ const navItems = [
   { id: "technotes", label: "Tech Notes", icon: Terminal },
 ];
 
+interface NavItemProps {
+  icon: LucideIcon;
+  label: string;
+  active: boolean;
+  onClick: () => void;
+  "data-ocid"?: string;
+}
+
+function SidebarNavItem({
+  icon: Icon,
+  label,
+  active,
+  onClick,
+  "data-ocid": dataOcid,
+}: NavItemProps) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      data-ocid={dataOcid}
+      className={`nav-item ${active ? "nav-item-active" : ""}`}
+    >
+      <Icon
+        className={`flex-shrink-0 transition-colors duration-200 ${
+          active
+            ? "text-primary"
+            : "text-muted-foreground group-hover:text-foreground"
+        }`}
+        style={{ width: 18, height: 18 }}
+      />
+      <span className="truncate">{label}</span>
+    </button>
+  );
+}
+
 export function AppSidebar({
   activePage,
   onNavigate,
@@ -66,7 +101,7 @@ export function AppSidebar({
       {/* Mobile overlay */}
       {mobileOpen && (
         <div
-          className="fixed inset-0 bg-black/60 z-40 lg:hidden"
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 lg:hidden"
           role="button"
           tabIndex={0}
           aria-label="Close menu"
@@ -79,14 +114,22 @@ export function AppSidebar({
         className={`
           fixed top-0 left-0 h-full w-56 z-50
           flex flex-col
-          bg-sidebar border-r border-sidebar-border
           transition-transform duration-300 ease-in-out
           lg:translate-x-0
           ${mobileOpen ? "translate-x-0" : "-translate-x-full"}
         `}
+        style={{
+          background: "oklch(0.07 0.016 245 / 0.92)",
+          backdropFilter: "blur(20px)",
+          WebkitBackdropFilter: "blur(20px)",
+          borderRight: "1px solid oklch(0.82 0.22 195 / 0.1)",
+        }}
       >
-        {/* Logo */}
-        <div className="flex items-center justify-between px-4 py-5 border-b border-sidebar-border">
+        {/* Logo area */}
+        <div
+          className="flex items-center justify-between px-4 py-5"
+          style={{ borderBottom: "1px solid oklch(0.22 0.018 243 / 0.5)" }}
+        >
           <div className="flex items-center gap-2">
             <img
               src="/assets/generated/lockfree-logo-transparent.dim_200x200.png"
@@ -102,17 +145,18 @@ export function AppSidebar({
           </div>
           <button
             type="button"
-            className="lg:hidden text-muted-foreground hover:text-foreground"
+            className="lg:hidden text-muted-foreground hover:text-foreground transition-colors"
             onClick={onMobileClose}
+            aria-label="Close sidebar"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Nav */}
-        <nav className="flex-1 py-4 px-2 space-y-0.5 overflow-y-auto">
+        <nav className="flex-1 py-4 px-3 space-y-0.5 overflow-y-auto">
           {navItems.map((item) => (
-            <NavLink
+            <SidebarNavItem
               key={item.id}
               icon={item.icon}
               label={item.label}
@@ -124,7 +168,7 @@ export function AppSidebar({
             />
           ))}
           {effectiveIsAdmin && (
-            <NavLink
+            <SidebarNavItem
               icon={ShieldCheck}
               label="Admin"
               active={activePage === "admin"}
@@ -138,9 +182,24 @@ export function AppSidebar({
         </nav>
 
         {/* User info */}
-        <div className="px-3 py-4 border-t border-sidebar-border">
-          <div className="flex items-center gap-2 px-2 py-2 rounded-md bg-sidebar-accent mb-2">
-            <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
+        <div
+          className="px-3 py-4"
+          style={{ borderTop: "1px solid oklch(0.22 0.018 243 / 0.5)" }}
+        >
+          <div
+            className="flex items-center gap-2 px-2 py-2 rounded-lg mb-2"
+            style={{
+              background: "oklch(0.14 0.016 243 / 0.6)",
+              border: "1px solid oklch(0.82 0.22 195 / 0.08)",
+            }}
+          >
+            <div
+              className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0"
+              style={{
+                background: "oklch(0.82 0.22 195 / 0.15)",
+                border: "1px solid oklch(0.82 0.22 195 / 0.25)",
+              }}
+            >
               <span className="text-xs font-mono text-primary">
                 {principal.slice(0, 2).toUpperCase()}
               </span>
@@ -171,7 +230,7 @@ export function AppSidebar({
           <Button
             variant="ghost"
             size="sm"
-            className="w-full justify-start gap-2 h-8 text-muted-foreground hover:text-foreground text-xs"
+            className="w-full justify-start gap-2 h-8 text-muted-foreground hover:text-foreground text-xs transition-colors duration-200"
             onClick={onSignOut}
           >
             <LogOut className="w-3.5 h-3.5" />

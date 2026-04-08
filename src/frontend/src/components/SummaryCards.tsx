@@ -16,7 +16,6 @@ interface SummaryCardsProps {
   isDemoMode?: boolean;
 }
 
-// Gently ticking cost in demo mode
 function useLiveCostMultiplier(isDemoMode: boolean) {
   const [multiplier, setMultiplier] = useState(1.0);
   const tickRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -56,7 +55,7 @@ export function SummaryCards({
     return (
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         {(["s1", "s2", "s3", "s4"] as const).map((id) => (
-          <Skeleton key={id} className="h-28 rounded-lg" />
+          <Skeleton key={id} className="h-28 rounded-2xl" />
         ))}
       </div>
     );
@@ -90,6 +89,7 @@ export function SummaryCards({
         "A Cloud Engine is a managed compute unit that runs your ICP canisters. Switch providers anytime.",
       sub: `${engines?.filter((e) => e.status === "running").length ?? 0} running`,
       accentColor: "oklch(var(--primary))",
+      iconBg: "oklch(var(--primary) / 0.12)",
       valueColor: "text-foreground",
       animated: false,
     },
@@ -100,6 +100,7 @@ export function SummaryCards({
       tooltip: "Total estimated monthly cost across all active engines.",
       sub: hourlyCostDisplay,
       accentColor: "oklch(var(--status-provisioning))",
+      iconBg: "oklch(var(--status-provisioning) / 0.12)",
       valueColor: "text-foreground",
       animated: isDemoMode,
     },
@@ -116,6 +117,12 @@ export function SummaryCards({
           : avgResilience >= 50
             ? "oklch(var(--status-provisioning))"
             : "oklch(var(--destructive))",
+      iconBg:
+        avgResilience >= 80
+          ? "oklch(var(--status-running) / 0.12)"
+          : avgResilience >= 50
+            ? "oklch(var(--status-provisioning) / 0.12)"
+            : "oklch(var(--destructive) / 0.12)",
       valueColor:
         avgResilience >= 80
           ? "text-status-running"
@@ -134,6 +141,10 @@ export function SummaryCards({
         activeMigrations > 0
           ? "oklch(var(--status-migrating))"
           : "oklch(var(--muted-foreground))",
+      iconBg:
+        activeMigrations > 0
+          ? "oklch(var(--status-migrating) / 0.12)"
+          : "oklch(var(--muted) / 0.5)",
       valueColor:
         activeMigrations > 0 ? "text-status-migrating" : "text-foreground",
       animated: false,
@@ -142,28 +153,72 @@ export function SummaryCards({
 
   return (
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-      {cards.map((card) => (
-        <div
+      {cards.map((card, idx) => (
+        <motion.div
           key={card.label}
-          className="console-panel p-5 relative overflow-hidden"
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: idx * 0.07, duration: 0.35, ease: "easeOut" }}
+          className="summary-card group relative overflow-hidden rounded-2xl p-5 cursor-default"
+          style={{
+            background: "oklch(var(--card) / 0.6)",
+            border: "1px solid rgba(255,255,255,0.07)",
+            backdropFilter: "blur(12px)",
+            WebkitBackdropFilter: "blur(12px)",
+            boxShadow:
+              "0 4px 24px rgba(0,0,0,0.35), 0 1px 0 rgba(255,255,255,0.04) inset",
+            transition:
+              "box-shadow 0.2s ease, transform 0.2s ease, border-color 0.2s ease",
+          }}
+          whileHover={{
+            y: -2,
+            transition: { duration: 0.2 },
+          }}
+          onMouseEnter={(e) => {
+            const el = e.currentTarget as HTMLElement;
+            el.style.boxShadow = `0 8px 36px rgba(0,0,0,0.45), 0 0 20px ${card.accentColor.replace("oklch(", "").replace(")", "")} / 0.08), 0 1px 0 rgba(255,255,255,0.06) inset`;
+            el.style.borderColor = `${card.accentColor.replace("oklch(", "").replace(")", "")}/0.2`;
+          }}
+          onMouseLeave={(e) => {
+            const el = e.currentTarget as HTMLElement;
+            el.style.boxShadow =
+              "0 4px 24px rgba(0,0,0,0.35), 0 1px 0 rgba(255,255,255,0.04) inset";
+            el.style.borderColor = "rgba(255,255,255,0.07)";
+          }}
         >
-          {/* Accent dot left edge */}
+          {/* Left accent line */}
           <div
             className="absolute left-0 top-4 bottom-4 w-[3px] rounded-r-full"
             style={{ background: card.accentColor, opacity: 0.7 }}
           />
 
+          {/* Bottom accent line */}
+          <div
+            className="absolute bottom-0 left-4 right-4 h-px"
+            style={{ background: `${card.accentColor}`, opacity: 0.12 }}
+          />
+
           <div className="pl-3">
-            <div className="flex items-center justify-between mb-2">
-              <card.icon
-                className="w-4 h-4"
-                style={{ color: card.accentColor }}
-              />
+            <div className="flex items-center justify-between mb-3">
+              {/* Icon container */}
+              <div
+                className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 transition-all duration-200 group-hover:opacity-100"
+                style={{
+                  background: card.iconBg,
+                  border: `1px solid ${card.accentColor}30`,
+                }}
+              >
+                <card.icon
+                  className="w-4 h-4 transition-opacity duration-200 opacity-70 group-hover:opacity-100"
+                  style={{ color: card.accentColor }}
+                />
+              </div>
+
               <Popover>
                 <PopoverTrigger asChild>
                   <button
                     type="button"
-                    className="text-muted-foreground/50 hover:text-muted-foreground transition-colors"
+                    className="text-muted-foreground/40 hover:text-muted-foreground transition-colors"
                   >
                     <Info className="w-3.5 h-3.5" />
                   </button>
@@ -176,7 +231,7 @@ export function SummaryCards({
 
             {/* Value */}
             <div
-              className={`text-3xl font-mono font-bold leading-none tabular-nums mb-1.5 ${card.valueColor} overflow-hidden`}
+              className={`text-2xl font-display font-bold leading-none tabular-nums mb-1.5 ${card.valueColor} overflow-hidden`}
             >
               {card.animated ? (
                 <AnimatePresence mode="popLayout">
@@ -196,10 +251,10 @@ export function SummaryCards({
               )}
             </div>
 
-            <div className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+            <div className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
               {card.label}
             </div>
-            <div className="text-xs text-muted-foreground/70 mt-0.5">
+            <div className="text-xs text-muted-foreground/60 mt-0.5">
               {card.animated ? (
                 <AnimatePresence mode="popLayout">
                   <motion.span
@@ -218,7 +273,7 @@ export function SummaryCards({
               )}
             </div>
           </div>
-        </div>
+        </motion.div>
       ))}
     </div>
   );

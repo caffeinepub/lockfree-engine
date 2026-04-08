@@ -10,16 +10,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
   Tooltip,
   TooltipContent,
+  TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Crown, Loader2, Lock, Trash2, UserPlus, Users } from "lucide-react";
@@ -36,7 +29,7 @@ interface SeatManagementProps {
   onUpgradeToEnterprise: () => void;
 }
 
-const ROLE_COLORS: Record<string, string> = {
+const ROLE_BADGE: Record<string, string> = {
   Admin:
     "bg-[oklch(0.75_0.18_60/0.15)] text-[oklch(0.85_0.18_60)] border-[oklch(0.75_0.18_60/0.3)]",
   Editor: "bg-primary/10 text-primary border-primary/20",
@@ -103,7 +96,7 @@ export function SeatManagement({
   // Locked state for non-Enterprise
   if (!isEnterprise) {
     return (
-      <div className="rounded-xl border border-border bg-card/50 p-6 text-center">
+      <div className="rounded-xl border border-dashed border-border/60 bg-muted/20 p-6 text-center">
         <div className="w-12 h-12 rounded-xl bg-muted/50 border border-border flex items-center justify-center mx-auto mb-3">
           <Lock className="w-5 h-5 text-muted-foreground" />
         </div>
@@ -149,7 +142,7 @@ export function SeatManagement({
       </div>
 
       {/* Invite form */}
-      <div className="p-4 rounded-xl border border-border bg-secondary/30 space-y-3">
+      <div className="p-4 rounded-xl border border-white/8 bg-background/40 space-y-3">
         <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-1.5">
           <UserPlus className="w-3.5 h-3.5" />
           Invite New Member
@@ -161,14 +154,14 @@ export function SeatManagement({
               placeholder="aaaaa-bbbbb-ccccc-ddddd-cai"
               value={principalId}
               onChange={(e) => setPrincipalId(e.target.value)}
-              className="h-9 text-sm font-mono"
+              className="h-9 text-sm font-mono bg-background/60 border-white/10 rounded-xl"
               onKeyDown={(e) => e.key === "Enter" && void handleInvite()}
             />
           </div>
           <div className="space-y-1.5">
             <Label className="text-xs">Role</Label>
             <Select value={role} onValueChange={setRole}>
-              <SelectTrigger className="h-9 w-32">
+              <SelectTrigger className="h-9 w-32 bg-background/60 border-white/10 rounded-xl">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -201,67 +194,70 @@ export function SeatManagement({
           <span className="text-sm">Loading members...</span>
         </div>
       ) : seats.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-border py-10 text-center">
+        <div className="rounded-xl border border-dashed border-border/60 py-10 text-center">
           <Users className="w-8 h-8 text-muted-foreground/40 mx-auto mb-3" />
           <p className="text-sm text-muted-foreground">No team members yet.</p>
-          <p className="text-xs text-muted-foreground/70 mt-0.5">
+          <p className="text-xs text-muted-foreground/60 mt-0.5">
             Invite your first member above.
           </p>
         </div>
       ) : (
-        <div className="rounded-xl border border-border overflow-hidden">
+        <div className="rounded-xl border border-white/8 bg-card/40 backdrop-blur-sm overflow-hidden">
           <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow className="border-border hover:bg-transparent">
-                  <TableHead className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-white/6 bg-background/40">
+                  <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground/70">
                     Principal ID
-                  </TableHead>
-                  <TableHead className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  </th>
+                  <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground/70">
                     Role
-                  </TableHead>
-                  <TableHead className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  </th>
+                  <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground/70">
                     Invited
-                  </TableHead>
-                  <TableHead className="text-xs font-semibold uppercase tracking-wide text-muted-foreground text-right">
+                  </th>
+                  <th className="text-right px-4 py-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground/70">
                     Actions
-                  </TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {seats.map((seat) => {
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {seats.map((seat, idx) => {
                   const pid = seat.principalId.toString();
                   const isCurrentlyRemoving = removingId === pid || isRemoving;
                   return (
-                    <TableRow key={pid} className="border-border">
-                      <TableCell className="font-mono text-xs">
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <span className="cursor-help text-foreground/80">
-                              {truncatePrincipal(pid)}
-                            </span>
-                          </TooltipTrigger>
-                          <TooltipContent
-                            side="top"
-                            className="max-w-xs font-mono text-xs"
-                          >
-                            {pid}
-                          </TooltipContent>
-                        </Tooltip>
-                      </TableCell>
-                      <TableCell>
+                    <tr
+                      key={pid}
+                      className={`border-b border-white/5 transition-colors hover:bg-muted/20 ${idx % 2 === 0 ? "" : "bg-white/[0.02]"}`}
+                    >
+                      <td className="px-4 py-3.5">
+                        <TooltipProvider delayDuration={200}>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <span className="font-mono text-xs text-foreground/80 cursor-help">
+                                {truncatePrincipal(pid)}
+                              </span>
+                            </TooltipTrigger>
+                            <TooltipContent
+                              side="top"
+                              className="max-w-xs font-mono text-xs"
+                            >
+                              {pid}
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </td>
+                      <td className="px-4 py-3.5">
                         <span
-                          className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border capitalize
-                          ${ROLE_COLORS[seat.role] ?? ROLE_COLORS.Viewer}
-                        `}
+                          className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border capitalize ${ROLE_BADGE[seat.role] ?? ROLE_BADGE.Viewer}`}
                         >
                           {seat.role}
                         </span>
-                      </TableCell>
-                      <TableCell className="text-xs text-muted-foreground">
+                      </td>
+                      <td className="px-4 py-3.5 text-xs text-muted-foreground">
                         {formatDate(seat.invitedAt)}
-                      </TableCell>
-                      <TableCell className="text-right">
+                      </td>
+                      <td className="px-4 py-3.5 text-right">
                         <Button
                           variant="ghost"
                           size="icon"
@@ -275,12 +271,12 @@ export function SeatManagement({
                             <Trash2 className="w-3.5 h-3.5" />
                           )}
                         </Button>
-                      </TableCell>
-                    </TableRow>
+                      </td>
+                    </tr>
                   );
                 })}
-              </TableBody>
-            </Table>
+              </tbody>
+            </table>
           </div>
         </div>
       )}

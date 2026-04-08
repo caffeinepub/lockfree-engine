@@ -435,7 +435,7 @@ function AppShell() {
           onToggleTheme={toggleTheme}
         />
 
-        <main className="flex-1 p-4 lg:p-6">
+        <main className="flex-1 p-4 lg:p-6 page-enter">
           {activePage === "dashboard" && (
             <DashboardPage
               isDemoMode={isDemoMode}
@@ -487,13 +487,19 @@ function AppShell() {
         </main>
 
         {/* Footer */}
-        <footer className="px-4 lg:px-6 py-3 border-t border-border text-xs text-muted-foreground flex items-center justify-between">
-          <span>LockFreeEngine — Built on ICP</span>
+        <footer
+          className="px-4 lg:px-6 py-3 text-xs flex items-center justify-between"
+          style={{ borderTop: "1px solid oklch(0.82 0.22 195 / 0.08)" }}
+        >
+          <span style={{ color: "oklch(0.55 0.018 243)" }}>
+            LockFreeEngine — Built on ICP
+          </span>
           <a
             href={`https://caffeine.ai?utm_source=caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(window.location.hostname)}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="hover:text-primary transition-colors"
+            className="transition-colors duration-200 hover:text-primary"
+            style={{ color: "oklch(0.82 0.22 195 / 0.55)" }}
           >
             © {new Date().getFullYear()} Built with love using caffeine.ai
           </a>

@@ -43,7 +43,7 @@ function EngineGridSkeleton() {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
       {(["dsk1", "dsk2", "dsk3"] as const).map((id) => (
-        <Skeleton key={id} className="h-56 rounded-lg" />
+        <Skeleton key={id} className="h-56 rounded-2xl" />
       ))}
     </div>
   );
@@ -64,20 +64,36 @@ function EmptyEnginesState({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
       data-ocid="engines.empty_state"
-      className="w-full rounded-xl border border-emerald-500/25 bg-gradient-to-br from-emerald-950/40 via-card to-cyan-950/30 overflow-hidden"
+      className="w-full rounded-2xl overflow-hidden"
+      style={{
+        background: "oklch(var(--card) / 0.5)",
+        border: "1px solid rgba(255,255,255,0.07)",
+        backdropFilter: "blur(12px)",
+        WebkitBackdropFilter: "blur(12px)",
+        boxShadow: "0 4px 28px rgba(0,0,0,0.35)",
+      }}
     >
       {/* Top accent line */}
-      <div className="h-0.5 w-full bg-gradient-to-r from-emerald-500/60 via-cyan-400/80 to-emerald-500/60" />
+      <div className="h-[3px] w-full bg-gradient-to-r from-emerald-500/60 via-cyan-400/80 to-emerald-500/60" />
 
       <div className="px-6 py-10 sm:px-10 sm:py-12 flex flex-col items-center text-center gap-6">
         {/* Icon cluster */}
         <div className="flex items-center justify-center gap-3">
-          <div className="w-12 h-12 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center">
-            <Server className="w-6 h-6 text-cyan-400" />
+          <div
+            className="w-12 h-12 rounded-xl flex items-center justify-center"
+            style={{
+              background: "oklch(var(--primary) / 0.1)",
+              border: "1px solid oklch(var(--primary) / 0.2)",
+            }}
+          >
+            <Server
+              className="w-6 h-6"
+              style={{ color: "oklch(var(--primary))" }}
+            />
           </div>
-          <div className="w-2 h-2 rounded-full bg-emerald-400/50" />
-          <div className="w-2 h-2 rounded-full bg-cyan-400/50" />
-          <div className="w-2 h-2 rounded-full bg-emerald-400/50" />
+          <div className="w-2 h-2 rounded-full bg-emerald-400/40" />
+          <div className="w-2 h-2 rounded-full bg-cyan-400/40" />
+          <div className="w-2 h-2 rounded-full bg-emerald-400/40" />
         </div>
 
         {/* Headline */}
@@ -97,7 +113,6 @@ function EmptyEnginesState({
           data-ocid="engines.primary_button"
           className="group relative flex items-center gap-3 px-7 py-3.5 rounded-xl font-semibold text-sm bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white shadow-lg shadow-emerald-900/40 border border-emerald-400/30 transition-all duration-200 hover:shadow-emerald-800/50 hover:scale-[1.02] active:scale-[0.98]"
         >
-          {/* Glow */}
           <span className="absolute inset-0 rounded-xl bg-emerald-400/10 opacity-0 group-hover:opacity-100 transition-opacity" />
           <Play className="w-4 h-4 fill-white relative z-10" />
           <span className="relative z-10">Load Demo Engines</span>
@@ -105,9 +120,9 @@ function EmptyEnginesState({
 
         {/* Divider */}
         <div className="flex items-center gap-3 w-full max-w-xs">
-          <div className="flex-1 h-px bg-border/50" />
-          <span className="text-xs text-muted-foreground/60">or</span>
-          <div className="flex-1 h-px bg-border/50" />
+          <div className="flex-1 h-px bg-border/40" />
+          <span className="text-xs text-muted-foreground/50">or</span>
+          <div className="flex-1 h-px bg-border/40" />
         </div>
 
         {/* Secondary CTA */}
@@ -158,12 +173,10 @@ export function DashboardPage({
 
   const announcementBanner = publicSettings?.announcementBanner ?? "";
 
-  // Auto-trigger demo tour only when demo engines are actually loaded
   useEffect(() => {
     if (!isDemoMode) return;
     const seen = localStorage.getItem(DEMO_TOUR_SEEN_KEY);
     if (seen) return;
-    // Only auto-start when there is actual demo data loaded (engines with "demo" in their name)
     const hasDemoEngines = (engines ?? []).some((e) =>
       e.name.toLowerCase().includes("demo"),
     );
@@ -188,22 +201,34 @@ export function DashboardPage({
         {announcementBanner && !bannerDismissed && (
           <motion.div
             key="announcement-banner"
-            className="flex items-start gap-3 px-4 py-3 rounded-lg bg-amber-500/10 border border-amber-500/20 text-sm"
+            className="flex items-start gap-3 px-4 py-3 rounded-xl text-sm"
+            style={{
+              background: "oklch(0.72 0.17 80 / 0.08)",
+              border: "1px solid oklch(0.72 0.17 80 / 0.2)",
+              backdropFilter: "blur(8px)",
+            }}
             initial={{ opacity: 0, y: -8, height: 0 }}
             animate={{ opacity: 1, y: 0, height: "auto" }}
             exit={{ opacity: 0, y: -8, height: 0 }}
             transition={{ duration: 0.2 }}
             data-ocid="dashboard.announcement.panel"
           >
-            <Megaphone className="w-4 h-4 text-amber-400 flex-shrink-0 mt-0.5" />
-            <span className="text-amber-400 flex-1 leading-relaxed min-w-0 break-words">
+            <Megaphone
+              className="w-4 h-4 flex-shrink-0 mt-0.5"
+              style={{ color: "oklch(0.78 0.17 80)" }}
+            />
+            <span
+              className="flex-1 leading-relaxed min-w-0 break-words"
+              style={{ color: "oklch(0.78 0.17 80)" }}
+            >
               {announcementBanner}
             </span>
             <button
               type="button"
               onClick={() => setBannerDismissed(true)}
-              className="text-amber-400/60 hover:text-amber-400 transition-colors flex-shrink-0"
+              className="flex-shrink-0 transition-opacity opacity-50 hover:opacity-100"
               aria-label="Dismiss announcement"
+              style={{ color: "oklch(0.78 0.17 80)" }}
               data-ocid="dashboard.announcement.close_button"
             >
               <X className="w-4 h-4" />
@@ -215,7 +240,12 @@ export function DashboardPage({
       {/* Demo mode banner */}
       {isDemoMode && (
         <motion.div
-          className="flex items-center gap-2 flex-wrap px-4 py-2.5 rounded-lg bg-status-provisioning/10 border border-status-provisioning/20 text-sm"
+          className="flex items-center gap-2 flex-wrap px-4 py-2.5 rounded-xl text-sm"
+          style={{
+            background: "oklch(var(--status-provisioning) / 0.08)",
+            border: "1px solid oklch(var(--status-provisioning) / 0.2)",
+            backdropFilter: "blur(8px)",
+          }}
           initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
         >
@@ -229,7 +259,7 @@ export function DashboardPage({
           <button
             type="button"
             onClick={() => setDemoTourOpen(true)}
-            className="flex-shrink-0 text-xs font-semibold px-3 py-1.5 rounded-md bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-400 border border-emerald-500/40 hover:border-emerald-500/60 transition-colors"
+            className="flex-shrink-0 text-xs font-semibold px-3 py-1.5 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-400 border border-emerald-500/40 hover:border-emerald-500/60 transition-colors"
             data-ocid="demo_tour.open_modal_button"
           >
             Take the Tour
@@ -237,7 +267,7 @@ export function DashboardPage({
           <button
             type="button"
             onClick={onClearDemo}
-            className="flex-shrink-0 text-xs font-semibold px-3 py-1.5 rounded-md bg-white/15 hover:bg-white/25 text-white border border-white/30 transition-colors"
+            className="flex-shrink-0 text-xs font-semibold px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white border border-white/25 transition-colors"
             data-ocid="dashboard.demo.toggle"
             aria-label="Exit demo mode"
             data-tour-id="exit-demo-btn"
@@ -268,7 +298,13 @@ export function DashboardPage({
               Cloud Engines
             </h2>
             {engines && (
-              <span className="text-xs font-mono bg-secondary px-2 py-0.5 rounded-full text-muted-foreground border border-border">
+              <span
+                className="text-xs font-mono px-2 py-0.5 rounded-full text-muted-foreground"
+                style={{
+                  background: "oklch(var(--secondary) / 0.8)",
+                  border: "1px solid oklch(var(--border))",
+                }}
+              >
                 {engines.length}
               </span>
             )}
@@ -343,8 +379,16 @@ export function DashboardPage({
         <LiveCostDashboard isDemoMode={isDemoMode} />
       </div>
 
-      {/* Quick tips */}
-      <div className="console-panel p-5">
+      {/* Why LockFreeEngine */}
+      <div
+        className="rounded-2xl p-5"
+        style={{
+          background: "oklch(var(--card) / 0.5)",
+          border: "1px solid rgba(255,255,255,0.06)",
+          backdropFilter: "blur(12px)",
+          WebkitBackdropFilter: "blur(12px)",
+        }}
+      >
         <div className="text-base font-display font-semibold tracking-tight mb-4">
           Why LockFreeEngine?
         </div>
@@ -369,12 +413,16 @@ export function DashboardPage({
           ].map((tip) => (
             <div
               key={tip.title}
-              className="bg-secondary/30 rounded-md px-3 py-3 border border-border/40"
+              className="rounded-xl px-3 py-3 transition-colors duration-150 hover:bg-muted/20"
+              style={{
+                background: "oklch(var(--secondary) / 0.25)",
+                border: "1px solid rgba(255,255,255,0.05)",
+              }}
             >
               <div className="text-xs font-semibold text-foreground mb-1.5">
                 {tip.title}
               </div>
-              <div className="text-xs text-muted-foreground/80 leading-relaxed">
+              <div className="text-xs text-muted-foreground/70 leading-relaxed">
                 {tip.desc}
               </div>
             </div>

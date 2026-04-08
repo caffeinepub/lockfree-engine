@@ -91,9 +91,14 @@ export default {
       },
       boxShadow: {
         xs: "0 1px 2px 0 rgba(0,0,0,0.2)",
-        card: "0 4px 28px rgba(0,0,0,0.35), 0 1px 4px rgba(0,0,0,0.25)",
-        glow: "0 0 24px oklch(var(--primary) / 0.25), 0 0 8px oklch(var(--primary) / 0.12)",
-        "glow-sm": "0 0 12px oklch(var(--primary) / 0.2)",
+        card: "0 4px 28px rgba(0,0,0,0.45), 0 1px 4px rgba(0,0,0,0.3)",
+        "card-subtle": "0 2px 8px rgba(0,0,0,0.3)",
+        "card-elevated": "0 4px 28px rgba(0,0,0,0.45), 0 1px 4px rgba(0,0,0,0.3)",
+        "card-hover": "0 8px 40px rgba(0,0,0,0.5), 0 0 20px rgba(107,206,229,0.1)",
+        glow: "0 0 24px oklch(var(--primary) / 0.3), 0 0 8px oklch(var(--primary) / 0.15)",
+        "glow-sm": "0 0 12px oklch(var(--primary) / 0.25)",
+        "glow-md": "0 0 24px oklch(var(--primary) / 0.35)",
+        "glow-lg": "0 0 40px oklch(var(--primary) / 0.45)",
       },
       keyframes: {
         "accordion-down": {
@@ -116,6 +121,10 @@ export default {
           from: { opacity: "0", transform: "translateX(16px)" },
           to: { opacity: "1", transform: "translateX(0)" },
         },
+        "glow-swing": {
+          "0%, 100%": { boxShadow: "0 0 8px 2px rgba(107,206,229,0.5)" },
+          "50%": { boxShadow: "0 0 16px 8px rgba(107,206,229,0.15)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -124,6 +133,7 @@ export default {
         "fade-in": "fade-in 0.35s ease forwards",
         "slide-in-right": "slide-in-right 0.25s ease forwards",
         "pulse-slow": "pulse 2.4s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+        "glow-swing": "glow-swing 3s ease-in-out infinite",
       },
     },
   },

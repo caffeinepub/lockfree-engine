@@ -491,20 +491,22 @@ export function LandingPage({
 
       {/* ── Announcement Banner ── */}
       <div
-        className="relative z-50 flex items-center justify-center gap-2 px-4 py-2 text-xs font-mono text-center"
+        className="relative z-50 flex items-center justify-center gap-2.5 px-4 py-2 text-xs font-mono text-center"
         style={{
           background:
-            "linear-gradient(90deg, oklch(0.82 0.22 195 / 0.12) 0%, oklch(0.72 0.2 310 / 0.10) 100%)",
-          borderBottom: "1px solid oklch(0.82 0.22 195 / 0.2)",
+            "linear-gradient(90deg, oklch(0.82 0.22 195 / 0.1) 0%, oklch(0.72 0.2 310 / 0.08) 100%)",
+          borderBottom: "1px solid oklch(0.82 0.22 195 / 0.22)",
           color: "oklch(0.88 0.008 240)",
+          backdropFilter: "blur(16px)",
+          WebkitBackdropFilter: "blur(16px)",
         }}
       >
         <span
-          className="w-1.5 h-1.5 rounded-full shrink-0 animate-pulse"
+          className="w-2 h-2 rounded-full shrink-0 announcement-badge"
           style={{ background: "oklch(0.74 0.19 145)" }}
         />
         <span>
-          <span style={{ color: "oklch(0.82 0.22 195)", fontWeight: 600 }}>
+          <span style={{ color: "oklch(0.82 0.22 195)", fontWeight: 700 }}>
             Caffeine v3.0 is live
           </span>
           {" — a new era of self-writing cloud on ICP"}
@@ -566,10 +568,16 @@ export function LandingPage({
                 transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
               >
                 {/* Headline — cinematic type treatment */}
-                <h1 className="font-display font-extrabold tracking-tight leading-[1.05] mb-7">
+                <h1
+                  className="font-display font-extrabold leading-[1.05] mb-7"
+                  style={{ letterSpacing: "-0.03em" }}
+                >
                   <motion.span
                     className="block text-foreground"
-                    style={{ fontSize: "clamp(2.6rem, 6vw, 4.5rem)" }}
+                    style={{
+                      fontSize: "clamp(2.8rem, 6.5vw, 4.75rem)",
+                      textShadow: "0 2px 40px oklch(0.82 0.22 195 / 0.1)",
+                    }}
                     initial={{ opacity: 0, x: -16 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{
@@ -582,7 +590,7 @@ export function LandingPage({
                   </motion.span>
                   <motion.span
                     className="block hero-gradient-text"
-                    style={{ fontSize: "clamp(2.6rem, 6vw, 4.5rem)" }}
+                    style={{ fontSize: "clamp(2.8rem, 6.5vw, 4.75rem)" }}
                     initial={{ opacity: 0, x: -16 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{
@@ -596,8 +604,8 @@ export function LandingPage({
                 </h1>
 
                 <motion.p
-                  className="text-base md:text-lg text-[oklch(0.88_0.008_240)] leading-relaxed mb-6 max-w-md"
-                  style={{ fontWeight: 400 }}
+                  className="text-base md:text-lg text-[oklch(0.88_0.008_240)] mb-6 max-w-md"
+                  style={{ fontWeight: 400, lineHeight: 1.65 }}
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.55, delay: 0.35 }}
@@ -715,10 +723,10 @@ export function LandingPage({
       </section>
 
       {/* ── Features strip ── */}
-      <section className="relative z-10 py-16 border-y border-border/30 bg-card/20 backdrop-blur-sm px-5 sm:px-8 md:px-12">
+      <section className="relative z-10 py-16 border-y border-border/30 bg-card/20 backdrop-blur-sm px-4 sm:px-8 md:px-12">
         <div className="max-w-5xl mx-auto">
           <motion.div
-            className="grid grid-cols-1 md:grid-cols-3 gap-6"
+            className="grid grid-cols-1 md:grid-cols-3 gap-5"
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-60px" }}
@@ -730,8 +738,13 @@ export function LandingPage({
             {FEATURES.map((f) => (
               <motion.div
                 key={f.title}
-                className="flex flex-col gap-4 p-6 rounded-xl border bg-card/40 backdrop-blur-sm"
-                style={{ borderColor: `${f.color.replace(")", " / 0.2)")}` }}
+                className="group flex flex-col gap-4 p-6 rounded-2xl backdrop-blur-sm transition-all duration-200"
+                style={{
+                  background: "oklch(var(--card) / 0.55)",
+                  border: "1px solid rgba(255,255,255,0.07)",
+                  borderBottom: `1px solid ${f.color.replace(")", " / 0.15)")}`,
+                  boxShadow: "0 4px 24px rgba(0,0,0,0.3)",
+                }}
                 variants={{
                   hidden: { opacity: 0, y: 20 },
                   visible: {
@@ -740,21 +753,29 @@ export function LandingPage({
                     transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] },
                   },
                 }}
+                whileHover={{ y: -3, transition: { duration: 0.2 } }}
               >
                 <div
-                  className="w-10 h-10 rounded-lg flex items-center justify-center"
+                  className="w-10 h-10 rounded-xl flex items-center justify-center"
                   style={{
                     background: `${f.color.replace(")", " / 0.1)")}`,
-                    border: `1px solid ${f.color.replace(")", " / 0.25)")}`,
+                    border: `1px solid ${f.color.replace(")", " / 0.28)")}`,
+                    boxShadow: `0 0 16px ${f.color.replace(")", " / 0.1)")}`,
                   }}
                 >
                   <f.icon className="w-5 h-5" style={{ color: f.color }} />
                 </div>
                 <div>
-                  <div className="font-display text-base font-semibold mb-1.5">
+                  <div
+                    className="font-display text-base font-semibold mb-1.5"
+                    style={{ letterSpacing: "-0.015em" }}
+                  >
                     {f.title}
                   </div>
-                  <div className="text-sm text-[oklch(0.88_0.008_240)] leading-relaxed">
+                  <div
+                    className="text-sm text-[oklch(0.88_0.008_240)]"
+                    style={{ lineHeight: 1.65 }}
+                  >
                     {f.desc}
                   </div>
                 </div>
@@ -1090,10 +1111,10 @@ export function LandingPage({
       */}
 
       {/* ── How it works ── */}
-      <section className="relative z-10 py-16 px-5 sm:px-8 md:px-12">
+      <section className="relative z-10 py-16 px-4 sm:px-8 md:px-12">
         <div className="max-w-5xl mx-auto">
           <motion.div
-            className="text-center mb-10"
+            className="text-center mb-12"
             initial={{ opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -1114,25 +1135,36 @@ export function LandingPage({
               How it works
             </div>
             <h2
-              className="font-display font-bold tracking-tight mb-4"
-              style={{ fontSize: "clamp(1.75rem, 4vw, 2.5rem)" }}
+              className="font-display font-bold mb-4"
+              style={{
+                fontSize: "clamp(1.85rem, 4vw, 2.6rem)",
+                letterSpacing: "-0.025em",
+              }}
             >
               Three steps to total cloud freedom.
             </h2>
-            <p className="text-sm md:text-base text-[oklch(0.88_0.008_240)] max-w-lg mx-auto leading-relaxed">
+            <p
+              className="text-sm md:text-base text-[oklch(0.88_0.008_240)] max-w-lg mx-auto"
+              style={{ lineHeight: 1.65 }}
+            >
               From zero to multi-cloud in minutes. Provision, deploy, then
               migrate instantly — no DevOps PhD required.
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5 relative">
             {/* Connector line (desktop only) */}
             <div className="hidden md:block absolute top-10 left-[22%] right-[22%] h-px bg-gradient-to-r from-border/30 via-primary/40 to-border/30" />
 
             {HOW_IT_WORKS.map((step, i) => (
               <motion.div
                 key={step.step}
-                className="relative flex flex-col items-center text-center p-8 rounded-xl border border-border/40 bg-card/25 backdrop-blur-sm"
+                className="group relative flex flex-col items-center text-center p-8 rounded-2xl backdrop-blur-sm transition-all duration-200"
+                style={{
+                  background: "oklch(var(--card) / 0.5)",
+                  border: "1px solid rgba(255,255,255,0.07)",
+                  boxShadow: "0 4px 28px rgba(0,0,0,0.3)",
+                }}
                 initial={{ opacity: 0, y: 24 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-40px" }}
@@ -1141,22 +1173,34 @@ export function LandingPage({
                   delay: i * 0.12,
                   ease: [0.22, 1, 0.36, 1],
                 }}
+                whileHover={{
+                  y: -4,
+                  boxShadow:
+                    "0 8px 40px rgba(0,0,0,0.4), 0 0 20px rgba(107,206,229,0.08)",
+                  transition: { duration: 0.2 },
+                }}
               >
                 <div
                   className="w-12 h-12 rounded-xl flex items-center justify-center mb-5 font-mono text-sm font-bold"
                   style={{
-                    background: "oklch(0.82 0.22 195 / 0.08)",
-                    border: "1px solid oklch(0.82 0.22 195 / 0.22)",
+                    background: "oklch(0.82 0.22 195 / 0.1)",
+                    border: "1px solid oklch(0.82 0.22 195 / 0.3)",
                     color: "oklch(0.82 0.22 195)",
-                    boxShadow: "0 0 16px oklch(0.82 0.22 195 / 0.08)",
+                    boxShadow: "0 0 20px oklch(0.82 0.22 195 / 0.12)",
                   }}
                 >
                   {step.step}
                 </div>
-                <div className="font-display text-lg font-semibold mb-2">
+                <div
+                  className="font-display text-lg font-semibold mb-2.5"
+                  style={{ letterSpacing: "-0.018em" }}
+                >
                   {step.title}
                 </div>
-                <div className="text-sm text-[oklch(0.88_0.008_240)] leading-relaxed">
+                <div
+                  className="text-sm text-[oklch(0.88_0.008_240)]"
+                  style={{ lineHeight: 1.65 }}
+                >
                   {step.desc}
                 </div>
               </motion.div>
@@ -1166,7 +1210,7 @@ export function LandingPage({
       </section>
 
       {/* ── Architecture Diagram ── */}
-      <section className="relative z-10 py-16 px-5 sm:px-8 md:px-12 border-t border-border/30">
+      <section className="relative z-10 py-16 px-4 sm:px-8 md:px-12 border-t border-border/30">
         <div className="max-w-5xl mx-auto">
           <motion.div
             className="text-center mb-10"
@@ -1185,21 +1229,40 @@ export function LandingPage({
             >
               System Architecture
             </span>
-            <h2 className="text-3xl md:text-4xl font-display font-bold mb-3">
+            <h2
+              className="font-display font-bold mb-3"
+              style={{
+                fontSize: "clamp(1.85rem, 4vw, 2.6rem)",
+                letterSpacing: "-0.025em",
+              }}
+            >
               The Full Stack Vision
             </h2>
-            <p className="text-[oklch(0.88_0.008_240)] text-lg max-w-2xl mx-auto">
+            <p
+              className="text-[oklch(0.88_0.008_240)] text-lg max-w-2xl mx-auto"
+              style={{ lineHeight: 1.6 }}
+            >
               LockFreeEngine, ICP, and NeoCloud — three layers built to work as
               one.
             </p>
           </motion.div>
           <motion.div
+            className="rounded-2xl overflow-hidden"
+            style={{
+              background: "oklch(var(--card) / 0.5)",
+              border: "1px solid rgba(255,255,255,0.07)",
+              boxShadow:
+                "0 8px 48px rgba(0,0,0,0.4), 0 0 0 1px rgba(107,206,229,0.05)",
+              backdropFilter: "blur(12px)",
+            }}
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.1 }}
           >
-            <ArchitectureDiagram />
+            <div className="p-5 sm:p-8">
+              <ArchitectureDiagram />
+            </div>
           </motion.div>
         </div>
       </section>
@@ -1309,27 +1372,27 @@ export function LandingPage({
 
       {/* ── Dom Testimonial ── */}
       <section
-        className="relative z-10 py-20 px-5 sm:px-8 md:px-12 border-t border-border/30 overflow-hidden"
-        style={{ background: "oklch(0.12 0.014 243 / 0.5)" }}
+        className="relative z-10 py-24 px-4 sm:px-8 md:px-12 border-t border-border/30 overflow-hidden"
+        style={{ background: "oklch(0.11 0.016 245)" }}
       >
         {/* Radial focal glow */}
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
             background:
-              "radial-gradient(ellipse 70% 60% at 50% 50%, oklch(0.82 0.22 195 / 0.06) 0%, transparent 65%)",
+              "radial-gradient(ellipse 65% 55% at 50% 50%, oklch(0.82 0.22 195 / 0.07) 0%, transparent 65%)",
           }}
         />
-        {/* Subtle top shimmer */}
+        {/* Top shimmer line */}
         <div
           className="absolute top-0 left-0 right-0 h-px pointer-events-none"
           style={{
             background:
-              "linear-gradient(to right, transparent, oklch(0.82 0.22 195 / 0.3) 40%, oklch(0.82 0.22 195 / 0.3) 60%, transparent)",
+              "linear-gradient(to right, transparent, oklch(0.82 0.22 195 / 0.4) 35%, oklch(0.82 0.22 195 / 0.4) 65%, transparent)",
           }}
         />
 
-        <div className="max-w-3xl md:max-w-5xl mx-auto text-center relative">
+        <div className="max-w-3xl mx-auto relative">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -1351,60 +1414,73 @@ export function LandingPage({
               </div>
             </div>
 
-            {/* Giant decorative opening quote */}
-            <div
-              className="font-display leading-none select-none mb-2 text-center"
-              style={{
-                fontSize: "6rem",
-                color: "oklch(0.82 0.22 195 / 0.18)",
-                lineHeight: 0.85,
-                marginBottom: "-1.5rem",
-              }}
-              aria-hidden="true"
-            >
-              &ldquo;
+            {/* Pull-quote card */}
+            <div className="pullquote-container text-left">
+              {/* Decorative quote mark — positioned absolutely */}
+              <div className="pullquote-mark" aria-hidden="true">
+                &ldquo;
+              </div>
+
+              {/* Quote text */}
+              <blockquote className="pt-10 sm:pt-12">
+                <p
+                  className="font-display italic font-medium text-foreground mb-8"
+                  style={{
+                    fontSize: "clamp(1.15rem, 2.8vw, 1.5rem)",
+                    lineHeight: 1.6,
+                    letterSpacing: "-0.015em",
+                  }}
+                >
+                  Ha that&apos;s cool.. kind of a visualization of what cloud
+                  engines can do.. I like
+                </p>
+
+                {/* Attribution */}
+                <footer>
+                  <div className="flex items-center gap-4">
+                    {/* Avatar placeholder */}
+                    <div
+                      className="w-10 h-10 rounded-full shrink-0 flex items-center justify-center font-display font-bold text-sm"
+                      style={{
+                        background: "oklch(0.82 0.22 195 / 0.15)",
+                        border: "1px solid oklch(0.82 0.22 195 / 0.35)",
+                        color: "oklch(0.82 0.22 195)",
+                      }}
+                    >
+                      DW
+                    </div>
+                    <div>
+                      <cite
+                        className="not-italic font-display font-bold text-foreground text-base block"
+                        style={{ letterSpacing: "-0.01em" }}
+                      >
+                        Dominic Williams
+                      </cite>
+                      <p
+                        className="text-sm font-medium"
+                        style={{ color: "oklch(0.72 0.12 195)" }}
+                      >
+                        Founder &amp; Chief Scientist, DFINITY Foundation
+                      </p>
+                      <p
+                        className="font-mono text-[11px] mt-0.5 italic"
+                        style={{ color: "oklch(0.55 0.08 195)" }}
+                      >
+                        Unsolicited reaction on seeing LockFreeEngine for the
+                        first time
+                      </p>
+                    </div>
+                  </div>
+                </footer>
+              </blockquote>
             </div>
-
-            {/* Quote text */}
-            <blockquote>
-              <p
-                className="font-display italic font-medium leading-relaxed mb-8 text-foreground md:whitespace-nowrap"
-                style={{ fontSize: "clamp(1.1rem, 2.5vw, 1.45rem)" }}
-              >
-                Ha that&apos;s cool.. kind of a visualization of what cloud
-                engines can do.. I like
-              </p>
-
-              {/* Attribution */}
-              <footer>
-                <div className="flex flex-col items-center gap-1.5">
-                  <div
-                    className="w-8 h-px mb-2"
-                    style={{ background: "oklch(0.82 0.22 195 / 0.4)" }}
-                  />
-                  <cite className="not-italic font-display font-semibold text-foreground text-base">
-                    Dominic Williams
-                  </cite>
-                  <p className="text-sm text-[oklch(0.88_0.008_240)] font-medium">
-                    Founder &amp; Chief Scientist, DFINITY Foundation
-                  </p>
-                  <p
-                    className="font-mono text-xs mt-2 italic"
-                    style={{ color: "oklch(0.60 0.08 195)" }}
-                  >
-                    Unsolicited reaction on seeing LockFreeEngine for the first
-                    time
-                  </p>
-                </div>
-              </footer>
-            </blockquote>
           </motion.div>
         </div>
       </section>
 
       {/* ── Roadmap ── */}
       <section
-        className="relative z-10 py-16 px-5 sm:px-8 md:px-12 border-t border-border/30 overflow-hidden"
+        className="relative z-10 py-16 px-4 sm:px-8 md:px-12 border-t border-border/30 overflow-hidden"
         style={{ background: "oklch(0.11 0.014 243 / 0.7)" }}
       >
         {/* Background glow */}
@@ -1437,12 +1513,18 @@ export function LandingPage({
               Roadmap
             </div>
             <h2
-              className="font-display font-bold tracking-tight mb-4"
-              style={{ fontSize: "clamp(1.75rem, 4vw, 2.5rem)" }}
+              className="font-display font-bold mb-4"
+              style={{
+                fontSize: "clamp(1.85rem, 4vw, 2.6rem)",
+                letterSpacing: "-0.025em",
+              }}
             >
               The road to full cloud freedom.
             </h2>
-            <p className="text-[oklch(0.88_0.008_240)] max-w-xl mx-auto leading-relaxed text-sm md:text-base">
+            <p
+              className="text-[oklch(0.88_0.008_240)] max-w-xl mx-auto text-sm md:text-base"
+              style={{ lineHeight: 1.65 }}
+            >
               ICP Cloud Engines are in live production on the NNS. Pakistan — a
               nation of 240 million — has already signed an MoU with DFINITY for
               a sovereign cloud subnet. The integration that connects this demo
@@ -1577,7 +1659,7 @@ export function LandingPage({
 
       {/* ── Vision / Future State ── */}
       <section
-        className="relative z-10 py-20 px-5 sm:px-8 md:px-12 border-t border-border/30 overflow-hidden"
+        className="relative z-10 py-20 px-4 sm:px-8 md:px-12 border-t border-border/30 overflow-hidden"
         style={{ background: "oklch(0.09 0.016 245)" }}
       >
         {/* Multi-point atmospheric glow */}
@@ -1620,12 +1702,18 @@ export function LandingPage({
               What Comes Next
             </div>
             <h2
-              className="font-display font-bold tracking-tight mb-5"
-              style={{ fontSize: "clamp(2rem, 4.5vw, 3rem)" }}
+              className="font-display font-bold mb-5"
+              style={{
+                fontSize: "clamp(2rem, 4.5vw, 3rem)",
+                letterSpacing: "-0.03em",
+              }}
             >
               What this becomes.
             </h2>
-            <p className="text-[oklch(0.88_0.008_240)] max-w-2xl mx-auto leading-relaxed text-sm md:text-base">
+            <p
+              className="text-[oklch(0.88_0.008_240)] max-w-2xl mx-auto text-sm md:text-base"
+              style={{ lineHeight: 1.65 }}
+            >
               Cloud Engines are live on ICP. The simulation layer is ready to
               swap for real API calls. Caffeine v3.0 is live. LockFreeEngine is
               positioned to become the definitive management interface for
@@ -1647,10 +1735,12 @@ export function LandingPage({
             {VISION_CARDS.map((card) => (
               <motion.div
                 key={card.title}
-                className="group relative rounded-2xl border p-7 flex flex-col gap-5 overflow-hidden"
+                className="group relative rounded-2xl p-7 flex flex-col gap-5 overflow-hidden backdrop-blur-sm"
                 style={{
-                  background: card.accentBg,
-                  borderColor: card.accentBorder,
+                  background: "oklch(var(--card) / 0.55)",
+                  border: "1px solid rgba(255,255,255,0.07)",
+                  borderTop: `1px solid ${card.accent.replace(")", " / 0.3)")}`,
+                  boxShadow: "0 4px 32px rgba(0,0,0,0.3)",
                 }}
                 variants={{
                   hidden: { opacity: 0, y: 28 },
@@ -1659,6 +1749,11 @@ export function LandingPage({
                     y: 0,
                     transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] },
                   },
+                }}
+                whileHover={{
+                  y: -4,
+                  boxShadow: `0 12px 48px rgba(0,0,0,0.4), 0 0 24px ${card.accent.replace(")", " / 0.1)")}`,
+                  transition: { duration: 0.2 },
                 }}
               >
                 {/* Hover corner glow */}
@@ -1741,13 +1836,13 @@ export function LandingPage({
       </section>
 
       {/* ── Footer CTA ── */}
-      <section className="relative z-10 py-20 px-5 sm:px-8 md:px-12 border-t border-border/30">
+      <section className="relative z-10 py-24 px-4 sm:px-8 md:px-12 border-t border-border/30">
         {/* Focal glow */}
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
             background:
-              "radial-gradient(ellipse 60% 50% at 50% 50%, oklch(0.82 0.22 195 / 0.05) 0%, transparent 65%)",
+              "radial-gradient(ellipse 60% 50% at 50% 50%, oklch(0.82 0.22 195 / 0.06) 0%, transparent 65%)",
           }}
         />
         <div className="max-w-2xl mx-auto text-center relative">
@@ -1758,12 +1853,18 @@ export function LandingPage({
             transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
           >
             <h2
-              className="font-display font-bold tracking-tight mb-5"
-              style={{ fontSize: "clamp(1.75rem, 4vw, 2.5rem)" }}
+              className="font-display font-bold mb-5"
+              style={{
+                fontSize: "clamp(1.85rem, 4vw, 2.6rem)",
+                letterSpacing: "-0.025em",
+              }}
             >
               Ready to break free?
             </h2>
-            <p className="text-base md:text-lg mb-10 leading-relaxed text-[oklch(0.88_0.008_240)]">
+            <p
+              className="text-base md:text-lg mb-10 text-[oklch(0.88_0.008_240)]"
+              style={{ lineHeight: 1.65 }}
+            >
               Sign in to get full access,{" "}
               <span
                 style={{
@@ -1780,7 +1881,7 @@ export function LandingPage({
               <Button
                 data-ocid="footer.primary_button"
                 size="default"
-                className="h-10 px-6 font-semibold gap-2 text-sm"
+                className="h-11 px-7 font-semibold gap-2 text-sm rounded-xl transition-all duration-200"
                 onClick={onSignIn}
                 disabled={isLoggingIn}
                 style={{

@@ -45,7 +45,6 @@ const STACK_MAPPINGS: Array<{
   icpEquivalent: string;
   notes: string;
 }> = [
-  // Infrastructure / Hosting
   {
     keywords: ["aws", "ec2", "lambda"],
     original: "AWS / EC2 / Lambda",
@@ -76,7 +75,6 @@ const STACK_MAPPINGS: Array<{
     icpEquivalent: "ICP Canister",
     notes: "Deploy once, runs forever",
   },
-  // Databases
   {
     keywords: ["postgres", "postgresql", "mysql", "sqlite"],
     original: "PostgreSQL / MySQL / SQLite",
@@ -95,7 +93,6 @@ const STACK_MAPPINGS: Array<{
     icpEquivalent: "In-memory canister state",
     notes: "Sub-millisecond, no cache invalidation",
   },
-  // Auth
   {
     keywords: ["auth0", "oauth", "jwt", "firebase auth"],
     original: "Auth0 / OAuth / JWT",
@@ -108,7 +105,6 @@ const STACK_MAPPINGS: Array<{
     icpEquivalent: "Internet Identity",
     notes: "Self-sovereign identity, GDPR-native",
   },
-  // Backend languages
   {
     keywords: [
       "node.js",
@@ -147,7 +143,6 @@ const STACK_MAPPINGS: Array<{
     icpEquivalent: "CDK Rust Canister",
     notes: "Native ICP Rust CDK support",
   },
-  // Frontend
   {
     keywords: ["next.js", "nextjs"],
     original: "Next.js",
@@ -166,7 +161,6 @@ const STACK_MAPPINGS: Array<{
     icpEquivalent: "React on ICP (asset canister)",
     notes: "Rebuilt as React, same UX",
   },
-  // Messaging / Queues
   {
     keywords: ["nats", "nats queue"],
     original: "NATS Queue",
@@ -185,7 +179,6 @@ const STACK_MAPPINGS: Array<{
     icpEquivalent: "Polling / IC streaming",
     notes: "Long-polling supported natively",
   },
-  // Container / Orchestration
   {
     keywords: ["kubernetes", "k8s"],
     original: "Kubernetes / K8s",
@@ -204,7 +197,6 @@ const STACK_MAPPINGS: Array<{
     icpEquivalent: "NNS Proposals + Candid API",
     notes: "Infrastructure-as-governance",
   },
-  // Payments
   {
     keywords: ["stripe"],
     original: "Stripe",
@@ -217,7 +209,6 @@ const STACK_MAPPINGS: Array<{
     icpEquivalent: "HTTP outcalls + ICP",
     notes: "External APIs via certified outcalls",
   },
-  // Storage
   {
     keywords: ["ceph", "minio", "blob storage"],
     original: "Ceph / MinIO / Blob Storage",
@@ -230,7 +221,6 @@ const STACK_MAPPINGS: Array<{
     icpEquivalent: "ICP Asset Canister",
     notes: "Decentralised, faster than IPFS",
   },
-  // Security
   {
     keywords: ["tee", "bft", "tee bft", "hsm", "zero-trust", "zerotrust"],
     original: "TEE BFT Mesh / HSM / Zero-Trust",
@@ -243,7 +233,6 @@ const STACK_MAPPINGS: Array<{
     icpEquivalent: "ICP Vetkeys",
     notes: "On-chain key management",
   },
-  // Blockchain
   {
     keywords: ["sui move", "sui"],
     original: "Sui Move",
@@ -262,7 +251,6 @@ const STACK_MAPPINGS: Array<{
     icpEquivalent: "Chain-key integration",
     notes: "Cross-chain via ICP threshold sigs",
   },
-  // AI / ML
   {
     keywords: ["openai", "gpt", "claude"],
     original: "OpenAI / GPT / Claude",
@@ -351,7 +339,6 @@ function analyseStack(input: string): ScanResult {
           ...GENERIC_FALLBACK.slice(0, Math.max(5 - matched.length, 3)),
         ];
 
-  // Check enterprise sovereign preset
   const enterpriseHits = ENTERPRISE_KEYWORDS.filter((kw) => lower.includes(kw));
   const isEnterpriseSovereign = enterpriseHits.length >= 4;
 
@@ -361,7 +348,6 @@ function analyseStack(input: string): ScanResult {
   else if (components.length >= 5) complexity = "Medium";
   else complexity = "Low";
 
-  // Cost model
   let currentCostMin: number;
   let currentCostMax: number;
   let icpCostMin: number;
@@ -480,7 +466,6 @@ export function LegacyAppScanner({ onDeployWithChat }: LegacyAppScannerProps) {
       setCompletedSteps((prev) => [...prev, i]);
     }
 
-    // Small pause before showing result
     await new Promise((r) => setTimeout(r, 200));
     setCurrentStepIdx(null);
     setScanning(false);
@@ -516,10 +501,10 @@ export function LegacyAppScanner({ onDeployWithChat }: LegacyAppScannerProps) {
             className="flex flex-col gap-4 p-4"
           >
             <div>
-              <h3 className="text-sm font-semibold text-foreground mb-1">
+              <h3 className="text-sm font-semibold text-foreground mb-1 tracking-tight">
                 Analyse your existing stack
               </h3>
-              <p className="text-xs text-muted-foreground leading-relaxed">
+              <p className="text-xs text-muted-foreground/80 leading-relaxed">
                 Paste your current tech stack, infrastructure, or app
                 description. LockFreeEngine will map each component to its ICP
                 equivalent and generate a sovereign migration plan.
@@ -535,18 +520,18 @@ export function LegacyAppScanner({ onDeployWithChat }: LegacyAppScannerProps) {
                 setStackInput(NEOCLOULD_DEMO_STACK);
                 handleScan(NEOCLOULD_DEMO_STACK);
               }}
-              className="w-full flex items-center justify-between gap-2 px-3 py-2.5 rounded-lg border border-emerald-500/40 bg-emerald-500/8 hover:bg-emerald-500/12 transition-all duration-200 shadow-[0_0_14px_oklch(0.72_0.19_145/0.18)] hover:shadow-[0_0_22px_oklch(0.72_0.19_145/0.32)] group"
+              className="w-full flex items-center justify-between gap-2 px-3.5 py-3 rounded-xl border border-emerald-500/40 bg-emerald-500/8 hover:bg-emerald-500/12 backdrop-blur-sm transition-all duration-200 shadow-[0_0_16px_oklch(0.72_0.19_145/0.2)] hover:shadow-[0_0_24px_oklch(0.72_0.19_145/0.35)] group"
               data-ocid="scanner.demo_stack_btn"
             >
-              <div className="flex items-center gap-2">
-                <span className="flex-shrink-0 w-5 h-5 rounded-full bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center">
+              <div className="flex items-center gap-2.5">
+                <span className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center">
                   <Sparkles className="w-3 h-3 text-emerald-400" />
                 </span>
                 <div className="text-left">
-                  <div className="text-xs font-semibold text-emerald-400 leading-tight">
+                  <div className="text-xs font-semibold text-emerald-300 leading-tight">
                     Try NeoCloud Demo Stack →
                   </div>
-                  <div className="text-[10px] text-muted-foreground/70 font-mono leading-tight mt-0.5">
+                  <div className="text-[10px] text-muted-foreground/60 font-mono leading-tight mt-0.5">
                     Kubernetes · Sui Move · NATS · Ceph NVMe · TEE BFT
                   </div>
                 </div>
@@ -554,6 +539,7 @@ export function LegacyAppScanner({ onDeployWithChat }: LegacyAppScannerProps) {
               <ArrowRight className="w-3.5 h-3.5 text-emerald-400 group-hover:translate-x-0.5 transition-transform flex-shrink-0" />
             </motion.button>
 
+            {/* Textarea — code editor feel */}
             <Textarea
               placeholder={
                 "Paste your tech stack here...\n\nExample: Kubernetes 1.28, Sui Move, NATS Queue, Ceph NVMe Storage, TEE BFT Mesh\n\nor: Node.js, PostgreSQL, React, hosted on AWS EC2"
@@ -561,13 +547,13 @@ export function LegacyAppScanner({ onDeployWithChat }: LegacyAppScannerProps) {
               value={stackInput}
               onChange={(e) => setStackInput(e.target.value)}
               rows={6}
-              className="resize-none text-xs leading-relaxed font-mono placeholder:font-sans"
+              className="resize-none text-xs leading-relaxed font-mono placeholder:font-sans bg-background/60 border-white/10 rounded-xl focus:border-cyan-500/40 focus:ring-1 focus:ring-cyan-500/10 placeholder:text-muted-foreground/50"
               data-ocid="scanner.input"
             />
 
             <div className="space-y-2">
               <Button
-                className="w-full h-10 font-semibold text-sm gap-2 bg-emerald-600 hover:bg-emerald-500 text-white border-0 shadow-[0_0_16px_oklch(0.72_0.19_145/0.3)] hover:shadow-[0_0_24px_oklch(0.72_0.19_145/0.5)] transition-all duration-300"
+                className="w-full h-10 font-semibold text-sm gap-2 bg-gradient-to-r from-cyan-600 to-cyan-500 hover:from-cyan-500 hover:to-cyan-400 text-background border-0 shadow-[0_0_16px_oklch(0.82_0.22_195/0.3)] hover:shadow-[0_0_24px_oklch(0.82_0.22_195/0.5)] transition-all duration-300 rounded-xl"
                 onClick={() => handleScan()}
                 disabled={!stackInput.trim()}
                 data-ocid="scanner.scan_btn"
@@ -575,7 +561,7 @@ export function LegacyAppScanner({ onDeployWithChat }: LegacyAppScannerProps) {
                 <Sparkles className="w-4 h-4" />
                 Scan &amp; Generate Migration Plan
               </Button>
-              <p className="text-center text-[11px] text-muted-foreground/60">
+              <p className="text-center text-[11px] text-muted-foreground/50">
                 All analysis is simulated — powered by Caffeine Snorkel (coming
                 soon)
               </p>
@@ -594,18 +580,18 @@ export function LegacyAppScanner({ onDeployWithChat }: LegacyAppScannerProps) {
             className="flex flex-col gap-5 p-6"
           >
             <div className="text-center">
-              <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-cyan-500/10 border border-cyan-500/30 mb-3">
+              <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-cyan-500/10 border border-cyan-500/25 mb-3 shadow-[0_0_20px_oklch(0.82_0.22_195/0.15)]">
                 <Loader2 className="w-5 h-5 text-cyan-400 animate-spin" />
               </div>
               <p className="text-sm font-semibold text-foreground">
                 Scanning your stack...
               </p>
-              <p className="text-xs text-muted-foreground mt-1">
+              <p className="text-xs text-muted-foreground/70 mt-1">
                 Caffeine Snorkel analysis in progress
               </p>
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-2">
               {SCAN_STEPS.map((step, idx) => {
                 const isDone = completedSteps.includes(idx);
                 const isActive = currentStepIdx === idx && !isDone;
@@ -613,12 +599,12 @@ export function LegacyAppScanner({ onDeployWithChat }: LegacyAppScannerProps) {
                   <motion.div
                     key={step.label}
                     className={[
-                      "flex items-center gap-3 px-3 py-2.5 rounded-lg border transition-colors duration-300",
+                      "flex items-center gap-3 px-3 py-2.5 rounded-xl border transition-colors duration-300",
                       isDone
-                        ? "bg-cyan-500/5 border-cyan-500/20"
+                        ? "bg-cyan-500/8 border-cyan-500/20 backdrop-blur-sm"
                         : isActive
-                          ? "bg-secondary/60 border-border"
-                          : "bg-secondary/20 border-border/50 opacity-50",
+                          ? "bg-card/60 border-cyan-500/30 backdrop-blur-sm shadow-[0_0_12px_oklch(0.82_0.22_195/0.1)]"
+                          : "bg-secondary/15 border-border/30 opacity-50",
                     ].join(" ")}
                     initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: isActive || isDone ? 1 : 0.4, x: 0 }}
@@ -630,16 +616,16 @@ export function LegacyAppScanner({ onDeployWithChat }: LegacyAppScannerProps) {
                       ) : isActive ? (
                         <Loader2 className="w-4 h-4 text-cyan-400 animate-spin" />
                       ) : (
-                        <div className="w-3 h-3 rounded-full border border-border/60" />
+                        <div className="w-3 h-3 rounded-full border border-border/40" />
                       )}
                     </div>
                     <span
-                      className={`text-xs ${isDone ? "text-cyan-300" : isActive ? "text-foreground" : "text-muted-foreground"}`}
+                      className={`text-xs ${isDone ? "text-cyan-300/90" : isActive ? "text-foreground" : "text-muted-foreground"}`}
                     >
                       {step.label}
                     </span>
                     {isDone && (
-                      <span className="ml-auto text-[10px] text-cyan-500/70 font-mono">
+                      <span className="ml-auto text-[10px] text-cyan-500/60 font-mono">
                         done
                       </span>
                     )}
@@ -660,7 +646,7 @@ export function LegacyAppScanner({ onDeployWithChat }: LegacyAppScannerProps) {
             className="flex flex-col gap-4 p-4"
           >
             {/* A. Summary header */}
-            <div className="rounded-lg border border-cyan-500/20 bg-cyan-500/5 p-3">
+            <div className="rounded-xl border border-cyan-500/20 bg-cyan-500/5 backdrop-blur-sm p-3 shadow-[0_0_16px_oklch(0.82_0.22_195/0.06)]">
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
                   <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
@@ -671,7 +657,7 @@ export function LegacyAppScanner({ onDeployWithChat }: LegacyAppScannerProps) {
                 <button
                   type="button"
                   onClick={resetScan}
-                  className="text-[11px] text-muted-foreground hover:text-foreground underline-offset-2 hover:underline transition-colors"
+                  className="text-[11px] text-muted-foreground/60 hover:text-foreground underline-offset-2 hover:underline transition-colors"
                 >
                   Scan again
                 </button>
@@ -696,7 +682,7 @@ export function LegacyAppScanner({ onDeployWithChat }: LegacyAppScannerProps) {
                 initial={{ opacity: 0, scale: 0.97 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.3, delay: 0.1 }}
-                className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-3 space-y-1.5"
+                className="rounded-xl border border-amber-500/30 bg-amber-500/5 backdrop-blur-sm p-3 space-y-1.5"
               >
                 <div className="flex items-center gap-2">
                   <Globe className="w-3.5 h-3.5 text-amber-400 flex-shrink-0" />
@@ -711,7 +697,7 @@ export function LegacyAppScanner({ onDeployWithChat }: LegacyAppScannerProps) {
                   GDPR-compliant node selection, giving you complete control
                   over data residency.
                 </p>
-                <div className="flex items-center gap-1.5 text-[11px] text-amber-400/80">
+                <div className="flex items-center gap-1.5 text-[11px] text-amber-400/70">
                   <MapPin className="w-3 h-3" />
                   Sovereign EU node infrastructure · NNS-governed · GDPR-native
                 </div>
@@ -719,26 +705,26 @@ export function LegacyAppScanner({ onDeployWithChat }: LegacyAppScannerProps) {
             )}
 
             {/* B. Component mapping table */}
-            <div className="rounded-lg border border-border overflow-hidden">
-              <div className="flex items-center justify-between px-3 py-2 border-b border-border bg-secondary/50">
+            <div className="rounded-xl border border-white/8 overflow-hidden bg-card/40 backdrop-blur-sm">
+              <div className="flex items-center justify-between px-3 py-2 border-b border-white/8 bg-secondary/40">
                 <span className="text-xs font-semibold text-foreground">
                   Component Mapping
                 </span>
-                <span className="text-[10px] text-muted-foreground">
+                <span className="text-[10px] text-muted-foreground/60">
                   {result.components.length} mapped
                 </span>
               </div>
               <div className="overflow-x-auto">
                 <table className="w-full text-xs min-w-[480px]">
                   <thead>
-                    <tr className="border-b border-border bg-secondary/30">
-                      <th className="text-left px-3 py-2 text-muted-foreground font-medium w-[32%]">
+                    <tr className="border-b border-white/6 bg-secondary/20">
+                      <th className="text-left px-3 py-2 text-muted-foreground/70 font-medium w-[32%]">
                         Your Stack
                       </th>
-                      <th className="text-left px-3 py-2 text-muted-foreground font-medium w-[36%]">
+                      <th className="text-left px-3 py-2 text-muted-foreground/70 font-medium w-[36%]">
                         ICP Equivalent
                       </th>
-                      <th className="text-left px-3 py-2 text-muted-foreground font-medium">
+                      <th className="text-left px-3 py-2 text-muted-foreground/70 font-medium">
                         Notes
                       </th>
                     </tr>
@@ -747,15 +733,15 @@ export function LegacyAppScanner({ onDeployWithChat }: LegacyAppScannerProps) {
                     {result.components.map((comp, i) => (
                       <tr
                         key={`${comp.original}-${i}`}
-                        className={`border-b border-border/60 last:border-0 ${i % 2 === 0 ? "bg-background/40" : "bg-secondary/20"}`}
+                        className={`border-b border-white/5 last:border-0 hover:bg-cyan-500/3 transition-colors ${i % 2 === 0 ? "bg-background/20" : "bg-secondary/10"}`}
                       >
-                        <td className="px-3 py-2 font-mono text-foreground/90">
+                        <td className="px-3 py-2.5 font-mono text-foreground/90 text-[11px]">
                           {comp.original}
                         </td>
-                        <td className="px-3 py-2 font-semibold text-cyan-400">
+                        <td className="px-3 py-2.5 font-semibold text-cyan-300 text-[11px]">
                           {comp.icpEquivalent}
                         </td>
-                        <td className="px-3 py-2 text-muted-foreground">
+                        <td className="px-3 py-2.5 text-muted-foreground/70 text-[11px]">
                           {comp.notes}
                         </td>
                       </tr>
@@ -766,7 +752,7 @@ export function LegacyAppScanner({ onDeployWithChat }: LegacyAppScannerProps) {
             </div>
 
             {/* C. Migration Timeline */}
-            <div className="rounded-lg border border-border p-3 space-y-3">
+            <div className="rounded-xl border border-white/8 bg-card/40 backdrop-blur-sm p-3 space-y-3">
               <div className="flex items-center gap-2">
                 <Clock className="w-3.5 h-3.5 text-primary" />
                 <span className="text-xs font-semibold text-foreground">
@@ -774,8 +760,7 @@ export function LegacyAppScanner({ onDeployWithChat }: LegacyAppScannerProps) {
                 </span>
               </div>
               <div className="relative pl-5 space-y-4">
-                {/* vertical line */}
-                <div className="absolute left-1.5 top-2 bottom-2 w-px bg-border" />
+                <div className="absolute left-1.5 top-2 bottom-2 w-px bg-border/40" />
                 {[
                   {
                     phase: "Phase 1",
@@ -800,7 +785,7 @@ export function LegacyAppScanner({ onDeployWithChat }: LegacyAppScannerProps) {
                   },
                 ].map((p) => (
                   <div key={p.phase} className="flex items-start gap-3">
-                    <div className="relative z-10 w-3 h-3 rounded-full bg-cyan-500 border-2 border-background flex-shrink-0 mt-0.5" />
+                    <div className="relative z-10 w-3 h-3 rounded-full bg-cyan-500 border-2 border-background flex-shrink-0 mt-0.5 shadow-[0_0_6px_oklch(0.82_0.22_195/0.5)]" />
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
                         <span className="text-[10px] font-semibold text-cyan-400 uppercase tracking-wide">
@@ -809,11 +794,11 @@ export function LegacyAppScanner({ onDeployWithChat }: LegacyAppScannerProps) {
                         <span className="text-xs font-medium text-foreground">
                           {p.title}
                         </span>
-                        <span className="text-[10px] text-muted-foreground ml-auto">
+                        <span className="text-[10px] text-muted-foreground/60 ml-auto">
                           {p.duration}
                         </span>
                       </div>
-                      <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
+                      <p className="text-xs text-muted-foreground/70 mt-0.5 leading-relaxed">
                         {p.detail}
                       </p>
                     </div>
@@ -824,35 +809,35 @@ export function LegacyAppScanner({ onDeployWithChat }: LegacyAppScannerProps) {
 
             {/* D. Cost comparison */}
             <div className="grid grid-cols-2 gap-2">
-              <div className="rounded-lg border border-red-500/20 bg-red-500/5 p-3 text-center">
-                <div className="text-[10px] text-red-400/80 font-medium mb-1">
-                  Estimated Current Cost
+              <div className="rounded-xl border border-red-500/20 bg-red-500/5 backdrop-blur-sm p-3 text-center">
+                <div className="text-[10px] text-red-400/70 font-medium mb-1 uppercase tracking-wide">
+                  Current Cost
                 </div>
-                <div className="text-sm font-bold text-red-400">
+                <div className="text-sm font-bold text-red-400 font-mono">
                   {formatCost(result.currentCostMin, result.currentCostMax)}
                 </div>
-                <div className="text-[10px] text-muted-foreground mt-1">
+                <div className="text-[10px] text-muted-foreground/50 mt-1">
                   Cloud vendor billing
                 </div>
               </div>
-              <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-3 text-center">
-                <div className="text-[10px] text-emerald-400/80 font-medium mb-1">
-                  Estimated ICP Cost
+              <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 backdrop-blur-sm p-3 text-center">
+                <div className="text-[10px] text-emerald-400/70 font-medium mb-1 uppercase tracking-wide">
+                  ICP Cost
                 </div>
-                <div className="text-sm font-bold text-emerald-400">
+                <div className="text-sm font-bold text-emerald-400 font-mono">
                   {formatCost(result.icpCostMin, result.icpCostMax)}
                 </div>
-                <div className="text-[10px] text-muted-foreground mt-1">
+                <div className="text-[10px] text-muted-foreground/50 mt-1">
                   Sovereign ICP hosting
                 </div>
               </div>
             </div>
-            <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/8 px-3 py-2 flex items-center justify-center gap-2">
-              <AlertTriangle className="w-3.5 h-3.5 text-emerald-400" />
-              <span className="text-xs font-bold text-emerald-400">
+            <div className="rounded-xl border border-emerald-500/25 bg-emerald-500/6 backdrop-blur-sm px-3 py-2 flex items-center justify-center gap-2">
+              <Zap className="w-3.5 h-3.5 text-emerald-400" />
+              <span className="text-xs font-bold text-emerald-300">
                 Save ~{result.savingsPercent}% monthly
               </span>
-              <span className="text-xs text-muted-foreground">
+              <span className="text-xs text-muted-foreground/70">
                 by migrating to sovereign ICP infrastructure
               </span>
             </div>
@@ -860,7 +845,7 @@ export function LegacyAppScanner({ onDeployWithChat }: LegacyAppScannerProps) {
             {/* E. CTAs */}
             <div className="flex flex-col gap-2 pt-1">
               <Button
-                className="w-full h-10 font-semibold text-sm gap-2 bg-emerald-600 hover:bg-emerald-500 text-white border-0 shadow-[0_0_16px_oklch(0.72_0.19_145/0.25)] hover:shadow-[0_0_24px_oklch(0.72_0.19_145/0.45)] transition-all duration-300"
+                className="w-full h-10 font-semibold text-sm gap-2 bg-emerald-600 hover:bg-emerald-500 text-white border-0 shadow-[0_0_16px_oklch(0.72_0.19_145/0.3)] hover:shadow-[0_0_28px_oklch(0.72_0.19_145/0.5)] transition-all duration-300 rounded-xl"
                 onClick={handleDeployWithChat}
                 data-ocid="scanner.deploy_btn"
                 data-tour-id="snorkel-migration-progress"
@@ -871,7 +856,7 @@ export function LegacyAppScanner({ onDeployWithChat }: LegacyAppScannerProps) {
               </Button>
               <Button
                 variant="outline"
-                className="w-full h-9 text-sm gap-2"
+                className="w-full h-9 text-sm gap-2 border-white/10 bg-white/3 hover:bg-white/6 rounded-xl"
                 onClick={handleDownloadBrief}
                 data-ocid="scanner.download_btn"
               >
@@ -881,7 +866,7 @@ export function LegacyAppScanner({ onDeployWithChat }: LegacyAppScannerProps) {
             </div>
 
             {/* Disclaimer */}
-            <p className="text-center text-[11px] text-muted-foreground/50 pb-1">
+            <p className="text-center text-[11px] text-muted-foreground/40 pb-1">
               All analysis is simulated. Powered by Caffeine Snorkel (coming
               soon) · LockFreeEngine v3.0
             </p>

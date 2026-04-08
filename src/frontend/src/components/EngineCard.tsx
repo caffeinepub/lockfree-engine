@@ -64,38 +64,83 @@ const SCALE_TIERS = [
   { name: "XL", cpu: 16, ram: 32, storage: 500 },
 ] as const;
 
-function ResilienceBar({ score }: { score: number }) {
+// ── Inline arc gauge (replacing flat bar) ─────────────────────────────────
+function ResilienceArc({ score }: { score: number }) {
+  const clamped = Math.max(0, Math.min(100, score));
   const color =
-    score >= 80
-      ? "bg-status-running"
-      : score >= 50
-        ? "bg-status-provisioning"
-        : "bg-destructive";
-  const textColor =
-    score >= 80
-      ? "text-status-running"
-      : score >= 50
-        ? "text-status-provisioning"
-        : "text-destructive";
+    clamped >= 80 ? "#22c55e" : clamped >= 60 ? "#f59e0b" : "#ef4444";
+
+  const r = 22;
+  const cx = 30;
+  const cy = 28;
+  const startAngle = -180;
+  const endAngle = 0;
+  const totalAngle = endAngle - startAngle;
+  const progressAngle = startAngle + (clamped / 100) * totalAngle;
+
+  function polar(angle: number): [number, number] {
+    const rad = ((angle - 90) * Math.PI) / 180;
+    return [cx + r * Math.cos(rad), cy + r * Math.sin(rad)];
+  }
+
+  function arc(from: number, to: number): string {
+    const [x1, y1] = polar(from);
+    const [x2, y2] = polar(to);
+    const large = to - from > 180 ? 1 : 0;
+    return `M ${x1} ${y1} A ${r} ${r} 0 ${large} 1 ${x2} ${y2}`;
+  }
+
+  const trackPath = arc(startAngle, endAngle);
+  const progressPath = clamped > 0 ? arc(startAngle, progressAngle) : null;
 
   return (
-    <div className="space-y-1">
-      <div className="flex items-center justify-between">
-        <span className="text-xs text-muted-foreground">Resilience</span>
-        <span
-          className={`text-xs font-mono font-semibold tabular-nums ${textColor}`}
-        >
-          {score}%
-        </span>
-      </div>
-      <div className="h-1 bg-secondary rounded-full overflow-hidden">
-        <motion.div
-          className={`h-full rounded-full ${color}`}
-          initial={{ width: 0 }}
-          animate={{ width: `${score}%` }}
-          transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
+    <div className="flex flex-col items-center gap-0.5">
+      <svg
+        width="60"
+        height="36"
+        viewBox="0 0 60 36"
+        role="img"
+        aria-labelledby={`res-arc-${clamped}`}
+      >
+        <title id={`res-arc-${clamped}`}>Resilience: {clamped}%</title>
+        <path
+          d={trackPath}
+          fill="none"
+          stroke="oklch(var(--muted))"
+          strokeWidth="5"
+          strokeLinecap="round"
         />
-      </div>
+        {progressPath && (
+          <path
+            d={progressPath}
+            fill="none"
+            stroke={color}
+            strokeWidth="5"
+            strokeLinecap="round"
+            style={{ filter: `drop-shadow(0 0 3px ${color}80)` }}
+          />
+        )}
+        <text
+          x={cx}
+          y={cy + 2}
+          textAnchor="middle"
+          dominantBaseline="middle"
+          style={{
+            fill: color,
+            fontSize: "9px",
+            fontFamily: '"JetBrains Mono", monospace',
+            fontWeight: "600",
+          }}
+        >
+          {clamped}
+        </text>
+      </svg>
+      <span
+        className="text-[9px] uppercase tracking-wider"
+        style={{ color: "oklch(var(--muted-foreground))", lineHeight: 1 }}
+      >
+        Resilience
+      </span>
     </div>
   );
 }
@@ -220,17 +265,25 @@ export function EngineCard({
   return (
     <>
       <motion.div
-        className={`relative flex flex-col overflow-hidden rounded-lg bg-card transition-all duration-200 cursor-default ${provider.cardClass}`}
+        className={`relative flex flex-col overflow-hidden rounded-2xl transition-all duration-200 cursor-default ${provider.cardClass}`}
+        style={{
+          background: "oklch(var(--card) / 0.6)",
+          border: "1px solid rgba(255,255,255,0.07)",
+          backdropFilter: "blur(12px)",
+          WebkitBackdropFilter: "blur(12px)",
+        }}
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: index * 0.05 }}
         layout
         data-tour-id={`engine-card-${index}`}
       >
-        {/* Provider accent bar */}
+        {/* Provider top accent bar */}
         <div
           className="h-[3px] w-full flex-shrink-0"
-          style={{ background: provider.color }}
+          style={{
+            background: `linear-gradient(90deg, ${provider.color}, ${provider.color}80)`,
+          }}
         />
 
         <div className="p-4 flex flex-col gap-3.5 flex-1">
@@ -238,9 +291,13 @@ export function EngineCard({
           <div className="flex items-start justify-between gap-2">
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2 mb-2 flex-wrap">
+                {/* Provider badge */}
                 <span
                   className={`inline-flex items-center gap-1.5 text-xs font-bold px-2.5 py-1 rounded-full font-mono ${provider.bgClass} ${provider.textClass}`}
-                  style={{ border: `1px solid ${provider.color}35` }}
+                  style={{
+                    border: `1px solid ${provider.color}40`,
+                    boxShadow: `0 0 8px ${provider.color}15`,
+                  }}
                 >
                   <span
                     className="w-1.5 h-1.5 rounded-full flex-shrink-0"
@@ -249,6 +306,7 @@ export function EngineCard({
                   {provider.label}
                 </span>
 
+                {/* Status badge */}
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <span
@@ -285,18 +343,20 @@ export function EngineCard({
               <h3 className="font-display font-semibold text-base text-foreground truncate leading-tight">
                 {engine.name}
               </h3>
-              <p className="text-xs font-mono text-muted-foreground/60 mt-0.5">
+              <p className="text-xs font-mono text-muted-foreground/50 mt-0.5">
                 engine/{engine.id.toString()}
               </p>
             </div>
 
-            <div className="text-right flex-shrink-0">
+            {/* Cost + resilience arc */}
+            <div className="text-right flex-shrink-0 flex flex-col items-end gap-1">
               <div className="text-sm font-mono font-bold text-foreground tabular-nums">
                 {formatCostPerHour(engine.costPerHour)}
               </div>
               <div className="text-xs text-muted-foreground tabular-nums">
                 {formatCostPerMonth(engine.costPerHour)}/mo
               </div>
+              <ResilienceArc score={resilienceScore} />
             </div>
           </div>
 
@@ -309,37 +369,29 @@ export function EngineCard({
             ].map(({ icon: Icon, label }) => (
               <div
                 key={label}
-                className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded bg-secondary/60 text-muted-foreground"
+                className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-lg"
+                style={{
+                  background: "oklch(var(--secondary) / 0.5)",
+                  border: `1px solid ${provider.color}20`,
+                }}
               >
                 <Icon className="w-3 h-3" style={{ color: provider.color }} />
-                <span className="font-mono">{label}</span>
+                <span className="font-mono text-muted-foreground">{label}</span>
               </div>
             ))}
           </div>
 
-          {/* Resilience */}
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <div className="cursor-help">
-                <ResilienceBar score={resilienceScore} />
-              </div>
-            </TooltipTrigger>
-            <TooltipContent side="top" className="max-w-52">
-              <p>
-                How fault-tolerant your engine is across regions and providers.
-                Higher is better.
-              </p>
-            </TooltipContent>
-          </Tooltip>
-
           {/* Actions */}
-          <div className="flex items-center gap-1.5 pt-0.5 border-t border-border">
+          <div
+            className="flex items-center gap-1.5 pt-0.5"
+            style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}
+          >
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
                   size="sm"
                   variant="outline"
-                  className="h-7 px-2.5 text-xs gap-1.5 flex-1"
+                  className="h-7 px-2.5 text-xs gap-1.5 flex-1 transition-all duration-150"
                   onClick={() => setMigrateOpen(true)}
                   disabled={
                     displayStatus === "migrating" || actionInProgress !== null
@@ -372,7 +424,7 @@ export function EngineCard({
                 <Button
                   size="sm"
                   variant="ghost"
-                  className="h-7 px-2.5 text-xs gap-1.5"
+                  className="h-7 px-2.5 text-xs gap-1.5 hover:bg-muted/50 transition-colors duration-150"
                   onClick={() => onDeployShortcut(engine)}
                   data-tour-id={`ai-deploy-btn-${index}`}
                 >
@@ -391,7 +443,7 @@ export function EngineCard({
                 <Button
                   size="sm"
                   variant="ghost"
-                  className="h-7 w-7 p-0 text-muted-foreground hover:text-foreground"
+                  className="h-7 w-7 p-0 text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors duration-150"
                   disabled={actionInProgress !== null}
                   onClick={handleStopStart}
                   data-ocid="engine.toggle"
@@ -419,7 +471,7 @@ export function EngineCard({
                 <Button
                   size="sm"
                   variant="ghost"
-                  className="h-7 w-7 p-0 text-muted-foreground hover:text-foreground"
+                  className="h-7 w-7 p-0 text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors duration-150"
                   disabled={actionInProgress !== null || isStoppedDisplay}
                   onClick={handleRestart}
                   data-ocid="engine.secondary_button"
@@ -442,7 +494,7 @@ export function EngineCard({
                 <Button
                   size="sm"
                   variant="ghost"
-                  className="h-7 w-7 p-0 text-muted-foreground hover:text-foreground"
+                  className="h-7 w-7 p-0 text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors duration-150"
                   disabled={actionInProgress !== null}
                   onClick={() => setScaleOpen(true)}
                   data-ocid="engine.edit_button"
@@ -467,7 +519,7 @@ export function EngineCard({
                     <Button
                       size="sm"
                       variant="ghost"
-                      className="h-7 w-7 p-0 text-muted-foreground hover:text-destructive"
+                      className="h-7 w-7 p-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors duration-150"
                       disabled={isDeleting}
                       data-ocid="engine.delete_button"
                     >
@@ -532,7 +584,7 @@ export function EngineCard({
                   key={tier.name}
                   type="button"
                   onClick={() => handleScaleTier(tier)}
-                  className={`flex flex-col gap-1.5 p-3 rounded-lg border text-left transition-all duration-150 hover:scale-[1.02] focus:outline-none ${
+                  className={`flex flex-col gap-1.5 p-3 rounded-xl border text-left transition-all duration-150 hover:scale-[1.02] focus:outline-none ${
                     isCurrent
                       ? "border-2 bg-secondary/50"
                       : "border-border hover:border-opacity-70 hover:bg-secondary/30"

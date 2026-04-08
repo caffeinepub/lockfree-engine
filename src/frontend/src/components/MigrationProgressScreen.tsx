@@ -92,29 +92,29 @@ function StepRow({
     <motion.div
       initial={{ opacity: 0, x: -12 }}
       animate={{
-        opacity: status === "pending" ? 0.4 : 1,
+        opacity: status === "pending" ? 0.35 : 1,
         x: 0,
       }}
       transition={{ duration: 0.3, delay: index * 0.04 }}
       className={[
-        "relative flex items-start gap-3 px-3 py-3 rounded-lg border transition-all duration-400",
+        "relative flex items-start gap-3 px-3 py-3 rounded-xl border transition-all duration-300",
         status === "done"
-          ? "bg-cyan-500/5 border-cyan-500/25"
+          ? "bg-cyan-500/6 border-cyan-500/20 backdrop-blur-sm"
           : status === "active"
-            ? "bg-secondary/70 border-cyan-500/40 shadow-[0_0_14px_oklch(0.82_0.22_195/0.15)]"
-            : "bg-secondary/10 border-border/30",
+            ? "bg-card/60 border-cyan-500/35 backdrop-blur-sm shadow-[0_0_16px_oklch(0.82_0.22_195/0.12)]"
+            : "bg-secondary/8 border-border/20",
       ].join(" ")}
     >
       {/* Active pulsing glow overlay */}
       {status === "active" && (
         <motion.div
-          className="absolute inset-0 rounded-lg bg-cyan-500/5 pointer-events-none"
-          animate={{ opacity: [0.3, 0.7, 0.3] }}
-          transition={{ duration: 1.6, repeat: Number.POSITIVE_INFINITY }}
+          className="absolute inset-0 rounded-xl bg-cyan-500/4 pointer-events-none"
+          animate={{ opacity: [0.3, 0.8, 0.3] }}
+          transition={{ duration: 1.8, repeat: Number.POSITIVE_INFINITY }}
         />
       )}
 
-      {/* Step number / icon */}
+      {/* Step icon */}
       <div className="flex-shrink-0 w-6 h-6 flex items-center justify-center mt-0.5">
         {status === "done" ? (
           <motion.div
@@ -122,12 +122,12 @@ function StepRow({
             animate={{ scale: 1, rotate: 0 }}
             transition={{ type: "spring", stiffness: 400, damping: 18 }}
           >
-            <CheckCircle2 className="w-5 h-5 text-cyan-400" />
+            <CheckCircle2 className="w-5 h-5 text-cyan-400 drop-shadow-[0_0_6px_oklch(0.82_0.22_195/0.5)]" />
           </motion.div>
         ) : status === "active" ? (
           <Loader2 className="w-4.5 h-4.5 text-cyan-400 animate-spin" />
         ) : (
-          <div className="w-4 h-4 rounded-full border-2 border-border/40" />
+          <div className="w-4 h-4 rounded-full border-2 border-border/30" />
         )}
       </div>
 
@@ -137,30 +137,30 @@ function StepRow({
           <span
             className={`text-xs font-semibold ${
               status === "done"
-                ? "text-cyan-300"
+                ? "text-cyan-200"
                 : status === "active"
                   ? "text-foreground"
-                  : "text-muted-foreground"
+                  : "text-muted-foreground/60"
             }`}
           >
             {step.label}
           </span>
           {status === "done" && elapsed !== undefined && (
-            <span className="text-[10px] text-cyan-500/60 font-mono ml-auto">
+            <span className="text-[10px] text-cyan-500/50 font-mono ml-auto">
               {(elapsed / 1000).toFixed(1)}s
             </span>
           )}
           {status === "active" && (
-            <span className="text-[10px] text-cyan-400/70 animate-pulse ml-auto">
+            <span className="text-[10px] text-cyan-400/60 animate-pulse ml-auto font-mono">
               running…
             </span>
           )}
         </div>
         <p
-          className={`text-[11px] mt-0.5 leading-relaxed ${
+          className={`text-[11px] mt-0.5 leading-relaxed font-mono ${
             status === "active"
-              ? "text-foreground/70"
-              : "text-muted-foreground/70"
+              ? "text-cyan-300/60"
+              : "text-muted-foreground/50"
           }`}
         >
           {status === "active" ? step.description : step.techDetail}
@@ -172,16 +172,19 @@ function StepRow({
 
 function ProgressBar({ progress }: { progress: number }) {
   return (
-    <div className="relative h-1.5 rounded-full bg-border/40 overflow-hidden">
+    <div className="relative h-1.5 rounded-full bg-white/6 overflow-hidden backdrop-blur-sm">
       <motion.div
-        className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-cyan-500 to-emerald-400"
+        className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-cyan-600 via-cyan-400 to-emerald-400"
         initial={{ width: "0%" }}
         animate={{ width: `${progress}%` }}
         transition={{ duration: 0.5, ease: "easeOut" }}
+        style={{
+          boxShadow: "0 0 8px oklch(0.82 0.22 195 / 0.5)",
+        }}
       />
-      {/* shimmer */}
+      {/* shimmer sweep */}
       <motion.div
-        className="absolute inset-y-0 w-16 bg-gradient-to-r from-transparent via-white/20 to-transparent"
+        className="absolute inset-y-0 w-16 bg-gradient-to-r from-transparent via-white/25 to-transparent"
         animate={{ left: ["-10%", "110%"] }}
         transition={{
           duration: 1.8,
@@ -204,7 +207,6 @@ function SuccessScreen({
   onComplete: (result: ScanResult, stackInput: string) => void;
   onNewScan: () => void;
 }) {
-  // Derive a human-friendly stack name from the first component or detect enterprise
   const isNeoCloud = /kubernetes|sui move|nats|ceph|tee bft/i.test(stackInput);
   const stackName = isNeoCloud
     ? "NeoCloud Sovereign"
@@ -213,15 +215,6 @@ function SuccessScreen({
       : stackInput.trim()
         ? stackInput.split(/[\n,]/)[0].trim().slice(0, 36) || "Sovereign"
         : "Sovereign";
-
-  // Build a compact component summary from matched components (up to 4)
-  const componentSummary = result.components
-    .slice(0, 4)
-    .map(
-      (c) =>
-        `${c.original.split(/[/,]/)[0].trim()} → ${c.icpEquivalent.split(/[+(]/)[0].trim()}`,
-    )
-    .join("  ·  ");
 
   return (
     <motion.div
@@ -242,35 +235,35 @@ function SuccessScreen({
             damping: 20,
             delay: 0.1,
           }}
-          className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-emerald-500/15 border border-emerald-500/30 mx-auto"
+          className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-emerald-500/12 border border-emerald-500/30 mx-auto shadow-[0_0_24px_oklch(0.72_0.19_145/0.2)]"
         >
-          <CheckCircle2 className="w-7 h-7 text-emerald-400" />
+          <CheckCircle2 className="w-7 h-7 text-emerald-400 drop-shadow-[0_0_8px_oklch(0.72_0.19_145/0.6)]" />
         </motion.div>
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.25, duration: 0.3 }}
         >
-          <h3 className="text-base font-bold text-foreground">
+          <h3 className="text-base font-bold text-foreground tracking-tight">
             Migration Complete
           </h3>
-          <p className="text-xs text-muted-foreground mt-0.5">
+          <p className="text-xs text-muted-foreground/80 mt-0.5">
             Your{" "}
-            <span className="text-foreground/80 font-medium">{stackName}</span>{" "}
+            <span className="text-cyan-300 font-semibold">{stackName}</span>{" "}
             stack is live on sovereign ICP infrastructure
           </p>
         </motion.div>
       </div>
 
       {/* Component mapping summary */}
-      {componentSummary && (
+      {result.components.length > 0 && (
         <motion.div
           initial={{ opacity: 0, y: 6 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3, duration: 0.25 }}
-          className="rounded-lg border border-cyan-500/20 bg-cyan-500/5 px-3 py-2.5"
+          className="rounded-xl border border-cyan-500/20 bg-cyan-500/5 backdrop-blur-sm px-3 py-2.5"
         >
-          <p className="text-[10px] text-muted-foreground/70 uppercase tracking-wide font-semibold mb-1.5">
+          <p className="text-[10px] text-muted-foreground/60 uppercase tracking-wide font-semibold mb-1.5">
             Component Migration Summary
           </p>
           <div className="flex flex-wrap gap-x-3 gap-y-1">
@@ -282,8 +275,8 @@ function SuccessScreen({
                 <span className="text-foreground/70 font-mono">
                   {c.original.split(/[/,]/)[0].trim()}
                 </span>
-                <span className="text-muted-foreground/50">→</span>
-                <span className="text-cyan-400 font-semibold">
+                <span className="text-muted-foreground/40">→</span>
+                <span className="text-cyan-300 font-semibold">
                   {c.icpEquivalent.split(/[+(]/)[0].trim()}
                 </span>
               </span>
@@ -297,32 +290,32 @@ function SuccessScreen({
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.38, duration: 0.3 }}
-        className="rounded-xl border border-emerald-500/25 bg-gradient-to-b from-emerald-500/8 to-emerald-500/3 p-4 space-y-3"
+        className="rounded-xl border border-emerald-500/20 bg-gradient-to-b from-emerald-500/6 to-emerald-500/2 backdrop-blur-sm p-4 space-y-3 shadow-[0_0_20px_oklch(0.72_0.19_145/0.08)]"
       >
         {/* Engine header */}
         <div className="flex items-start justify-between gap-2">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-emerald-500/15 border border-emerald-500/25 flex items-center justify-center flex-shrink-0">
-              <Shield className="w-4 h-4 text-emerald-400" />
+            <div className="w-9 h-9 rounded-xl bg-emerald-500/12 border border-emerald-500/25 flex items-center justify-center flex-shrink-0 shadow-[0_0_12px_oklch(0.72_0.19_145/0.2)]">
+              <Shield className="w-4.5 h-4.5 text-emerald-400" />
             </div>
             <div>
               <div
-                className="text-sm font-semibold text-foreground leading-tight truncate max-w-[160px]"
+                className="text-sm font-semibold text-foreground leading-tight truncate max-w-[160px] tracking-tight"
                 title={stackName}
               >
                 {stackName}
               </div>
               <div className="flex items-center gap-1 mt-0.5">
-                <MapPin className="w-2.5 h-2.5 text-cyan-400/70" />
-                <span className="text-[11px] text-muted-foreground">
+                <MapPin className="w-2.5 h-2.5 text-cyan-400/60" />
+                <span className="text-[11px] text-muted-foreground/70">
                   NeoCloud · Romania · EU
                 </span>
               </div>
             </div>
           </div>
           <div className="flex flex-col items-end gap-1.5">
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/35">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_4px_oklch(0.72_0.19_145/0.8)]" />
               Live
             </span>
           </div>
@@ -330,12 +323,12 @@ function SuccessScreen({
 
         {/* Subnet / tech details */}
         <div className="grid grid-cols-2 gap-2 text-[11px]">
-          <div className="rounded-md bg-secondary/40 px-2.5 py-1.5">
-            <div className="text-muted-foreground/60 mb-0.5">Subnet ID</div>
+          <div className="rounded-lg bg-background/40 border border-white/6 px-2.5 py-1.5 backdrop-blur-sm">
+            <div className="text-muted-foreground/50 mb-0.5">Subnet ID</div>
             <div className="font-mono text-foreground/90">eu-neocloud-1a</div>
           </div>
-          <div className="rounded-md bg-secondary/40 px-2.5 py-1.5">
-            <div className="text-muted-foreground/60 mb-0.5">Components</div>
+          <div className="rounded-lg bg-background/40 border border-white/6 px-2.5 py-1.5 backdrop-blur-sm">
+            <div className="text-muted-foreground/50 mb-0.5">Components</div>
             <div className="font-mono text-foreground/90">
               {result.components.length} canisters
             </div>
@@ -343,25 +336,25 @@ function SuccessScreen({
         </div>
 
         {/* Cost savings callout */}
-        <div className="flex items-center gap-2 rounded-lg border border-cyan-500/20 bg-cyan-500/5 px-3 py-2">
+        <div className="flex items-center gap-2 rounded-lg border border-cyan-500/15 bg-cyan-500/5 px-3 py-2">
           <Zap className="w-3.5 h-3.5 text-cyan-400 flex-shrink-0" />
           <div className="flex-1 min-w-0">
-            <span className="text-xs font-bold text-cyan-300">
+            <span className="text-xs font-bold text-cyan-200">
               {result.savingsPercent}% cost reduction
             </span>
-            <span className="text-xs text-muted-foreground">
+            <span className="text-xs text-muted-foreground/60">
               {" "}
               vs hyperscalers
             </span>
           </div>
-          <span className="text-[10px] text-cyan-500/60 font-mono">
+          <span className="text-[10px] text-cyan-500/50 font-mono">
             ~€{result.icpCostMin.toLocaleString()}/mo
           </span>
         </div>
 
         {/* Attribution badge */}
         <div className="flex items-center justify-center gap-2 pt-0.5">
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-secondary/60 border border-border/60 text-[10px] text-muted-foreground">
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-background/40 border border-white/8 backdrop-blur-sm text-[10px] text-muted-foreground/60">
             <Sparkles className="w-3 h-3 text-primary" />
             Powered by Caffeine Snorkel + LockFreeEngine
           </span>
@@ -376,7 +369,7 @@ function SuccessScreen({
         className="flex flex-col gap-2"
       >
         <Button
-          className="w-full h-10 font-semibold text-sm gap-2 bg-emerald-600 hover:bg-emerald-500 text-white border-0 shadow-[0_0_16px_oklch(0.72_0.19_145/0.3)] hover:shadow-[0_0_24px_oklch(0.72_0.19_145/0.5)] transition-all duration-300"
+          className="w-full h-10 font-semibold text-sm gap-2 bg-gradient-to-r from-cyan-600 to-cyan-500 hover:from-cyan-500 hover:to-cyan-400 text-background border-0 shadow-[0_0_16px_oklch(0.82_0.22_195/0.3)] hover:shadow-[0_0_28px_oklch(0.82_0.22_195/0.5)] transition-all duration-300 rounded-xl"
           onClick={() => onComplete(result, stackInput)}
           data-ocid="migration.open_dashboard_btn"
         >
@@ -385,7 +378,7 @@ function SuccessScreen({
         </Button>
         <Button
           variant="outline"
-          className="w-full h-9 text-sm gap-2"
+          className="w-full h-9 text-sm gap-2 border-white/10 bg-white/3 hover:bg-white/6 rounded-xl"
           onClick={onNewScan}
           data-ocid="migration.new_scan_btn"
         >
@@ -394,7 +387,7 @@ function SuccessScreen({
         </Button>
       </motion.div>
 
-      <p className="text-center text-[11px] text-muted-foreground/40 pb-1">
+      <p className="text-center text-[11px] text-muted-foreground/35 pb-1">
         All migration is simulated · Powered by Caffeine Snorkel (coming soon) ·
         LockFreeEngine v3.0
       </p>
@@ -443,7 +436,6 @@ export function MigrationProgressScreen({
         setStepElapsed((prev) => ({ ...prev, [i]: elapsed }));
         setCompletedSteps((prev) => [...prev, i]);
       }
-      // Brief pause before showing success
       await new Promise<void>((r) => setTimeout(r, 300));
       setIsComplete(true);
     })();
@@ -462,21 +454,23 @@ export function MigrationProgressScreen({
             className="flex flex-col gap-4 p-4"
           >
             {/* Header */}
-            <div className="text-center space-y-1.5">
-              <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-cyan-500/10 border border-cyan-500/30">
+            <div className="text-center space-y-2">
+              <div className="inline-flex items-center justify-center w-11 h-11 rounded-full bg-cyan-500/10 border border-cyan-500/25 shadow-[0_0_20px_oklch(0.82_0.22_195/0.15)]">
                 <Sparkles className="w-4.5 h-4.5 text-cyan-400 animate-pulse" />
               </div>
-              <p className="text-sm font-semibold text-foreground">
-                Caffeine Snorkel Migration
-              </p>
-              <p className="text-xs text-muted-foreground">
-                Migrating your workload to sovereign ICP infrastructure
-              </p>
+              <div>
+                <p className="text-sm font-semibold text-foreground tracking-tight">
+                  Caffeine Snorkel Migration
+                </p>
+                <p className="text-xs text-muted-foreground/70 mt-0.5">
+                  Migrating your workload to sovereign ICP infrastructure
+                </p>
+              </div>
             </div>
 
             {/* Progress bar */}
-            <div className="space-y-1">
-              <div className="flex justify-between text-[10px] text-muted-foreground">
+            <div className="space-y-1.5">
+              <div className="flex justify-between text-[10px] text-muted-foreground/50 font-mono">
                 <span>
                   Step {Math.min(currentStepIdx + 1, MIGRATION_STEPS.length)} of{" "}
                   {MIGRATION_STEPS.length}
@@ -487,7 +481,7 @@ export function MigrationProgressScreen({
             </div>
 
             {/* Steps */}
-            <div className="space-y-2">
+            <div className="space-y-1.5">
               {MIGRATION_STEPS.map((step, idx) => {
                 const status = completedSteps.includes(idx)
                   ? "done"
@@ -507,9 +501,9 @@ export function MigrationProgressScreen({
             </div>
 
             {/* Subnet target */}
-            <div className="flex items-center gap-2 rounded-lg border border-border/50 bg-secondary/20 px-3 py-2 mt-1">
-              <MapPin className="w-3.5 h-3.5 text-cyan-400/70 flex-shrink-0" />
-              <span className="text-[11px] text-muted-foreground">
+            <div className="flex items-center gap-2 rounded-xl border border-white/8 bg-card/30 backdrop-blur-sm px-3 py-2 mt-1">
+              <MapPin className="w-3.5 h-3.5 text-cyan-400/60 flex-shrink-0" />
+              <span className="text-[11px] text-muted-foreground/70">
                 Destination:{" "}
                 <span className="text-foreground/80 font-mono">
                   eu-neocloud-1a

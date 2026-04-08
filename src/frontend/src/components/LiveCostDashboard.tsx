@@ -30,9 +30,8 @@ const PROVIDER_COLORS: Record<string, string> = {
   Azure: "#00BCF2",
 };
 
-const ICP_RATE = 6.2; // 1 ICP ≈ $6.20 (mock)
+const ICP_RATE = 6.2;
 
-// ── Day labels helper ──────────────────────────────────────────────────────
 const DAY_LABELS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 function last7DayLabels(): string[] {
@@ -44,7 +43,6 @@ function last7DayLabels(): string[] {
   return labels;
 }
 
-// ── Custom bar chart tooltip ───────────────────────────────────────────────
 function EngineBarTooltip({
   active,
   payload,
@@ -60,10 +58,11 @@ function EngineBarTooltip({
   const color = PROVIDER_COLORS[d.provider] ?? "#888";
   return (
     <div
-      className="rounded-lg px-3 py-2.5 text-xs shadow-xl"
+      className="rounded-xl px-3 py-2.5 text-xs shadow-xl"
       style={{
-        background: "oklch(var(--popover))",
-        border: "1px solid oklch(var(--border))",
+        background: "oklch(var(--popover) / 0.95)",
+        border: "1px solid rgba(255,255,255,0.1)",
+        backdropFilter: "blur(12px)",
         minWidth: 150,
       }}
     >
@@ -160,7 +159,7 @@ function ResilienceGauge({
                 stroke={color}
                 strokeWidth="8"
                 strokeLinecap="round"
-                style={{ filter: `drop-shadow(0 0 4px ${color}80)` }}
+                style={{ filter: `drop-shadow(0 0 6px ${color}90)` }}
               />
             )}
             <text
@@ -172,7 +171,7 @@ function ResilienceGauge({
               style={{
                 fill: color,
                 fontSize: "18px",
-                fontFamily: '"Geist Mono", monospace',
+                fontFamily: '"JetBrains Mono", monospace',
               }}
             >
               {clampedScore}%
@@ -185,7 +184,7 @@ function ResilienceGauge({
               style={{
                 fill: "oklch(var(--muted-foreground))",
                 fontSize: "9px",
-                fontFamily: "Outfit, system-ui",
+                fontFamily: "Plus Jakarta Sans, system-ui",
               }}
             >
               Resilience
@@ -246,18 +245,16 @@ function useLiveCostMultiplier(isDemoMode: boolean) {
       return;
     }
 
-    // Update cost every 8-12 seconds with a tiny random fluctuation
     function scheduleTick() {
       const delay = 8000 + Math.random() * 4000;
       tickRef.current = setTimeout(() => {
-        const delta = (Math.random() - 0.48) * 0.025; // ±2.5%
+        const delta = (Math.random() - 0.48) * 0.025;
         setMultiplier((prev) => Math.max(0.92, Math.min(1.08, prev + delta)));
         setSecondsSinceUpdate(0);
         scheduleTick();
       }, delay);
     }
 
-    // Seconds-since-update counter
     secRef.current = setInterval(() => {
       setSecondsSinceUpdate((s) => s + 1);
     }, 1000);
@@ -273,14 +270,13 @@ function useLiveCostMultiplier(isDemoMode: boolean) {
   return { multiplier, secondsSinceUpdate };
 }
 
-// ── Live trend data updater (demo mode only) ──────────────────────────────
+// ── Live trend data updater ─────────────────────────────────────────────
 function useLiveTrendData(
   baseTrendData: { day: string; cost: number }[],
   isDemoMode: boolean,
 ) {
   const [trendData, setTrendData] = useState(baseTrendData);
 
-  // Update when baseTrendData changes (new engines etc.)
   useEffect(() => {
     setTrendData(baseTrendData);
   }, [baseTrendData]);
@@ -323,7 +319,6 @@ export function LiveCostDashboard({
   const isLoading = costLoading || enginesLoading;
   const engineList: Engine[] = engines ?? [];
 
-  // Build per-engine bar chart data
   const engineMap = new Map(engineList.map((e) => [e.id.toString(), e]));
   const barData = (cost?.engineCosts ?? []).map(([id, costPerHr]) => {
     const engine = engineMap.get(id.toString());
@@ -343,7 +338,6 @@ export function LiveCostDashboard({
           monthly: e.costPerHour * 720,
         }));
 
-  // Apply live multiplier in demo mode
   const animatedBarData = isDemoMode
     ? displayBarData.map((d) => ({
         ...d,
@@ -359,9 +353,6 @@ export function LiveCostDashboard({
     : rawTotalMonthlyUSD;
   const totalMonthlyICP = totalMonthlyUSD / ICP_RATE;
 
-  // 7-day trend — both memoized to prevent infinite re-render loop (React error #185)
-  // dayLabels is stable (only changes once per day), baseTrendData only recalculates
-  // when the cost figure changes, preventing a new array reference on every render.
   const dayLabels = useMemo(() => last7DayLabels(), []);
   const baseTrendData = useMemo(
     () =>
@@ -386,14 +377,23 @@ export function LiveCostDashboard({
       : 0;
   const uniqueProviders = new Set(engineList.map((e) => e.provider)).size;
 
-  // Format display values for animation key
   const displayUSD = `$${totalMonthlyUSD.toFixed(2)}`;
   const displayICP = `≈ ${totalMonthlyICP.toFixed(2)} ICP/month`;
+
+  const gridStroke = "oklch(0.22 0.018 243)";
 
   return (
     <>
       <motion.div
-        className="console-panel p-5 space-y-6"
+        className="rounded-2xl p-5 space-y-6"
+        style={{
+          background: "oklch(var(--card) / 0.6)",
+          border: "1px solid rgba(255,255,255,0.07)",
+          backdropFilter: "blur(12px)",
+          WebkitBackdropFilter: "blur(12px)",
+          boxShadow:
+            "0 4px 28px rgba(0,0,0,0.4), 0 1px 0 rgba(255,255,255,0.04) inset",
+        }}
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease: "easeOut" }}
@@ -403,24 +403,29 @@ export function LiveCostDashboard({
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1">
               <span className="relative flex items-center gap-1.5">
+                {/* Pulsing LIVE badge */}
                 <span
-                  className="w-2 h-2 rounded-full flex-shrink-0"
+                  className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-semibold"
                   style={{
                     background: isDemoMode
-                      ? "#22c55e"
-                      : "oklch(var(--status-running))",
-                    animation: "pulse 1.5s ease-in-out infinite",
-                  }}
-                />
-                <span
-                  className="text-xs font-semibold uppercase tracking-wider"
-                  style={{
+                      ? "rgba(34,197,94,0.12)"
+                      : "oklch(var(--status-running) / 0.12)",
+                    border: `1px solid ${isDemoMode ? "rgba(34,197,94,0.3)" : "oklch(var(--status-running) / 0.3)"}`,
                     color: isDemoMode
                       ? "#22c55e"
                       : "oklch(var(--status-running))",
                   }}
                 >
-                  {isDemoMode ? "Live (Demo)" : "Live"}
+                  <span
+                    className="w-1.5 h-1.5 rounded-full flex-shrink-0"
+                    style={{
+                      background: isDemoMode
+                        ? "#22c55e"
+                        : "oklch(var(--status-running))",
+                      animation: "pulse 1.5s ease-in-out infinite",
+                    }}
+                  />
+                  {isDemoMode ? "LIVE (DEMO)" : "LIVE"}
                 </span>
               </span>
               <span className="text-xs text-muted-foreground">
@@ -466,7 +471,6 @@ export function LiveCostDashboard({
             )}
           </div>
 
-          {/* Resilience gauge */}
           <div className="flex-shrink-0">
             <ResilienceGauge
               score={Math.round(avgResilience)}
@@ -474,7 +478,6 @@ export function LiveCostDashboard({
             />
           </div>
 
-          {/* Optimize button */}
           <div className="w-full sm:w-auto flex items-center">
             <Button
               className="gap-2 w-full sm:w-auto"
@@ -490,7 +493,7 @@ export function LiveCostDashboard({
         {/* ── B. Per-engine bar chart ── */}
         <div>
           <div className="flex items-center gap-2 mb-3">
-            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+            <span className="text-xs font-semibold font-display text-muted-foreground uppercase tracking-wider">
               Monthly Cost by Engine
             </span>
             <div className="flex items-center gap-3 ml-auto">
@@ -509,12 +512,12 @@ export function LiveCostDashboard({
           <div className="overflow-x-auto">
             {isLoading ? (
               <div
-                className="h-[220px] rounded-lg animate-pulse min-w-[320px]"
-                style={{ background: "oklch(var(--muted))" }}
+                className="h-[220px] rounded-xl animate-pulse min-w-[320px]"
+                style={{ background: "oklch(var(--muted) / 0.5)" }}
               />
             ) : animatedBarData.length === 0 ? (
               <div
-                className="h-[220px] rounded-lg flex flex-col items-center justify-center gap-2"
+                className="h-[220px] rounded-xl flex flex-col items-center justify-center gap-2"
                 style={{ background: "oklch(var(--secondary) / 0.3)" }}
               >
                 <span className="text-sm text-muted-foreground">
@@ -530,8 +533,8 @@ export function LiveCostDashboard({
                     barCategoryGap="30%"
                   >
                     <CartesianGrid
-                      strokeDasharray="3 3"
-                      stroke="oklch(var(--border))"
+                      strokeDasharray="4 4"
+                      stroke={gridStroke}
                       vertical={false}
                     />
                     <XAxis
@@ -539,7 +542,7 @@ export function LiveCostDashboard({
                       tick={{
                         fill: "oklch(var(--muted-foreground))",
                         fontSize: 11,
-                        fontFamily: "Outfit, system-ui",
+                        fontFamily: "Plus Jakarta Sans, system-ui",
                       }}
                       axisLine={false}
                       tickLine={false}
@@ -549,7 +552,7 @@ export function LiveCostDashboard({
                       tick={{
                         fill: "oklch(var(--muted-foreground))",
                         fontSize: 11,
-                        fontFamily: '"Geist Mono", monospace',
+                        fontFamily: '"JetBrains Mono", monospace',
                       }}
                       axisLine={false}
                       tickLine={false}
@@ -558,11 +561,11 @@ export function LiveCostDashboard({
                     <RechartTooltip
                       content={<EngineBarTooltip />}
                       cursor={{
-                        fill: "oklch(var(--muted) / 0.5)",
+                        fill: "oklch(var(--muted) / 0.4)",
                         radius: 4,
                       }}
                     />
-                    <Bar dataKey="monthly" radius={[4, 4, 0, 0]}>
+                    <Bar dataKey="monthly" radius={[5, 5, 0, 0]}>
                       {animatedBarData.map((entry) => (
                         <Cell
                           key={`cell-${entry.name}-${entry.provider}`}
@@ -580,7 +583,7 @@ export function LiveCostDashboard({
 
         {/* ── C. 7-day trend ── */}
         <div>
-          <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">
+          <div className="text-xs font-semibold font-display text-muted-foreground uppercase tracking-wider mb-3">
             7-Day Cost Trend
           </div>
 
@@ -594,7 +597,7 @@ export function LiveCostDashboard({
                   <stop
                     offset="5%"
                     stopColor="oklch(var(--primary))"
-                    stopOpacity={0.35}
+                    stopOpacity={0.4}
                   />
                   <stop
                     offset="95%"
@@ -604,8 +607,8 @@ export function LiveCostDashboard({
                 </linearGradient>
               </defs>
               <CartesianGrid
-                strokeDasharray="3 3"
-                stroke="oklch(var(--border))"
+                strokeDasharray="4 4"
+                stroke={gridStroke}
                 vertical={false}
               />
               <XAxis
@@ -613,7 +616,7 @@ export function LiveCostDashboard({
                 tick={{
                   fill: "oklch(var(--muted-foreground))",
                   fontSize: 11,
-                  fontFamily: "Outfit, system-ui",
+                  fontFamily: "Plus Jakarta Sans, system-ui",
                 }}
                 axisLine={false}
                 tickLine={false}
@@ -623,7 +626,7 @@ export function LiveCostDashboard({
                 tick={{
                   fill: "oklch(var(--muted-foreground))",
                   fontSize: 10,
-                  fontFamily: '"Geist Mono", monospace',
+                  fontFamily: '"JetBrains Mono", monospace',
                 }}
                 axisLine={false}
                 tickLine={false}
@@ -635,11 +638,12 @@ export function LiveCostDashboard({
                   "Daily spend",
                 ]}
                 contentStyle={{
-                  background: "oklch(var(--popover))",
-                  border: "1px solid oklch(var(--border))",
-                  borderRadius: "8px",
+                  background: "oklch(var(--popover) / 0.95)",
+                  border: "1px solid rgba(255,255,255,0.1)",
+                  borderRadius: "10px",
                   fontSize: "12px",
                   color: "oklch(var(--foreground))",
+                  backdropFilter: "blur(12px)",
                 }}
                 labelStyle={{ color: "oklch(var(--muted-foreground))" }}
                 cursor={{ stroke: "oklch(var(--primary))", strokeWidth: 1 }}
@@ -648,11 +652,11 @@ export function LiveCostDashboard({
                 type="monotone"
                 dataKey="cost"
                 stroke="oklch(var(--primary))"
-                strokeWidth={2}
+                strokeWidth={2.5}
                 fill="url(#costGradient)"
                 dot={false}
                 activeDot={{
-                  r: 4,
+                  r: 5,
                   fill: "oklch(var(--primary))",
                   stroke: "oklch(var(--background))",
                   strokeWidth: 2,
@@ -664,7 +668,6 @@ export function LiveCostDashboard({
         </div>
       </motion.div>
 
-      {/* AI Optimization modal */}
       <AICostOptimizationModal
         open={optimizeOpen}
         onClose={() => setOptimizeOpen(false)}

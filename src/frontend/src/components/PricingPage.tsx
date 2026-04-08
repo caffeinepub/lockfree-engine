@@ -24,7 +24,8 @@ const TIERS = [
     iconBg: "bg-muted/50 border border-border",
     nameColor: "text-muted-foreground",
     checkColor: "text-muted-foreground",
-    cardClass: "border-border bg-card/60",
+    cardClass: "border-border/60 bg-card/60",
+    accentBar: "bg-border/40",
     badge: null,
     tagline: "Try it free — no credit card needed",
     features: [
@@ -53,7 +54,9 @@ const TIERS = [
       "bg-[oklch(0.72_0.19_145/0.15)] border border-[oklch(0.72_0.19_145/0.4)]",
     nameColor: "text-[oklch(0.82_0.19_145)]",
     checkColor: "text-[oklch(0.72_0.19_145)]",
-    cardClass: "tier-pro-glow border-[oklch(0.72_0.19_145/0.5)] bg-card",
+    cardClass: "border-[oklch(0.72_0.19_145/0.25)] bg-card/60",
+    accentBar:
+      "bg-gradient-to-r from-[oklch(0.72_0.19_145)] to-[oklch(0.82_0.22_195)]",
     badge: {
       label: "Most Popular",
       icon: Sparkles,
@@ -83,7 +86,9 @@ const TIERS = [
       "bg-[oklch(0.68_0.22_260/0.15)] border border-[oklch(0.68_0.22_260/0.4)]",
     nameColor: "text-[oklch(0.78_0.22_260)]",
     checkColor: "text-[oklch(0.68_0.22_260)]",
-    cardClass: "border-[oklch(0.68_0.22_260/0.5)] bg-card",
+    cardClass: "border-[oklch(0.68_0.22_260/0.3)] bg-card/60",
+    accentBar:
+      "bg-gradient-to-r from-[oklch(0.68_0.22_260)] to-[oklch(0.72_0.19_145)]",
     badge: {
       label: "Growing Teams",
       icon: Star,
@@ -111,10 +116,17 @@ const TIERS = [
     iconColor: "text-[oklch(0.75_0.18_60)]",
     iconBg:
       "bg-[oklch(0.75_0.18_60/0.15)] border border-[oklch(0.75_0.18_60/0.4)]",
-    nameColor: "text-[oklch(0.85_0.18_60)]",
+    nameColor:
+      "text-transparent bg-clip-text bg-gradient-to-r from-primary to-[oklch(0.85_0.18_60)]",
     checkColor: "text-[oklch(0.75_0.18_60)]",
-    cardClass: "tier-enterprise-glow border-[oklch(0.75_0.18_60/0.5)] bg-card",
-    badge: { label: "Enterprise", icon: Crown, bg: "bg-[oklch(0.75_0.18_60)]" },
+    cardClass: "border-[oklch(0.82_0.22_195/0.35)] border-2 bg-card/80",
+    accentBar:
+      "bg-gradient-to-r from-primary via-[oklch(0.78_0.22_220)] to-[oklch(0.85_0.18_60)]",
+    badge: {
+      label: "Enterprise",
+      icon: Crown,
+      bg: "bg-gradient-to-r from-primary to-[oklch(0.75_0.18_60)]",
+    },
     tagline: "For agencies and large organisations",
     features: [
       "Unlimited Cloud Engines",
@@ -142,17 +154,25 @@ interface TierCardProps {
 function TierCard({ tier, currentTier, annual, onUpgrade }: TierCardProps) {
   const isCurrent = currentTier === tier.id;
   const isFree = tier.id === "free";
+  const isEnterprise = tier.id === "enterprise";
   const Icon = tier.icon;
   const price = annual ? tier.annualMonthlyPrice : tier.monthlyPrice;
 
   return (
     <div
-      className={`relative flex flex-col rounded-xl border p-7 transition-all duration-200 h-full ${tier.cardClass}`}
+      className={`relative flex flex-col rounded-2xl border p-7 backdrop-blur-md transition-all duration-200 h-full ${tier.cardClass} ${
+        isEnterprise ? "shadow-[0_0_32px_oklch(0.82_0.22_195/0.12)]" : ""
+      }`}
     >
+      {/* Top accent bar */}
+      <div
+        className={`absolute top-0 left-0 right-0 h-0.5 rounded-t-2xl ${tier.accentBar}`}
+      />
+
       {tier.badge && (
         <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 z-10">
           <Badge
-            className={`${tier.badge.bg} text-background text-xs font-semibold px-3 py-1 shadow-lg whitespace-nowrap`}
+            className={`${tier.badge.bg} text-background text-xs font-semibold px-3 py-1 shadow-lg whitespace-nowrap border-0`}
           >
             <tier.badge.icon className="w-3 h-3 mr-1" />
             {tier.badge.label}
@@ -194,12 +214,11 @@ function TierCard({ tier, currentTier, annual, onUpgrade }: TierCardProps) {
                   /mo
                 </span>
               </div>
-              {annual && (
+              {annual ? (
                 <div className="text-sm text-[oklch(0.72_0.19_145)] mt-1 font-medium">
                   Billed annually — 2 months free
                 </div>
-              )}
-              {!annual && (
+              ) : (
                 <div className="text-sm text-muted-foreground mt-1">
                   or ${tier.annualMonthlyPrice}/mo billed annually
                 </div>
@@ -238,7 +257,11 @@ function TierCard({ tier, currentTier, annual, onUpgrade }: TierCardProps) {
 
       {/* CTA */}
       {isFree ? (
-        <Button variant="outline" className="w-full" disabled={isCurrent}>
+        <Button
+          variant="outline"
+          className="w-full border-white/10 bg-transparent"
+          disabled={isCurrent}
+        >
           {isCurrent ? "Current Plan" : "Downgrade to Free"}
         </Button>
       ) : tier.id === "pro" ? (
@@ -262,7 +285,7 @@ function TierCard({ tier, currentTier, annual, onUpgrade }: TierCardProps) {
       ) : (
         <Button
           data-ocid="pricing.enterprise.primary_button"
-          className="w-full bg-[oklch(0.75_0.18_60)] hover:bg-[oklch(0.68_0.18_60)] text-background font-semibold"
+          className="w-full bg-gradient-to-r from-primary to-[oklch(0.75_0.18_60)] hover:opacity-90 text-background font-semibold border-0"
           disabled={isCurrent}
           onClick={onUpgrade}
         >
@@ -334,7 +357,7 @@ export function PricingPage({
           lock-in. All plans recorded on-chain for full transparency.
         </p>
 
-        {/* Annual toggle */}
+        {/* Annual toggle — glass pill */}
         <div className="flex items-center justify-center gap-3 mt-7">
           <span
             className={`text-sm font-medium ${!annual ? "text-foreground" : "text-muted-foreground"}`}
@@ -348,13 +371,13 @@ export function PricingPage({
             data-ocid="pricing.annual.toggle"
             onClick={() => setAnnual((v) => !v)}
             className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-primary/30 ${
-              annual ? "bg-[oklch(0.72_0.19_145)]" : "bg-muted"
+              annual
+                ? "bg-[oklch(0.72_0.19_145)]"
+                : "bg-muted/60 border border-white/10"
             }`}
           >
             <span
-              className={`inline-block h-5 w-5 transform rounded-full bg-white shadow-sm transition-transform ${
-                annual ? "translate-x-6" : "translate-x-1"
-              }`}
+              className={`inline-block h-5 w-5 transform rounded-full bg-white shadow-sm transition-transform ${annual ? "translate-x-6" : "translate-x-1"}`}
             />
           </button>
           <span

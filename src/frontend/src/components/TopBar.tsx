@@ -187,12 +187,20 @@ export function TopBar({
   }
 
   return (
-    <header className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b border-border/60 bg-background/80 backdrop-blur-sm px-4 lg:px-6">
+    <header
+      className="sticky top-0 z-30 flex h-14 items-center gap-3 px-4 lg:px-6"
+      style={{
+        background: "oklch(0.1 0.014 245 / 0.85)",
+        backdropFilter: "blur(16px)",
+        WebkitBackdropFilter: "blur(16px)",
+        borderBottom: "1px solid oklch(0.82 0.22 195 / 0.08)",
+      }}
+    >
       {/* Mobile menu button */}
       <Button
         variant="ghost"
         size="icon"
-        className="lg:hidden w-8 h-8"
+        className="lg:hidden w-8 h-8 hover:bg-card/60 transition-colors duration-200"
         onClick={onMenuClick}
         data-ocid="topbar.menu.button"
       >
@@ -219,7 +227,7 @@ export function TopBar({
         <Search className="absolute left-2.5 w-3.5 h-3.5 text-muted-foreground pointer-events-none" />
         <Input
           placeholder="Search engines..."
-          className="h-8 pl-8 w-48 text-xs bg-secondary/50 border-border"
+          className="h-8 pl-8 w-48 text-xs bg-secondary/50 border-border/60 focus:border-primary/40 transition-colors"
           data-ocid="topbar.search_input"
         />
       </div>
@@ -228,7 +236,7 @@ export function TopBar({
       <Button
         variant="ghost"
         size="icon"
-        className="w-8 h-8"
+        className="w-8 h-8 text-muted-foreground hover:text-foreground hover:ring-2 hover:ring-primary/20 transition-all duration-200 rounded-lg"
         onClick={onToggleTheme}
         title={
           theme === "dark" ? "Switch to light mode" : "Switch to dark mode"
@@ -248,7 +256,7 @@ export function TopBar({
           <Button
             variant="ghost"
             size="icon"
-            className="w-8 h-8 relative"
+            className="w-8 h-8 relative text-muted-foreground hover:text-foreground hover:ring-2 hover:ring-primary/20 transition-all duration-200 rounded-lg"
             data-ocid="topbar.notifications.button"
             data-tour-id="notification-bell"
           >
@@ -329,10 +337,24 @@ export function TopBar({
         <DropdownMenuTrigger asChild>
           <button
             type="button"
-            className="flex items-center gap-2 pl-2 border-l border-border hover:opacity-80 transition-opacity"
+            className="flex items-center gap-2 pl-2 border-l border-border/40 hover:opacity-90 transition-opacity"
             data-ocid="topbar.profile.button"
           >
-            <div className="w-7 h-7 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center">
+            <div
+              className="w-7 h-7 rounded-full flex items-center justify-center transition-all duration-200"
+              style={{
+                background: "oklch(0.82 0.22 195 / 0.15)",
+                border: "1px solid oklch(0.82 0.22 195 / 0.25)",
+              }}
+              onMouseEnter={(e) => {
+                (e.currentTarget as HTMLDivElement).style.borderColor =
+                  "oklch(0.82 0.22 195 / 0.55)";
+              }}
+              onMouseLeave={(e) => {
+                (e.currentTarget as HTMLDivElement).style.borderColor =
+                  "oklch(0.82 0.22 195 / 0.25)";
+              }}
+            >
               <span className="text-xs font-mono text-primary font-bold">
                 {principal.slice(0, 2).toUpperCase()}
               </span>

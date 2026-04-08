@@ -2,15 +2,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Progress } from "@/components/ui/progress";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import {
   AlertTriangle,
   CalendarDays,
@@ -32,6 +23,7 @@ import {
   Zap,
 } from "lucide-react";
 import { useEffect, useState } from "react";
+import type React from "react";
 import { toast } from "sonner";
 import type { BillingEvent } from "../backend.d.ts";
 import {
@@ -115,7 +107,6 @@ function WhiteLabelSection({
 
   function handleSave() {
     if (isSaving) return;
-
     if (!isDemoMode) {
       localStorage.setItem(WHITE_LABEL_KEY, JSON.stringify(config));
       document.documentElement.style.setProperty(
@@ -126,7 +117,6 @@ function WhiteLabelSection({
       setSavedPreview({ ...config });
       return;
     }
-
     setIsSaving(true);
     setTimeout(() => {
       localStorage.setItem(WHITE_LABEL_KEY, JSON.stringify(config));
@@ -159,7 +149,7 @@ function WhiteLabelSection({
 
   if (!isEnterprise) {
     return (
-      <div className="rounded-xl border border-dashed border-border bg-muted/20 p-6 text-center">
+      <div className="rounded-xl border border-dashed border-border/60 bg-muted/20 p-6 text-center">
         <div className="w-12 h-12 rounded-xl bg-muted/50 border border-border flex items-center justify-center mx-auto mb-3">
           <Lock className="w-5 h-5 text-muted-foreground" />
         </div>
@@ -202,7 +192,7 @@ function WhiteLabelSection({
               White-Label Branding
             </h3>
             <p className="text-xs text-muted-foreground">
-              All team members will see your custom branding across the console
+              All team members will see your custom branding
             </p>
           </div>
           <div className="ml-auto">
@@ -211,7 +201,7 @@ function WhiteLabelSection({
             </Badge>
           </div>
         </div>
-        <div className="rounded-xl border border-border bg-muted/20 p-5 flex items-center gap-4">
+        <div className="rounded-xl border border-white/8 bg-background/40 p-5 flex items-center gap-4">
           <div className="w-10 h-10 rounded-xl bg-[oklch(0.75_0.18_60/0.15)] border border-[oklch(0.75_0.18_60/0.3)] flex items-center justify-center flex-shrink-0">
             <Mail className="w-5 h-5 text-[oklch(0.75_0.18_60)]" />
           </div>
@@ -220,7 +210,7 @@ function WhiteLabelSection({
               Contact sales to activate white-labeling
             </p>
             <p className="text-xs text-muted-foreground mt-0.5">
-              Reach out to your account manager or email{" "}
+              Email{" "}
               <span className="text-primary font-mono">
                 enterprise@lockfreeengine.io
               </span>{" "}
@@ -271,6 +261,7 @@ function WhiteLabelSection({
             onChange={(e) =>
               setConfig((prev) => ({ ...prev, companyName: e.target.value }))
             }
+            className="bg-background/60 border-white/10 rounded-xl focus:border-primary/40"
             data-ocid="billing.whitelabel.input"
           />
         </div>
@@ -300,7 +291,7 @@ function WhiteLabelSection({
                 setConfig((prev) => ({ ...prev, primaryColor: e.target.value }))
               }
               placeholder="#00b4d8"
-              className="font-mono text-xs"
+              className="font-mono text-xs bg-background/60 border-white/10 rounded-xl"
             />
             <label
               htmlFor="wl-color"
@@ -327,8 +318,9 @@ function WhiteLabelSection({
             onChange={(e) =>
               setConfig((prev) => ({ ...prev, logoUrl: e.target.value }))
             }
+            className="bg-background/60 border-white/10 rounded-xl"
           />
-          {config.logoUrl && (
+          {config.logoUrl ? (
             <div className="mt-1.5 p-2 rounded-lg border border-border bg-muted/30 flex items-center gap-2">
               <img
                 src={config.logoUrl}
@@ -342,8 +334,7 @@ function WhiteLabelSection({
                 Live preview
               </span>
             </div>
-          )}
-          {!config.logoUrl && (
+          ) : (
             <div className="mt-1.5 p-2 rounded-lg border border-dashed border-border bg-muted/20 flex items-center gap-2 text-muted-foreground">
               <Image className="w-3.5 h-3.5" />
               <span className="text-xs">Enter a URL to preview your logo</span>
@@ -361,6 +352,7 @@ function WhiteLabelSection({
             onChange={(e) =>
               setConfig((prev) => ({ ...prev, customDomain: e.target.value }))
             }
+            className="bg-background/60 border-white/10 rounded-xl"
           />
           <p className="text-xs text-muted-foreground">
             Point your CNAME to{" "}
@@ -403,10 +395,10 @@ function WhiteLabelSection({
 
       {savedPreview?.companyName && (
         <div
-          className="rounded-xl border border-border bg-card overflow-hidden"
+          className="rounded-xl border border-white/8 bg-card/60 backdrop-blur-md overflow-hidden"
           data-ocid="billing.whitelabel.success_state"
         >
-          <div className="px-4 py-2.5 border-b border-border bg-muted/30 flex items-center gap-2">
+          <div className="px-4 py-2.5 border-b border-white/6 bg-background/40 flex items-center gap-2">
             <CheckCircle2 className="w-3.5 h-3.5 text-[oklch(0.72_0.19_145)]" />
             <span className="text-xs font-semibold text-[oklch(0.82_0.19_145)]">
               Active Branding Preview
@@ -423,7 +415,7 @@ function WhiteLabelSection({
                 borderLeft: `3px solid ${savedPreview.primaryColor}`,
               }}
             >
-              {savedPreview.logoUrl && (
+              {savedPreview.logoUrl ? (
                 <img
                   src={savedPreview.logoUrl}
                   alt="Company logo"
@@ -433,8 +425,7 @@ function WhiteLabelSection({
                       "none";
                   }}
                 />
-              )}
-              {!savedPreview.logoUrl && (
+              ) : (
                 <div
                   className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 text-white font-bold text-sm"
                   style={{ background: savedPreview.primaryColor }}
@@ -514,7 +505,14 @@ const TIER_ICON_BG: Record<string, string> = {
     "bg-[oklch(0.75_0.18_60/0.15)] border border-[oklch(0.75_0.18_60/0.4)]",
 };
 
-import type React from "react";
+const TIER_ACCENT_BAR: Record<string, string> = {
+  free: "bg-border/60",
+  pro: "bg-gradient-to-r from-[oklch(0.72_0.19_145)] to-[oklch(0.82_0.22_195)]",
+  business:
+    "bg-gradient-to-r from-[oklch(0.68_0.22_260)] to-[oklch(0.72_0.19_145)]",
+  enterprise:
+    "bg-gradient-to-r from-[oklch(0.82_0.22_195)] to-[oklch(0.75_0.18_60)]",
+};
 
 function formatDate(timestamp: bigint): string {
   const ms = Number(timestamp / 1_000_000n);
@@ -570,12 +568,18 @@ function UsageMeter({ label, value, max, warn, onUpgrade }: UsageMeterProps) {
         </span>
       </div>
       {max !== null ? (
-        <Progress
-          value={pct}
-          className={`h-1.5 ${isNearLimit ? "[&>div]:bg-[oklch(0.72_0.18_55)]" : "[&>div]:bg-primary"}`}
-        />
+        <div className="h-1.5 rounded-full bg-secondary/60 overflow-hidden">
+          <div
+            className={`h-full rounded-full transition-all duration-500 ${
+              isNearLimit
+                ? "bg-gradient-to-r from-[oklch(0.72_0.18_55)] to-[oklch(0.82_0.18_55)]"
+                : "bg-gradient-to-r from-primary to-[oklch(0.82_0.22_195/0.7)]"
+            }`}
+            style={{ width: `${pct}%` }}
+          />
+        </div>
       ) : (
-        <div className="h-1.5 rounded-full bg-secondary">
+        <div className="h-1.5 rounded-full bg-secondary/60">
           <div className="h-full w-0 rounded-full bg-primary/40" />
         </div>
       )}
@@ -598,6 +602,29 @@ function UsageMeter({ label, value, max, warn, onUpgrade }: UsageMeterProps) {
           </Button>
         </div>
       )}
+    </div>
+  );
+}
+
+// Glass section card wrapper
+function SectionCard({
+  title,
+  children,
+  headerExtra,
+}: {
+  title: React.ReactNode;
+  children: React.ReactNode;
+  headerExtra?: React.ReactNode;
+}) {
+  return (
+    <div className="rounded-2xl backdrop-blur-md bg-card/60 border border-white/8 overflow-hidden">
+      <div className="px-5 py-4 border-b border-white/6 bg-background/30 flex items-center justify-between">
+        <h2 className="font-display font-bold text-sm text-muted-foreground uppercase tracking-wide">
+          {title}
+        </h2>
+        {headerExtra}
+      </div>
+      <div className="p-5">{children}</div>
     </div>
   );
 }
@@ -630,13 +657,13 @@ export function BillingPage({
   const migrationsCount = Number(usage?.migrationsThisMonth ?? 0);
 
   const TierIcon = TIER_ICON[subscription] ?? Shield;
+  const accentBar = TIER_ACCENT_BAR[subscription] ?? TIER_ACCENT_BAR.free;
 
   function openPricing() {
     setShowPricing(true);
     onPricingOpen?.();
   }
 
-  // Show full-page pricing view when "Change Plan" is clicked
   if (showPricing) {
     return (
       <PricingPage
@@ -662,9 +689,10 @@ export function BillingPage({
         </p>
       </div>
 
-      {/* Section A: Current Plan */}
-      <div className="rounded-xl border border-border bg-card overflow-hidden">
-        <div className="px-5 py-4 border-b border-border bg-card/80">
+      {/* Section A: Current Plan — with left accent bar */}
+      <div className="rounded-2xl backdrop-blur-md bg-card/60 border border-white/8 overflow-hidden">
+        <div className={`h-0.5 w-full ${accentBar}`} />
+        <div className="px-5 py-4 border-b border-white/6 bg-background/30">
           <h2 className="font-display font-bold text-sm text-muted-foreground uppercase tracking-wide">
             Current Plan
           </h2>
@@ -706,7 +734,7 @@ export function BillingPage({
                 <Button
                   size="sm"
                   variant="outline"
-                  className="gap-2"
+                  className="gap-2 border-white/10 hover:border-white/20 bg-transparent"
                   onClick={openPricing}
                   data-ocid="billing.plan.open_modal_button"
                 >
@@ -720,54 +748,53 @@ export function BillingPage({
       </div>
 
       {/* Section B: Usage */}
-      <div className="rounded-xl border border-border bg-card overflow-hidden">
-        <div className="px-5 py-4 border-b border-border bg-card/80">
-          <h2 className="font-display font-bold text-sm text-muted-foreground uppercase tracking-wide flex items-center gap-2">
+      <SectionCard
+        title={
+          <span className="flex items-center gap-2">
             <TrendingUp className="w-4 h-4" />
             Usage This Month
-          </h2>
-        </div>
-        <div className="p-5 space-y-5">
-          {usageLoading ? (
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <Loader2 className="w-4 h-4 animate-spin" />
-              <span className="text-sm">Loading usage...</span>
-            </div>
-          ) : (
-            <>
-              <UsageMeter
-                label="Cloud Engines"
-                value={enginesCount}
-                max={limits.engines === -1 ? null : limits.engines}
-                warn={subscription === "free" || subscription === "pro"}
-                onUpgrade={openPricing}
-              />
-              <UsageMeter
-                label="Deployments"
-                value={deploymentsCount}
-                max={limits.deployments === -1 ? null : limits.deployments}
-                warn={subscription === "free"}
-                onUpgrade={openPricing}
-              />
-              <UsageMeter
-                label="Migrations"
-                value={migrationsCount}
-                max={
-                  limits.migrations === -1
+          </span>
+        }
+      >
+        {usageLoading ? (
+          <div className="flex items-center gap-2 text-muted-foreground">
+            <Loader2 className="w-4 h-4 animate-spin" />
+            <span className="text-sm">Loading usage...</span>
+          </div>
+        ) : (
+          <div className="space-y-5">
+            <UsageMeter
+              label="Cloud Engines"
+              value={enginesCount}
+              max={limits.engines === -1 ? null : limits.engines}
+              warn={subscription === "free" || subscription === "pro"}
+              onUpgrade={openPricing}
+            />
+            <UsageMeter
+              label="Deployments"
+              value={deploymentsCount}
+              max={limits.deployments === -1 ? null : limits.deployments}
+              warn={subscription === "free"}
+              onUpgrade={openPricing}
+            />
+            <UsageMeter
+              label="Migrations"
+              value={migrationsCount}
+              max={
+                limits.migrations === -1
+                  ? null
+                  : limits.migrations === 0
                     ? null
-                    : limits.migrations === 0
-                      ? null
-                      : limits.migrations
-                }
-              />
-            </>
-          )}
-        </div>
-      </div>
+                    : limits.migrations
+              }
+            />
+          </div>
+        )}
+      </SectionCard>
 
       {/* Section C: Billing Log */}
-      <div className="rounded-xl border border-border bg-card overflow-hidden">
-        <div className="px-5 py-4 border-b border-border bg-card/80 flex items-center justify-between">
+      <div className="rounded-2xl backdrop-blur-md bg-card/60 border border-white/8 overflow-hidden">
+        <div className="px-5 py-4 border-b border-white/6 bg-background/30 flex items-center justify-between">
           <h2 className="font-display font-bold text-sm text-muted-foreground uppercase tracking-wide">
             On-Chain Billing Log
           </h2>
@@ -794,98 +821,81 @@ export function BillingPage({
               <p className="text-sm text-muted-foreground">
                 No billing events yet.
               </p>
-              <p className="text-xs text-muted-foreground/70 mt-1">
+              <p className="text-xs text-muted-foreground/60 mt-1">
                 Your payment history will appear here.
               </p>
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <Table data-ocid="billing.log.table">
-                <TableHeader>
-                  <TableRow className="border-border hover:bg-transparent">
-                    <TableHead className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                      Date
-                    </TableHead>
-                    <TableHead className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                      Event
-                    </TableHead>
-                    <TableHead className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                      Plan
-                    </TableHead>
-                    <TableHead className="text-xs font-semibold uppercase tracking-wide text-muted-foreground text-right">
-                      Amount
-                    </TableHead>
-                    <TableHead className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                      Currency
-                    </TableHead>
-                    <TableHead className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                      Note
-                    </TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {(billingEvents as BillingEvent[]).map((event) => (
-                    <TableRow
+            <div className="overflow-x-auto" data-ocid="billing.log.table">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-white/6 bg-background/40">
+                    {[
+                      "Date",
+                      "Event",
+                      "Plan",
+                      "Amount",
+                      "Currency",
+                      "Note",
+                    ].map((h, i) => (
+                      <th
+                        key={h}
+                        className={`px-5 py-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground/70 ${i === 3 ? "text-right" : "text-left"}`}
+                      >
+                        {h}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {(billingEvents as BillingEvent[]).map((event, idx) => (
+                    <tr
                       key={event.id.toString()}
-                      className="border-border"
+                      className={`border-b border-white/5 transition-colors hover:bg-muted/20 ${idx % 2 === 0 ? "" : "bg-white/[0.02]"}`}
                     >
-                      <TableCell className="text-xs text-muted-foreground font-mono">
+                      <td className="px-5 py-3.5 text-xs text-muted-foreground font-mono">
                         {formatDate(event.timestamp)}
-                      </TableCell>
-                      <TableCell>
+                      </td>
+                      <td className="px-5 py-3.5">
                         <EventTypeBadge type={event.eventType} />
-                      </TableCell>
-                      <TableCell className="text-xs text-foreground capitalize font-medium">
+                      </td>
+                      <td className="px-5 py-3.5 text-xs text-foreground capitalize font-medium">
                         {event.tier}
-                      </TableCell>
-                      <TableCell className="text-xs font-mono font-semibold text-right">
+                      </td>
+                      <td className="px-5 py-3.5 text-xs font-mono font-semibold text-right">
                         {event.amount > 0 ? `$${event.amount.toFixed(2)}` : "—"}
-                      </TableCell>
-                      <TableCell className="text-xs text-muted-foreground uppercase">
+                      </td>
+                      <td className="px-5 py-3.5 text-xs text-muted-foreground uppercase">
                         {event.currency}
-                      </TableCell>
-                      <TableCell className="text-xs text-muted-foreground max-w-[160px] truncate">
+                      </td>
+                      <td className="px-5 py-3.5 text-xs text-muted-foreground max-w-[160px] truncate">
                         {event.note}
-                      </TableCell>
-                    </TableRow>
+                      </td>
+                    </tr>
                   ))}
-                </TableBody>
-              </Table>
+                </tbody>
+              </table>
             </div>
           )}
         </div>
       </div>
 
       {/* Section D: Seat Management */}
-      <div className="rounded-xl border border-border bg-card overflow-hidden">
-        <div className="px-5 py-4 border-b border-border bg-card/80">
-          <h2 className="font-display font-bold text-sm text-muted-foreground uppercase tracking-wide">
-            Team Seats
-          </h2>
-        </div>
-        <div className="p-5">
-          <SeatManagement
-            subscription={subscription}
-            onUpgradeToEnterprise={openPricing}
-          />
-        </div>
-      </div>
+      <SectionCard title="Team Seats">
+        <SeatManagement
+          subscription={subscription}
+          onUpgradeToEnterprise={openPricing}
+        />
+      </SectionCard>
 
       {/* Section E: White-Label Branding */}
-      <div className="rounded-xl border border-border bg-card overflow-hidden">
-        <div className="px-5 py-4 border-b border-border bg-card/80">
-          <h2 className="font-display font-bold text-sm text-muted-foreground uppercase tracking-wide">
-            White-Label Branding
-          </h2>
-        </div>
-        <div className="p-5">
-          <WhiteLabelSection
-            subscription={subscription}
-            onUpgrade={openPricing}
-            isDemoMode={isDemoMode}
-          />
-        </div>
-      </div>
+      <SectionCard title="White-Label Branding">
+        <WhiteLabelSection
+          subscription={subscription}
+          onUpgrade={openPricing}
+          isDemoMode={isDemoMode}
+        />
+      </SectionCard>
     </div>
   );
 }

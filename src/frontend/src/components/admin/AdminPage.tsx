@@ -1,6 +1,6 @@
 import { Skeleton } from "@/components/ui/skeleton";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BarChart3, FileText, Settings2, ShieldOff, Users } from "lucide-react";
+import { useState } from "react";
 import { useIsAdmin } from "../../hooks/useAdminQueries";
 import { useInternetIdentity } from "../../hooks/useInternetIdentity";
 import { AdminAnalyticsTab } from "./AdminAnalyticsTab";
@@ -11,9 +11,34 @@ import { AdminWaitlistTab } from "./AdminWaitlistTab";
 const HARDCODED_ADMIN_PRINCIPAL =
   "7xb3p-r7kxo-tjbki-fkmcf-buzj5-i5ux2-tcaye-tkujv-zmd6t-whrx7-lqe";
 
+const TABS = [
+  {
+    id: "analytics",
+    label: "Analytics",
+    icon: BarChart3,
+    ocid: "admin.analytics_tab",
+  },
+  {
+    id: "waitlist",
+    label: "Waitlist",
+    icon: FileText,
+    ocid: "admin.waitlist_tab",
+  },
+  { id: "users", label: "Users", icon: Users, ocid: "admin.users_tab" },
+  {
+    id: "content",
+    label: "Content",
+    icon: Settings2,
+    ocid: "admin.content_tab",
+  },
+] as const;
+
+type TabId = (typeof TABS)[number]["id"];
+
 export function AdminPage() {
   const { data: isAdmin, isLoading } = useIsAdmin();
   const { identity } = useInternetIdentity();
+  const [activeTab, setActiveTab] = useState<TabId>("analytics");
 
   const callerIsHardcodedAdmin =
     identity?.getPrincipal().toText() === HARDCODED_ADMIN_PRINCIPAL;
@@ -49,8 +74,9 @@ export function AdminPage() {
 
   return (
     <div className="space-y-6">
+      {/* Page heading */}
       <div>
-        <h1 className="text-2xl font-display font-bold text-foreground tracking-tight">
+        <h1 className="text-2xl font-display font-bold tracking-tight bg-gradient-to-r from-foreground to-primary bg-clip-text text-transparent">
           Admin Panel
         </h1>
         <p className="text-sm text-muted-foreground mt-1">
@@ -58,58 +84,37 @@ export function AdminPage() {
         </p>
       </div>
 
-      <Tabs defaultValue="analytics">
-        <TabsList className="bg-card border border-border h-10 p-1">
-          <TabsTrigger
-            value="analytics"
-            data-ocid="admin.analytics_tab"
-            className="gap-1.5 text-xs data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-          >
-            <BarChart3 className="w-3.5 h-3.5" />
-            Analytics
-          </TabsTrigger>
-          <TabsTrigger
-            value="waitlist"
-            data-ocid="admin.waitlist_tab"
-            className="gap-1.5 text-xs data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-          >
-            <FileText className="w-3.5 h-3.5" />
-            Waitlist
-          </TabsTrigger>
-          <TabsTrigger
-            value="users"
-            data-ocid="admin.users_tab"
-            className="gap-1.5 text-xs data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-          >
-            <Users className="w-3.5 h-3.5" />
-            Users
-          </TabsTrigger>
-          <TabsTrigger
-            value="content"
-            data-ocid="admin.content_tab"
-            className="gap-1.5 text-xs data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-          >
-            <Settings2 className="w-3.5 h-3.5" />
-            Content
-          </TabsTrigger>
-        </TabsList>
+      {/* Glass pill tab navigation */}
+      <div className="flex items-center gap-1 p-1 rounded-xl backdrop-blur-md bg-card/60 border border-white/8 w-fit">
+        {TABS.map((tab) => {
+          const Icon = tab.icon;
+          const isActive = activeTab === tab.id;
+          return (
+            <button
+              key={tab.id}
+              type="button"
+              data-ocid={tab.ocid}
+              onClick={() => setActiveTab(tab.id)}
+              className={`flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-medium transition-all duration-200 ${
+                isActive
+                  ? "bg-primary/15 text-primary border border-primary/20 shadow-sm"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
+              }`}
+            >
+              <Icon className="w-3.5 h-3.5" />
+              {tab.label}
+            </button>
+          );
+        })}
+      </div>
 
-        <TabsContent value="analytics" className="mt-6">
-          <AdminAnalyticsTab />
-        </TabsContent>
-
-        <TabsContent value="waitlist" className="mt-6">
-          <AdminWaitlistTab />
-        </TabsContent>
-
-        <TabsContent value="users" className="mt-6">
-          <AdminUsersTabWrapper />
-        </TabsContent>
-
-        <TabsContent value="content" className="mt-6">
-          <AdminContentTab />
-        </TabsContent>
-      </Tabs>
+      {/* Tab content */}
+      <div>
+        {activeTab === "analytics" && <AdminAnalyticsTab />}
+        {activeTab === "waitlist" && <AdminWaitlistTab />}
+        {activeTab === "users" && <AdminUsersTabWrapper />}
+        {activeTab === "content" && <AdminContentTab />}
+      </div>
     </div>
   );
 }

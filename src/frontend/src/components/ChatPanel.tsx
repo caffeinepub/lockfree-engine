@@ -86,7 +86,6 @@ function buildEngineFromScan(result: ScanResult, stackInput: string): Engine {
           return label ? `${label} Migration` : "Snorkel Migration";
         })();
 
-  // Size resources based on complexity
   const isHigh =
     result.complexity === "High" || result.complexity === "Enterprise";
   const cpu = isHigh ? 16n : 8n;
@@ -118,7 +117,6 @@ function persistSnorkelEngine(engine: Engine) {
       localStorage.getItem(SNORKEL_ENGINES_KEY) ?? "[]",
     );
     existing.push(engine);
-    // Serialize BigInts as strings so JSON round-trips safely
     localStorage.setItem(
       SNORKEL_ENGINES_KEY,
       JSON.stringify(existing, (_k, v) =>
@@ -135,7 +133,6 @@ function persistSnorkelEngine(engine: Engine) {
 function generateAIResponse(content: string, engines: Engine[]): string {
   const lower = content.toLowerCase();
 
-  // Find relevant engine by name mentions or "current" context
   const crmEngine = engines.find(
     (e) =>
       e.name.toLowerCase().includes("crm") ||
@@ -147,7 +144,6 @@ function generateAIResponse(content: string, engines: Engine[]): string {
   const engineName = targetEngine?.name ?? "your engine";
   const provider = targetEngine?.provider ?? "AWS";
 
-  // "update my CRM with payments" or "add payments"
   if (
     (lower.includes("update") ||
       lower.includes("add") ||
@@ -162,7 +158,6 @@ function generateAIResponse(content: string, engines: Engine[]): string {
     return `Deploying payment integration to *${engineName}* on ${provider}.\n\n✓ Stripe canister provisioned\n✓ ICP token payment module active\n✓ Webhook handlers configured\n\nPayment endpoints are live. Demand-driven compute means you only pay for actual transaction volume.`;
   }
 
-  // "deploy a CRM" / "CRM with auth"
   if (
     lower.includes("crm") &&
     (lower.includes("deploy") ||
@@ -172,7 +167,6 @@ function generateAIResponse(content: string, engines: Engine[]): string {
     return `Deploying a full CRM to *${engineName}* (${provider}).\n\nProvisioning canisters:\n✓ User auth canister (Internet Identity)\n✓ Contacts database canister\n✓ Activity feed canister\n✓ API gateway canister\n\nCRM is live. Seamless multi-cloud migration means this entire stack moves in <5s if you switch providers — as per DFINITY Mission 70.`;
   }
 
-  // "add auth" / "authentication"
   if (
     lower.includes("auth") ||
     lower.includes("login") ||
@@ -181,7 +175,6 @@ function generateAIResponse(content: string, engines: Engine[]): string {
     return `Adding Internet Identity authentication to *${engineName}*.\n\n✓ Auth canister deployed\n✓ Principal-based access control configured\n✓ Session management active\n\nYour app now supports self-sovereign identity — no passwords, no vendor lock-in.`;
   }
 
-  // "add database" / "postgres"
   if (
     lower.includes("database") ||
     lower.includes("postgres") ||
@@ -191,7 +184,6 @@ function generateAIResponse(content: string, engines: Engine[]): string {
     return `Provisioning a persistent database canister on *${engineName}* (${provider}).\n\n✓ Stable memory canister deployed\n✓ Query API live\n✓ Backup schedule configured (every 6h)\n\nData lives on ICP — no external database, no S3 costs, no provider dependency.`;
   }
 
-  // Snorkel / legacy migration keywords
   if (
     lower.includes("snorkel") ||
     lower.includes("legacy") ||
@@ -216,7 +208,6 @@ function generateAIResponse(content: string, engines: Engine[]): string {
     return `Migration request received. Here's how this works with LockFreeEngine.\n\n*LockFreeEngine's AI Deploy Chat is the conversational front-end for Caffeine Snorkel* — DFINITY's upcoming auto-migration engine, announced as part of the Caffeine v3.0 roadmap on April 7th.\n\nWhen Snorkel goes live, this chat will trigger the real migration pipeline. Here's what that journey looks like:\n\n① *Describe* — You tell me about your existing app (stack, data, integrations)\n② *Snorkel analyses* — Your legacy stack is scanned, dependencies mapped, ICP-compatible deployment generated automatically\n③ *LockFreeEngine manages* — Your migrated workload runs on a sovereign ICP Cloud Engine\n④ *Sovereign hosting* — Hosted on tamper-proof, unstoppable ICP infrastructure — optionally on EU sovereign nodes\n\n*Simulated migration plan for your workload:*\n✓ Legacy stack audit: dependencies mapped\n✓ Data export schema: normalised for ICP stable storage\n✓ Canister architecture: 3 canisters proposed (app logic, auth, data)\n✓ Destination engine: ${engineName} (${provider})\n\nSnorkel is coming. When it does, this is the interface that drives it. Join the waitlist for early access.`;
   }
 
-  // "migrate" (provider-to-provider, not legacy)
   if (
     lower.includes("migrate") ||
     lower.includes("move") ||
@@ -229,7 +220,6 @@ function generateAIResponse(content: string, engines: Engine[]): string {
     return `Ready to migrate *${engineName}* from ${provider} to ${target}.\n\nEstimated downtime: *0 seconds* (Mission 70 live migration)\nEstimated monthly savings: ~$73\n\nUse the Migrate Now button on the engine card, or I can trigger it directly. Your apps, data, and configs transfer atomically.`;
   }
 
-  // "optimize" / "cheapest"
   if (
     lower.includes("optim") ||
     lower.includes("cheap") ||
@@ -239,7 +229,6 @@ function generateAIResponse(content: string, engines: Engine[]): string {
     return `Analyzing your ${engines.length} engine${engines.length !== 1 ? "s" : ""} against current provider rates...\n\nRecommendation: Move 60% of workload to GCP to save ~34%.\n\nProvider rates:\n• AWS — $0.25/hr (current)\n• GCP — $0.18/hr ← cheapest\n• Azure — $0.22/hr\n\nDemand-driven compute: switch providers anytime with zero lock-in.`;
   }
 
-  // "distribute" / "resilience"
   if (
     lower.includes("distribut") ||
     lower.includes("resilience") ||
@@ -248,7 +237,6 @@ function generateAIResponse(content: string, engines: Engine[]): string {
     return `Distributing your engines across AWS, GCP, and Azure for maximum resilience.\n\nCurrent resilience score will increase from ~55% → 89% after distribution.\n\nUse the *"Distribute Across Providers"* button on the dashboard to apply this instantly.`;
   }
 
-  // Generic deploy
   if (
     lower.includes("deploy") ||
     lower.includes("build") ||
@@ -258,7 +246,6 @@ function generateAIResponse(content: string, engines: Engine[]): string {
     return `Deploying to *${engineName}* (${provider}).\n\nAnalyzing your requirements and provisioning canisters on ICP...\n\n✓ Canister deployed\n✓ Endpoints configured\n✓ Health check passing\n\nYour app is live. It can migrate to any provider in <5s — no vendor lock-in.`;
   }
 
-  // Default
   return `I can help you deploy new apps, add auth, integrate payments, migrate engines between providers — or describe an existing legacy workload you want to move to ICP via *Caffeine Snorkel*.\n\nTry: *"Migrate my AWS app to ICP via Snorkel"* or *"Deploy a sovereign ICP cloud engine"* or *"Optimize my cloud costs"*\n\nPowered by ICP demand-driven compute — your infrastructure, your rules.`;
 }
 
@@ -271,10 +258,10 @@ interface TypingDotsProps {
 function TypingDots({ visible }: TypingDotsProps) {
   if (!visible) return null;
   return (
-    <div className="flex items-center gap-1.5 px-3 py-2.5 rounded-lg bg-card border border-border w-fit">
-      <span className="typing-dot w-1.5 h-1.5 rounded-full bg-muted-foreground" />
-      <span className="typing-dot w-1.5 h-1.5 rounded-full bg-muted-foreground" />
-      <span className="typing-dot w-1.5 h-1.5 rounded-full bg-muted-foreground" />
+    <div className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-2xl rounded-bl-sm bg-card/80 backdrop-blur-sm border border-white/6 w-fit">
+      <span className="typing-dot w-1.5 h-1.5 rounded-full bg-muted-foreground/60" />
+      <span className="typing-dot w-1.5 h-1.5 rounded-full bg-muted-foreground/60" />
+      <span className="typing-dot w-1.5 h-1.5 rounded-full bg-muted-foreground/60" />
     </div>
   );
 }
@@ -289,8 +276,8 @@ function ProviderComparisonTable({
   ];
 
   return (
-    <div className="rounded-lg border border-border bg-secondary/30 overflow-hidden">
-      <div className="px-3 py-2 border-b border-border bg-secondary/50 flex items-center gap-2">
+    <div className="rounded-xl border border-white/8 bg-background/50 backdrop-blur-sm overflow-hidden">
+      <div className="px-3 py-2 border-b border-white/8 bg-secondary/40 flex items-center gap-2">
         <TrendingDown className="w-3.5 h-3.5 text-primary" />
         <span className="text-xs font-semibold text-foreground">
           Provider Cost Comparison
@@ -301,7 +288,7 @@ function ProviderComparisonTable({
       </div>
       <table className="w-full text-xs">
         <thead>
-          <tr className="border-b border-border">
+          <tr className="border-b border-white/6">
             <th className="text-left px-3 py-2 text-muted-foreground font-medium">
               Provider
             </th>
@@ -320,7 +307,7 @@ function ProviderComparisonTable({
           {providers.map((p) => (
             <tr
               key={p.name}
-              className={`border-b border-border last:border-0 ${p.cheapest ? "bg-[oklch(0.72_0.19_145/0.06)]" : ""}`}
+              className={`border-b border-white/5 last:border-0 ${p.cheapest ? "bg-[oklch(0.72_0.19_145/0.06)]" : ""}`}
             >
               <td className="px-3 py-2 font-mono font-semibold">{p.name}</td>
               <td className="px-3 py-2 font-mono">{p.cost}</td>
@@ -338,7 +325,7 @@ function ProviderComparisonTable({
           ))}
         </tbody>
       </table>
-      <div className="px-3 py-2 border-t border-border bg-secondary/50">
+      <div className="px-3 py-2 border-t border-white/6 bg-secondary/30">
         <Button
           size="sm"
           variant="outline"
@@ -364,30 +351,35 @@ function MessageBubble({
   return (
     <motion.div
       className={`flex gap-2.5 ${isUser ? "flex-row-reverse" : "flex-row"}`}
-      initial={{ opacity: 0, y: 8 }}
+      initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.25 }}
+      transition={{ duration: 0.25, ease: "easeOut" }}
     >
+      {/* Avatar */}
       <div
         className={`
           w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5
-          ${isUser ? "bg-primary/20 border border-primary/30" : "bg-secondary border border-border"}
+          ${
+            isUser
+              ? "bg-primary/20 border border-primary/30 shadow-[0_0_10px_oklch(0.82_0.22_195/0.2)]"
+              : "bg-card/80 backdrop-blur-sm border border-white/8"
+          }
         `}
       >
         {isUser ? (
           <User className="w-3.5 h-3.5 text-primary" />
         ) : (
-          <Bot className="w-3.5 h-3.5 text-muted-foreground" />
+          <Bot className="w-3.5 h-3.5 text-cyan-400/80" />
         )}
       </div>
 
       <div
         className={`
-          max-w-[85%] rounded-lg px-3 py-2.5 text-sm leading-relaxed
+          max-w-[85%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed
           ${
             isUser
-              ? "bg-primary/15 border border-primary/20 text-foreground"
-              : "bg-card border border-border text-foreground"
+              ? "rounded-br-sm bg-primary/12 backdrop-blur-sm border border-primary/20 text-foreground"
+              : "rounded-bl-sm bg-card/80 backdrop-blur-sm border border-white/6 text-foreground"
           }
         `}
       >
@@ -409,7 +401,7 @@ function MessageBubble({
                   return j % 2 === 1 ? (
                     <em
                       key={key}
-                      className="text-primary not-italic font-medium"
+                      className="text-cyan-300 not-italic font-semibold"
                     >
                       {part}
                     </em>
@@ -421,7 +413,7 @@ function MessageBubble({
             );
           })
         )}
-        <div className="text-xs text-muted-foreground/70 mt-1.5">
+        <div className="text-[10px] text-muted-foreground/50 mt-1.5 font-mono">
           {message.timestamp.toLocaleTimeString([], {
             hour: "2-digit",
             minute: "2-digit",
@@ -484,7 +476,6 @@ export function ChatPanel({
     const text = (content ?? input).trim();
     if (!text) return;
 
-    // Check deployment limit for free tier
     if (subscription === "free" && deploymentsThisMonth >= 5) {
       toast.error("Deployment limit reached", {
         description:
@@ -508,7 +499,6 @@ export function ChatPanel({
     setInput("");
     setIsTyping(true);
 
-    // Simulate typing delay, then respond with context-aware AI
     await new Promise((r) => setTimeout(r, 1500));
     setIsTyping(false);
 
@@ -578,7 +568,6 @@ export function ChatPanel({
       setShowMigrationProgress(true);
     } else {
       setActiveTab("chat");
-      // Small delay so the tab switch animation completes
       setTimeout(() => {
         void handleSend(msg);
       }, 300);
@@ -586,13 +575,11 @@ export function ChatPanel({
   }
 
   function handleMigrationComplete(result: ScanResult, stackInput: string) {
-    // Build the engine and inject into React Query cache immediately
     const newEngine = buildEngineFromScan(result, stackInput);
     queryClient.setQueryData<Engine[]>(queryKeys.engines, (prev) => [
       ...(prev ?? []),
       newEngine,
     ]);
-    // Persist for page refresh
     persistSnorkelEngine(newEngine);
 
     setShowMigrationProgress(false);
@@ -608,7 +595,6 @@ export function ChatPanel({
       void handleSend(
         `My ${newEngine.name} workload has been migrated to sovereign ICP infrastructure on NeoCloud eu-neocloud-1a. The engine has been added to my Dashboard. What can I do next?`,
       );
-      // Navigate to dashboard after a brief delay
       setTimeout(() => onOpenDashboard?.(), 800);
     }, 300);
   }
@@ -617,33 +603,33 @@ export function ChatPanel({
     setShowMigrationProgress(false);
     setMigrationScanResult(null);
     setMigrationStackInput("");
-    // stays on scanner tab
   }
 
   const atDeployLimit = subscription === "free" && deploymentsThisMonth >= 5;
 
   return (
     <div className="flex flex-col h-full min-h-0 overflow-hidden">
-      {/* Header */}
+      {/* Header — glass surface */}
       <div
-        className="flex items-center justify-between px-4 py-3 border-b border-border flex-shrink-0"
+        className="flex items-center justify-between px-4 py-3 border-b border-white/8 bg-card/60 backdrop-blur-sm flex-shrink-0"
         onMouseEnter={() => setHeaderHovered(true)}
         onMouseLeave={() => setHeaderHovered(false)}
       >
-        <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-lg bg-primary/15 border border-primary/20 flex items-center justify-center">
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-xl bg-primary/15 border border-primary/25 flex items-center justify-center shadow-[0_0_12px_oklch(0.82_0.22_195/0.15)]">
             <Sparkles className="w-3.5 h-3.5 text-primary" />
           </div>
           <div>
-            <div className="text-sm font-semibold">AI Deploy Assistant</div>
-            <div className="text-xs text-muted-foreground/70">
+            <div className="text-sm font-semibold tracking-tight">
+              AI Deploy Assistant
+            </div>
+            <div className="text-[11px] text-muted-foreground/70">
               Demand-driven deployment to any engine
             </div>
           </div>
         </div>
 
         <div className="flex items-center gap-2">
-          {/* Clear history button — hover-revealed */}
           <AnimatePresence>
             {headerHovered && messages.length > 1 && activeTab === "chat" && (
               <motion.div
@@ -674,7 +660,6 @@ export function ChatPanel({
             )}
           </AnimatePresence>
 
-          {/* Pro: Suggest cheapest provider button */}
           {isPro && activeTab === "chat" && (
             <Tooltip>
               <TooltipTrigger asChild>
@@ -698,7 +683,7 @@ export function ChatPanel({
             <TooltipTrigger asChild>
               <button
                 type="button"
-                className="text-muted-foreground hover:text-foreground"
+                className="text-muted-foreground/60 hover:text-foreground transition-colors"
               >
                 <Info className="w-4 h-4" />
               </button>
@@ -715,9 +700,9 @@ export function ChatPanel({
         </div>
       </div>
 
-      {/* Tab bar — inline flexShrink:0 is the reliable guard, Tailwind class can be overridden */}
+      {/* Tab bar — PRESERVED mobile fix: inline flexShrink:0, 50/50 flex-1 layout */}
       <div
-        className="flex w-full border-b border-border bg-secondary/10"
+        className="flex w-full border-b border-white/8 bg-background/40"
         style={{ flexShrink: 0 }}
       >
         <button
@@ -726,10 +711,10 @@ export function ChatPanel({
           data-ocid="chat_panel.tab.chat"
           style={{ flexShrink: 0 }}
           className={[
-            "flex-1 flex items-center justify-center gap-1.5 py-3 text-xs font-medium transition-colors border-b-2 -mb-px",
+            "flex-1 flex items-center justify-center gap-1.5 py-3 text-xs font-medium transition-all duration-200 border-b-2 -mb-px",
             activeTab === "chat"
-              ? "border-cyan-400 text-foreground font-semibold"
-              : "border-transparent text-muted-foreground hover:text-foreground hover:border-foreground/20",
+              ? "border-cyan-400 text-cyan-300 font-semibold bg-card/30"
+              : "border-transparent text-muted-foreground hover:text-foreground hover:bg-white/3",
           ].join(" ")}
         >
           <Sparkles className="w-3.5 h-3.5" style={{ flexShrink: 0 }} />
@@ -742,10 +727,10 @@ export function ChatPanel({
           data-tour-id="chat-scanner-tab"
           style={{ flexShrink: 0 }}
           className={[
-            "flex-1 flex items-center justify-center gap-1.5 py-3 text-xs font-medium transition-colors border-b-2 -mb-px",
+            "flex-1 flex items-center justify-center gap-1.5 py-3 text-xs font-medium transition-all duration-200 border-b-2 -mb-px",
             activeTab === "scanner"
-              ? "border-cyan-400 text-foreground font-semibold"
-              : "border-transparent text-muted-foreground hover:text-foreground hover:border-foreground/20",
+              ? "border-cyan-400 text-cyan-300 font-semibold bg-card/30"
+              : "border-transparent text-muted-foreground hover:text-foreground hover:bg-white/3",
           ].join(" ")}
         >
           <ScanSearch className="w-3.5 h-3.5" style={{ flexShrink: 0 }} />
@@ -775,14 +760,14 @@ export function ChatPanel({
       {activeTab === "chat" && (
         <div className="flex flex-col flex-1 min-h-0 overflow-hidden">
           {/* Engine selector */}
-          <div className="px-4 py-2.5 border-b border-border bg-secondary/20 flex-shrink-0">
+          <div className="px-4 py-2.5 border-b border-white/6 bg-background/30 flex-shrink-0">
             <div className="flex items-center gap-2 text-xs">
-              <span className="text-muted-foreground">Deploy to:</span>
+              <span className="text-muted-foreground/70">Deploy to:</span>
               <Select
                 value={selectedEngineId}
                 onValueChange={setSelectedEngineId}
               >
-                <SelectTrigger className="h-7 text-xs flex-1 max-w-52">
+                <SelectTrigger className="h-7 text-xs flex-1 max-w-52 bg-background/60 border-white/10">
                   <SelectValue placeholder="Select an engine" />
                 </SelectTrigger>
                 <SelectContent>
@@ -799,7 +784,7 @@ export function ChatPanel({
 
           {/* Deployment limit warning */}
           {atDeployLimit && (
-            <div className="mx-4 mt-3 flex items-center gap-2.5 p-2.5 rounded-lg bg-[oklch(0.72_0.18_55/0.1)] border border-[oklch(0.72_0.18_55/0.3)] flex-shrink-0">
+            <div className="mx-4 mt-3 flex items-center gap-2.5 p-2.5 rounded-xl bg-[oklch(0.72_0.18_55/0.08)] border border-[oklch(0.72_0.18_55/0.25)] flex-shrink-0 backdrop-blur-sm">
               <AlertTriangle className="w-4 h-4 text-[oklch(0.72_0.18_55)] flex-shrink-0" />
               <p className="text-xs text-[oklch(0.82_0.18_55)] flex-1">
                 You've reached the Free tier limit (5 deployments/month).
@@ -830,8 +815,8 @@ export function ChatPanel({
 
               {isTyping && (
                 <div className="flex gap-2.5">
-                  <div className="w-7 h-7 rounded-full bg-secondary border border-border flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <Bot className="w-3.5 h-3.5 text-muted-foreground" />
+                  <div className="w-7 h-7 rounded-full bg-card/80 backdrop-blur-sm border border-white/8 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <Bot className="w-3.5 h-3.5 text-cyan-400/70" />
                   </div>
                   <TypingDots visible />
                 </div>
@@ -841,10 +826,10 @@ export function ChatPanel({
             </div>
           </div>
 
-          {/* Suggestions — show on first load or after welcome */}
+          {/* Suggested prompt chips */}
           {messages.length <= 2 && (
-            <div className="px-4 py-2 border-t border-border flex-shrink-0">
-              <div className="text-xs text-muted-foreground/70 mb-2">
+            <div className="px-4 py-2 border-t border-white/6 flex-shrink-0 bg-background/20">
+              <div className="text-[10px] text-muted-foreground/50 mb-2 uppercase tracking-wide font-semibold">
                 Suggested prompts
               </div>
               <div className="flex flex-wrap gap-1.5">
@@ -853,7 +838,7 @@ export function ChatPanel({
                     type="button"
                     key={p}
                     onClick={() => void handleSend(p)}
-                    className="text-xs px-2.5 py-1 rounded-full border border-border bg-secondary/50 hover:bg-secondary hover:border-primary/30 hover:text-primary transition-colors active:scale-[0.97]"
+                    className="text-xs px-3 py-1 rounded-full border border-white/10 bg-white/4 hover:bg-cyan-500/10 hover:border-cyan-500/20 hover:text-cyan-300 transition-all duration-150 active:scale-[0.97] text-muted-foreground"
                   >
                     {p}
                   </button>
@@ -876,19 +861,19 @@ export function ChatPanel({
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
                 rows={2}
-                className="resize-none text-sm leading-relaxed min-h-[64px]"
+                className="resize-none text-sm leading-relaxed min-h-[64px] bg-background/60 border-white/10 rounded-xl focus:border-cyan-500/40 focus:ring-1 focus:ring-cyan-500/10"
                 disabled={atDeployLimit}
               />
               <Button
                 size="icon"
-                className="h-9 w-9 flex-shrink-0 active:scale-[0.97]"
+                className="h-10 w-10 flex-shrink-0 active:scale-[0.97] bg-primary hover:bg-primary/90 shadow-[0_0_12px_oklch(0.82_0.22_195/0.25)] hover:shadow-[0_0_18px_oklch(0.82_0.22_195/0.4)] transition-all rounded-xl"
                 onClick={() => void handleSend()}
                 disabled={!input.trim() || isTyping || atDeployLimit}
               >
                 <Send className="w-4 h-4" />
               </Button>
             </div>
-            <p className="text-xs text-muted-foreground/60 mt-1.5">
+            <p className="text-[10px] text-muted-foreground/40 mt-1.5 font-mono">
               Enter to send · Shift+Enter for new line
               {!isPro && (
                 <span className="ml-2">
