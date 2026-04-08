@@ -12,6 +12,8 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { Principal } from "@icp-sdk/core/principal";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   AlertTriangle,
   ArrowRight,
@@ -29,7 +31,11 @@ import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import type { Engine } from "../backend.d.ts";
 import { type ChatMessage, useChatHistory } from "../hooks/useChatHistory";
-import { useGetUsageSummary, useListEngines } from "../hooks/useQueries";
+import {
+  queryKeys,
+  useGetUsageSummary,
+  useListEngines,
+} from "../hooks/useQueries";
 import { LegacyAppScanner, type ScanResult } from "./LegacyAppScanner";
 import { MigrationProgressScreen } from "./MigrationProgressScreen";
 
@@ -61,6 +67,68 @@ const PROVIDER_TABLE_MESSAGE: ChatMessage = {
   timestamp: new Date(),
   isProviderTable: true,
 };
+
+// ─── Snorkel migration localStorage key ──────────────────────────────────────
+export const SNORKEL_ENGINES_KEY = "snorkel_migrated_engines";
+
+// ─── Build an Engine object from a ScanResult ────────────────────────────────
+const DEMO_OWNER_PRINCIPAL = Principal.fromText("2vxsx-fae");
+
+function buildEngineFromScan(result: ScanResult, stackInput: string): Engine {
+  const isNeoCloud = /kubernetes|sui move|nats|ceph|tee bft/i.test(stackInput);
+  const name = isNeoCloud
+    ? "NeoCloud Sovereign Stack"
+    : result.isEnterpriseSovereign
+      ? "Enterprise Sovereign Stack"
+      : (() => {
+          const first = result.components[0]?.original ?? "";
+          const label = first.split(/[/,]/)[0].trim().slice(0, 30);
+          return label ? `${label} Migration` : "Snorkel Migration";
+        })();
+
+  // Size resources based on complexity
+  const isHigh =
+    result.complexity === "High" || result.complexity === "Enterprise";
+  const cpu = isHigh ? 16n : 8n;
+  const ram = isHigh ? 32n : 16n;
+  const storage = isHigh ? 1000n : 500n;
+  const resilienceScore = result.isEnterpriseSovereign ? 95n : 88n;
+  const costPerHour =
+    result.icpCostMin > 0 ? Number((result.icpCostMin / 730).toFixed(4)) : 0.18;
+
+  return {
+    id: BigInt(Date.now()),
+    name,
+    provider: "ICP",
+    status: "running",
+    cpu,
+    ram,
+    storage,
+    costPerHour,
+    resilienceScore,
+    ownerId: DEMO_OWNER_PRINCIPAL,
+    createdAt: BigInt(Date.now()) * 1_000_000n,
+  };
+}
+
+// ─── Persist a Snorkel engine to localStorage ────────────────────────────────
+function persistSnorkelEngine(engine: Engine) {
+  try {
+    const existing: Engine[] = JSON.parse(
+      localStorage.getItem(SNORKEL_ENGINES_KEY) ?? "[]",
+    );
+    existing.push(engine);
+    // Serialize BigInts as strings so JSON round-trips safely
+    localStorage.setItem(
+      SNORKEL_ENGINES_KEY,
+      JSON.stringify(existing, (_k, v) =>
+        typeof v === "bigint" ? `__bigint__${v.toString()}` : v,
+      ),
+    );
+  } catch {
+    // localStorage unavailable — skip silently
+  }
+}
 
 // ─── Context-aware AI response ────────────────────────────────────────────────
 
@@ -370,12 +438,14 @@ interface ChatPanelProps {
   preselectedEngineId?: bigint | null;
   subscription?: string;
   onOpenPricing?: () => void;
+  onOpenDashboard?: () => void;
 }
 
 export function ChatPanel({
   preselectedEngineId,
   subscription = "free",
   onOpenPricing,
+  onOpenDashboard,
 }: ChatPanelProps) {
   const [messages, setMessages, clearHistory] = useChatHistory(WELCOME_MESSAGE);
   const [input, setInput] = useState("");
@@ -393,6 +463,7 @@ export function ChatPanel({
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { data: engines } = useListEngines();
   const { data: usage } = useGetUsageSummary();
+  const queryClient = useQueryClient();
 
   const isPro = subscription === "pro" || subscription === "enterprise";
   const deploymentsThisMonth = Number(usage?.deploymentsThisMonth ?? 0);
@@ -514,14 +585,31 @@ export function ChatPanel({
     }
   }
 
-  function handleMigrationComplete() {
+  function handleMigrationComplete(result: ScanResult, stackInput: string) {
+    // Build the engine and inject into React Query cache immediately
+    const newEngine = buildEngineFromScan(result, stackInput);
+    queryClient.setQueryData<Engine[]>(queryKeys.engines, (prev) => [
+      ...(prev ?? []),
+      newEngine,
+    ]);
+    // Persist for page refresh
+    persistSnorkelEngine(newEngine);
+
     setShowMigrationProgress(false);
     setMigrationScanResult(null);
     setActiveTab("chat");
+
+    toast.success(`${newEngine.name} is live in your Dashboard!`, {
+      description: "Your migrated engine has been added to the engines grid.",
+      duration: 5000,
+    });
+
     setTimeout(() => {
       void handleSend(
-        "My workload has been migrated to sovereign ICP infrastructure on NeoCloud eu-neocloud-1a. What can I do next?",
+        `My ${newEngine.name} workload has been migrated to sovereign ICP infrastructure on NeoCloud eu-neocloud-1a. The engine has been added to my Dashboard. What can I do next?`,
       );
+      // Navigate to dashboard after a brief delay
+      setTimeout(() => onOpenDashboard?.(), 800);
     }, 300);
   }
 

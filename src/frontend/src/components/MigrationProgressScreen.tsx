@@ -25,7 +25,7 @@ interface MigrationStep {
 export interface MigrationProgressScreenProps {
   result: ScanResult;
   stackInput: string;
-  onComplete: () => void;
+  onComplete: (result: ScanResult, stackInput: string) => void;
   onNewScan: () => void;
 }
 
@@ -201,7 +201,7 @@ function SuccessScreen({
 }: {
   result: ScanResult;
   stackInput: string;
-  onComplete: () => void;
+  onComplete: (result: ScanResult, stackInput: string) => void;
   onNewScan: () => void;
 }) {
   // Derive a human-friendly stack name from the first component or detect enterprise
@@ -377,11 +377,11 @@ function SuccessScreen({
       >
         <Button
           className="w-full h-10 font-semibold text-sm gap-2 bg-emerald-600 hover:bg-emerald-500 text-white border-0 shadow-[0_0_16px_oklch(0.72_0.19_145/0.3)] hover:shadow-[0_0_24px_oklch(0.72_0.19_145/0.5)] transition-all duration-300"
-          onClick={onComplete}
+          onClick={() => onComplete(result, stackInput)}
           data-ocid="migration.open_dashboard_btn"
         >
           <ExternalLink className="w-4 h-4" />
-          Open in Dashboard
+          Your engine is live — open the Dashboard to see it running
         </Button>
         <Button
           variant="outline"

@@ -5,12 +5,14 @@ interface ChatPageProps {
   preselectedEngine?: Engine | null;
   subscription?: string;
   onOpenPricing?: () => void;
+  onOpenDashboard?: () => void;
 }
 
 export function ChatPage({
   preselectedEngine,
   subscription,
   onOpenPricing,
+  onOpenDashboard,
 }: ChatPageProps) {
   return (
     <div
@@ -22,6 +24,7 @@ export function ChatPage({
           preselectedEngineId={preselectedEngine?.id ?? null}
           subscription={subscription ?? "free"}
           onOpenPricing={onOpenPricing}
+          onOpenDashboard={onOpenDashboard}
         />
       </div>
     </div>

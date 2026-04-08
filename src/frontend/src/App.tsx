@@ -9,6 +9,7 @@ import type { Engine } from "./backend.d.ts";
 import { AppSidebar } from "./components/AppSidebar";
 import { BillingPage } from "./components/BillingPage";
 import { ChatPage } from "./components/ChatPage";
+import { SNORKEL_ENGINES_KEY } from "./components/ChatPanel";
 import { DashboardPage } from "./components/DashboardPage";
 import { EnginesPage } from "./components/EnginesPage";
 import { LandingPage } from "./components/LandingPage";
@@ -100,6 +101,26 @@ const DEMO_ENGINES: Engine[] = [
   },
 ];
 
+// ─── Load persisted Snorkel-migrated engines from localStorage ───────────────
+function loadSnorkelEngines(): Engine[] {
+  try {
+    const raw = localStorage.getItem(SNORKEL_ENGINES_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw, (_k, v) => {
+      if (typeof v === "string" && v.startsWith("__bigint__")) {
+        return BigInt(v.slice(10));
+      }
+      return v;
+    }) as Array<Record<string, unknown>>;
+    return parsed.map((e) => ({
+      ...e,
+      ownerId: Principal.fromText("2vxsx-fae"),
+    })) as Engine[];
+  } catch {
+    return [];
+  }
+}
+
 type Page =
   | "dashboard"
   | "engines"
@@ -177,6 +198,23 @@ function AppShell() {
       queryClient.setQueryData(queryKeys.engines, demoEngines);
     }
   }, [demoEngines, queryClient]);
+
+  // On mount: merge any previously Snorkel-migrated engines back into the cache
+  // biome-ignore lint/correctness/useExhaustiveDependencies: run once on mount, queryClient is stable
+  useEffect(() => {
+    const snorkelEngines = loadSnorkelEngines();
+    if (snorkelEngines.length > 0) {
+      queryClient.setQueryData<Engine[]>(queryKeys.engines, (prev) => {
+        const existing = prev ?? [];
+        // Avoid duplicates by id
+        const existingIds = new Set(existing.map((e) => e.id.toString()));
+        const newOnes = snorkelEngines.filter(
+          (e) => !existingIds.has(e.id.toString()),
+        );
+        return newOnes.length > 0 ? [...existing, ...newOnes] : existing;
+      });
+    }
+  }, []); // run once on mount
 
   // Show onboarding tour on first login
   useEffect(() => {
@@ -420,6 +458,7 @@ function AppShell() {
               preselectedEngine={chatEngine}
               subscription={effectiveTier}
               onOpenPricing={() => setPricingOpen(true)}
+              onOpenDashboard={() => setActivePage("dashboard")}
             />
           )}
           {activePage === "settings" && (
