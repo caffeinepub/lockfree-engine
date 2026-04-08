@@ -10,6 +10,7 @@ import {
   X,
   Zap,
 } from "lucide-react";
+import { motion } from "motion/react";
 import { useState } from "react";
 import { OnboardingPaymentPage } from "./OnboardingPaymentPage";
 
@@ -395,14 +396,25 @@ export function PricingPage({
 
       {/* Tier cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 items-start">
-        {TIERS.map((tier) => (
-          <TierCard
+        {TIERS.map((tier, i) => (
+          <motion.div
             key={tier.id}
-            tier={tier}
-            currentTier={currentTier}
-            annual={annual}
-            onUpgrade={() => handleUpgrade(tier.id as UpgradableTier)}
-          />
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.1 }}
+            transition={{
+              duration: 0.45,
+              delay: Math.min(i, 4) * 0.1,
+              ease: "easeOut",
+            }}
+          >
+            <TierCard
+              tier={tier}
+              currentTier={currentTier}
+              annual={annual}
+              onUpgrade={() => handleUpgrade(tier.id as UpgradableTier)}
+            />
+          </motion.div>
         ))}
       </div>
 

@@ -281,17 +281,29 @@ export function DashboardPage({
       <CostAlerts engines={engines ?? []} isDemoMode={isDemoMode} />
 
       {/* Summary cards */}
-      <div data-tour-id="summary-cards">
+      <motion.div
+        data-tour-id="summary-cards"
+        initial={{ opacity: 0, y: 24 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.15 }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
+      >
         <SummaryCards
           engines={engines}
           isLoading={isLoading}
           isDemoMode={isDemoMode}
         />
-      </div>
+      </motion.div>
 
       {/* Engines section */}
       <div>
-        <div className="flex items-center justify-between mb-4 gap-3 flex-wrap">
+        <motion.div
+          className="flex items-center justify-between mb-4 gap-3 flex-wrap"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.15 }}
+          transition={{ duration: 0.45, ease: "easeOut" }}
+        >
           <div className="flex items-center gap-2.5">
             <LayoutGrid className="w-4 h-4 text-muted-foreground" />
             <h2 className="font-display font-semibold text-lg tracking-tight">
@@ -343,7 +355,7 @@ export function DashboardPage({
               New Engine
             </Button>
           </div>
-        </div>
+        </motion.div>
 
         {isLoading ? (
           <EngineGridSkeleton />
@@ -372,15 +384,28 @@ export function DashboardPage({
       </div>
 
       {/* Migration History */}
-      <MigrationHistoryPanel />
+      <motion.div
+        initial={{ opacity: 0, y: 24 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.15 }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
+      >
+        <MigrationHistoryPanel />
+      </motion.div>
 
       {/* Live Cost Dashboard */}
-      <div data-tour-id="live-cost-dashboard">
+      <motion.div
+        data-tour-id="live-cost-dashboard"
+        initial={{ opacity: 0, y: 24 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.15 }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
+      >
         <LiveCostDashboard isDemoMode={isDemoMode} />
-      </div>
+      </motion.div>
 
       {/* Why LockFreeEngine */}
-      <div
+      <motion.div
         className="rounded-2xl p-5"
         style={{
           background: "oklch(var(--card) / 0.5)",
@@ -388,6 +413,10 @@ export function DashboardPage({
           backdropFilter: "blur(12px)",
           WebkitBackdropFilter: "blur(12px)",
         }}
+        initial={{ opacity: 0, y: 24 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.15 }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
       >
         <div className="text-base font-display font-semibold tracking-tight mb-4">
           Why LockFreeEngine?
@@ -428,7 +457,7 @@ export function DashboardPage({
             </div>
           ))}
         </div>
-      </div>
+      </motion.div>
 
       <NewEngineModal
         open={newModalOpen}

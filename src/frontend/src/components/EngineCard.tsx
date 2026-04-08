@@ -35,7 +35,7 @@ import {
   Terminal,
   Trash2,
 } from "lucide-react";
-import { motion } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 import { toast } from "sonner";
 import type { Engine } from "../backend.d.ts";
@@ -566,60 +566,90 @@ export function EngineCard({
 
       {/* Scale Dialog */}
       <Dialog open={scaleOpen} onOpenChange={setScaleOpen}>
-        <DialogContent className="max-w-sm">
-          <DialogHeader>
-            <DialogTitle>Scale Engine Resources</DialogTitle>
-            <DialogDescription>
-              Choose a new resource tier for {engine.name}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="grid grid-cols-2 gap-3 mt-2">
-            {SCALE_TIERS.map((tier) => {
-              const isCurrent =
-                tier.cpu === cpu &&
-                tier.ram === ram &&
-                tier.storage === storage;
-              return (
-                <button
-                  key={tier.name}
-                  type="button"
-                  onClick={() => handleScaleTier(tier)}
-                  className={`flex flex-col gap-1.5 p-3 rounded-xl border text-left transition-all duration-150 hover:scale-[1.02] focus:outline-none ${
-                    isCurrent
-                      ? "border-2 bg-secondary/50"
-                      : "border-border hover:border-opacity-70 hover:bg-secondary/30"
-                  }`}
-                  style={{
-                    borderColor: isCurrent ? provider.color : undefined,
-                  }}
-                  data-ocid="engine.secondary_button"
-                >
-                  <div
-                    className="text-sm font-semibold"
-                    style={{ color: provider.color }}
+        <DialogContent
+          className="max-w-sm border-white/10"
+          style={{
+            background: "oklch(var(--card) / 0.70)",
+            backdropFilter: "blur(24px)",
+            WebkitBackdropFilter: "blur(24px)",
+            boxShadow:
+              "0 24px 80px oklch(0 0 0 / 0.6), 0 0 0 1px oklch(1 0 0 / 0.06)",
+            borderRadius: "16px",
+          }}
+        >
+          {/* Provider-specific top glow */}
+          <div
+            className="absolute inset-x-0 top-0 h-20 pointer-events-none rounded-t-2xl"
+            style={{
+              background:
+                engine.provider === "AWS"
+                  ? "radial-gradient(ellipse 60% 30% at 50% 0%, oklch(0.74 0.18 55 / 0.12), transparent)"
+                  : engine.provider === "GCP"
+                    ? "radial-gradient(ellipse 60% 30% at 50% 0%, oklch(0.68 0.18 220 / 0.12), transparent)"
+                    : engine.provider === "Azure"
+                      ? "radial-gradient(ellipse 60% 30% at 50% 0%, oklch(0.74 0.17 195 / 0.12), transparent)"
+                      : "radial-gradient(ellipse 60% 30% at 50% 0%, oklch(0.82 0.22 195 / 0.15), transparent)",
+            }}
+          />
+          <motion.div
+            initial={{ opacity: 0, scale: 0.97 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <DialogHeader>
+              <DialogTitle>Scale Engine Resources</DialogTitle>
+              <DialogDescription>
+                Choose a new resource tier for {engine.name}
+              </DialogDescription>
+            </DialogHeader>
+            <div className="grid grid-cols-2 gap-3 mt-2">
+              {SCALE_TIERS.map((tier) => {
+                const isCurrent =
+                  tier.cpu === cpu &&
+                  tier.ram === ram &&
+                  tier.storage === storage;
+                return (
+                  <button
+                    key={tier.name}
+                    type="button"
+                    onClick={() => handleScaleTier(tier)}
+                    className={`flex flex-col gap-1.5 p-3 rounded-xl border text-left transition-all duration-150 hover:scale-[1.02] focus:outline-none ${
+                      isCurrent
+                        ? "border-2 bg-secondary/50"
+                        : "border-border hover:border-opacity-70 hover:bg-secondary/30"
+                    }`}
+                    style={{
+                      borderColor: isCurrent ? provider.color : undefined,
+                    }}
+                    data-ocid="engine.secondary_button"
                   >
-                    {tier.name}
-                    {isCurrent && (
-                      <span className="ml-1.5 text-xs font-normal text-muted-foreground">
-                        (current)
-                      </span>
-                    )}
-                  </div>
-                  <div className="space-y-0.5">
-                    <div className="text-xs text-muted-foreground font-mono">
-                      {tier.cpu} CPU
+                    <div
+                      className="text-sm font-semibold"
+                      style={{ color: provider.color }}
+                    >
+                      {tier.name}
+                      {isCurrent && (
+                        <span className="ml-1.5 text-xs font-normal text-muted-foreground">
+                          (current)
+                        </span>
+                      )}
                     </div>
-                    <div className="text-xs text-muted-foreground font-mono">
-                      {tier.ram} GB RAM
+                    <div className="space-y-0.5">
+                      <div className="text-xs text-muted-foreground font-mono">
+                        {tier.cpu} CPU
+                      </div>
+                      <div className="text-xs text-muted-foreground font-mono">
+                        {tier.ram} GB RAM
+                      </div>
+                      <div className="text-xs text-muted-foreground font-mono">
+                        {tier.storage} GB Storage
+                      </div>
                     </div>
-                    <div className="text-xs text-muted-foreground font-mono">
-                      {tier.storage} GB Storage
-                    </div>
-                  </div>
-                </button>
-              );
-            })}
-          </div>
+                  </button>
+                );
+              })}
+            </div>
+          </motion.div>
         </DialogContent>
       </Dialog>
     </>

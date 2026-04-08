@@ -25,6 +25,7 @@ import {
   Terminal,
   Users,
 } from "lucide-react";
+import { motion } from "motion/react";
 import { ArchitectureDiagram } from "./ArchitectureDiagram";
 
 function CodeBlock({ children }: { children: string }) {
@@ -82,42 +83,56 @@ export function TechnicalNotesPage() {
       </div>
 
       {/* Quick-reference architecture card */}
-      <Card className="border-primary/20 bg-card">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-semibold flex items-center gap-2">
-            <Network className="w-4 h-4 text-primary" />
-            System at a Glance
-          </CardTitle>
-          <CardDescription className="text-xs">
-            Two-canister deployment on the Internet Computer
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <CodeBlock>{`[Browser]  →  [Frontend Canister (React SPA)]  →  [Backend Canister (Motoko Actor)]
+      <motion.div
+        initial={{ opacity: 0, y: 24 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.15 }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
+      >
+        <Card className="border-primary/20 bg-card">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-semibold flex items-center gap-2">
+              <Network className="w-4 h-4 text-primary" />
+              System at a Glance
+            </CardTitle>
+            <CardDescription className="text-xs">
+              Two-canister deployment on the Internet Computer
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <CodeBlock>{`[Browser]  →  [Frontend Canister (React SPA)]  →  [Backend Canister (Motoko Actor)]
                                                               ↑
                               [Internet Identity]  ←  authenticated principal
                               [NNS / Governance]   ←  subnet management
 
 // All state lives in the Motoko actor — orthogonally persistent, no database required`}</CodeBlock>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </motion.div>
 
       {/* Combined architecture diagram */}
-      <Card className="border-border bg-card">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-sm font-semibold flex items-center gap-2">
-            <Layers className="w-4 h-4 text-primary" />
-            Combined Architecture — ICP · NeoCloud · LockFreeEngine
-          </CardTitle>
-          <CardDescription className="text-xs">
-            Three-layer infrastructure vision: physical compute · protocol ·
-            operator dashboard
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <ArchitectureDiagram />
-        </CardContent>
-      </Card>
+      <motion.div
+        initial={{ opacity: 0, y: 24 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.15 }}
+        transition={{ duration: 0.5, ease: "easeOut", delay: 0.1 }}
+      >
+        <Card className="border-border bg-card">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm font-semibold flex items-center gap-2">
+              <Layers className="w-4 h-4 text-primary" />
+              Combined Architecture — ICP · NeoCloud · LockFreeEngine
+            </CardTitle>
+            <CardDescription className="text-xs">
+              Three-layer infrastructure vision: physical compute · protocol ·
+              operator dashboard
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ArchitectureDiagram />
+          </CardContent>
+        </Card>
+      </motion.div>
 
       {/* Accordion sections */}
       <Accordion

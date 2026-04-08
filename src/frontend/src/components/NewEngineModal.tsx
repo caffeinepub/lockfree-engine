@@ -34,6 +34,7 @@ import {
   MemoryStick,
   Server,
 } from "lucide-react";
+import { motion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import type { Engine } from "../backend.d.ts";
@@ -214,10 +215,32 @@ export function NewEngineModal({
 
   return (
     <Dialog open={open} onOpenChange={(v) => !v && handleClose()}>
-      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+      <DialogContent
+        className="max-w-lg max-h-[90vh] overflow-y-auto rounded-2xl border-white/10"
+        style={{
+          background: "oklch(var(--card) / 0.70)",
+          backdropFilter: "blur(24px)",
+          WebkitBackdropFilter: "blur(24px)",
+          boxShadow:
+            "0 24px 80px oklch(0 0 0 / 0.6), 0 0 0 1px oklch(1 0 0 / 0.06)",
+          borderRadius: "16px",
+        }}
+      >
+        {/* Top radial glow accent */}
+        <div
+          className="absolute inset-x-0 top-0 h-24 pointer-events-none rounded-t-2xl"
+          style={{
+            background:
+              "radial-gradient(ellipse 80% 40% at 50% 0%, oklch(0.82 0.22 195 / 0.08), transparent)",
+          }}
+        />
         {/* === FORM STEP === */}
         {provisionStep === "form" && (
-          <>
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, ease: "easeOut" }}
+          >
             <DialogHeader>
               <DialogTitle className="font-display">
                 New Cloud Engine
@@ -428,7 +451,7 @@ export function NewEngineModal({
                 {isPending ? "Provisioning..." : "Provision Engine"}
               </Button>
             </DialogFooter>
-          </>
+          </motion.div>
         )}
 
         {/* === PROVISIONING ANIMATION STEP (demo mode) === */}
@@ -525,8 +548,16 @@ export function NewEngineModal({
 
         {/* === COMPLETE STEP (demo mode) === */}
         {provisionStep === "complete" && (
-          <div className="flex flex-col items-center gap-5 py-8">
-            <div className="w-16 h-16 rounded-full bg-status-running/10 border border-status-running/30 flex items-center justify-center">
+          <motion.div
+            className="flex flex-col items-center gap-5 py-8"
+            initial={{ opacity: 0, scale: 0.97 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <div
+              className="w-16 h-16 rounded-full bg-status-running/10 border border-status-running/30 flex items-center justify-center"
+              style={{ boxShadow: "0 0 24px oklch(0.74 0.19 145 / 0.3)" }}
+            >
               <CheckCircle2 className="w-8 h-8 text-status-running" />
             </div>
             <div className="text-center space-y-1.5">
@@ -549,7 +580,7 @@ export function NewEngineModal({
               <CheckCircle2 className="w-4 h-4" />
               View Engine
             </Button>
-          </div>
+          </motion.div>
         )}
       </DialogContent>
     </Dialog>
