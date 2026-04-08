@@ -204,10 +204,24 @@ function SuccessScreen({
   onComplete: () => void;
   onNewScan: () => void;
 }) {
-  const engineName = stackInput.trim()
-    ? stackInput.split(/[\n,]/)[0].trim().slice(0, 38) ||
-      "Sovereign EU Deployment"
-    : "Sovereign EU Deployment";
+  // Derive a human-friendly stack name from the first component or detect enterprise
+  const isNeoCloud = /kubernetes|sui move|nats|ceph|tee bft/i.test(stackInput);
+  const stackName = isNeoCloud
+    ? "NeoCloud Sovereign"
+    : result.isEnterpriseSovereign
+      ? "Enterprise"
+      : stackInput.trim()
+        ? stackInput.split(/[\n,]/)[0].trim().slice(0, 36) || "Sovereign"
+        : "Sovereign";
+
+  // Build a compact component summary from matched components (up to 4)
+  const componentSummary = result.components
+    .slice(0, 4)
+    .map(
+      (c) =>
+        `${c.original.split(/[/,]/)[0].trim()} → ${c.icpEquivalent.split(/[+(]/)[0].trim()}`,
+    )
+    .join("  ·  ");
 
   return (
     <motion.div
@@ -241,16 +255,48 @@ function SuccessScreen({
             Migration Complete
           </h3>
           <p className="text-xs text-muted-foreground mt-0.5">
-            Your workload is live on sovereign ICP infrastructure
+            Your{" "}
+            <span className="text-foreground/80 font-medium">{stackName}</span>{" "}
+            stack is live on sovereign ICP infrastructure
           </p>
         </motion.div>
       </div>
+
+      {/* Component mapping summary */}
+      {componentSummary && (
+        <motion.div
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3, duration: 0.25 }}
+          className="rounded-lg border border-cyan-500/20 bg-cyan-500/5 px-3 py-2.5"
+        >
+          <p className="text-[10px] text-muted-foreground/70 uppercase tracking-wide font-semibold mb-1.5">
+            Component Migration Summary
+          </p>
+          <div className="flex flex-wrap gap-x-3 gap-y-1">
+            {result.components.slice(0, 4).map((c, i) => (
+              <span
+                key={`${c.original}-${i}`}
+                className="flex items-center gap-1 text-[10px]"
+              >
+                <span className="text-foreground/70 font-mono">
+                  {c.original.split(/[/,]/)[0].trim()}
+                </span>
+                <span className="text-muted-foreground/50">→</span>
+                <span className="text-cyan-400 font-semibold">
+                  {c.icpEquivalent.split(/[+(]/)[0].trim()}
+                </span>
+              </span>
+            ))}
+          </div>
+        </motion.div>
+      )}
 
       {/* Deployed engine card */}
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.35, duration: 0.3 }}
+        transition={{ delay: 0.38, duration: 0.3 }}
         className="rounded-xl border border-emerald-500/25 bg-gradient-to-b from-emerald-500/8 to-emerald-500/3 p-4 space-y-3"
       >
         {/* Engine header */}
@@ -262,9 +308,9 @@ function SuccessScreen({
             <div>
               <div
                 className="text-sm font-semibold text-foreground leading-tight truncate max-w-[160px]"
-                title={engineName}
+                title={stackName}
               >
-                {engineName}
+                {stackName}
               </div>
               <div className="flex items-center gap-1 mt-0.5">
                 <MapPin className="w-2.5 h-2.5 text-cyan-400/70" />
