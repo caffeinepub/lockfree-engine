@@ -52,6 +52,7 @@ interface NavItemProps {
   active: boolean;
   onClick: () => void;
   "data-ocid"?: string;
+  "data-tour-id"?: string;
 }
 
 function SidebarNavItem({
@@ -60,12 +61,14 @@ function SidebarNavItem({
   active,
   onClick,
   "data-ocid": dataOcid,
+  "data-tour-id": dataTourId,
 }: NavItemProps) {
   return (
     <button
       type="button"
       onClick={onClick}
       data-ocid={dataOcid}
+      data-tour-id={dataTourId}
       className={`nav-item ${active ? "nav-item-active" : ""}`}
     >
       <Icon
@@ -161,6 +164,9 @@ export function AppSidebar({
               icon={item.icon}
               label={item.label}
               active={activePage === item.id}
+              data-tour-id={
+                item.id === "billing" ? "sidebar-billing" : undefined
+              }
               onClick={() => {
                 onNavigate(item.id);
                 onMobileClose();
